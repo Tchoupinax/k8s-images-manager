@@ -1,11 +1,11 @@
 # k8s-images-manager
 
-![frontend](https://img.shields.io/badge/frontend-Nuxt.js-green?style=for-the-badge)
-![backend](https://img.shields.io/badge/backend-Node.js-purple?style=for-the-badge)
+![frontend](https://img.shields.io/badge/frontend-Nuxt.js-00D492?style=for-the-badge)
+![backend](https://img.shields.io/badge/backend-Node.js-6DA55F?style=for-the-badge)
 ![rust](https://img.shields.io/badge/agent-Rust-brown?style=for-the-badge)
 
-[![NodeJS](https://img.shields.io/badge/Node.js_v24-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)](#)
-[![Golang](https://img.shields.io/badge/Golang_v1.24-118293?style=for-the-badge&logo=go&logoColor=white)](#)
+[![Nuxt](https://img.shields.io/badge/Nuxt_v25-00D492?style=for-the-badge&logo=nuxt&logoColor=white)](#)
+[![NodeJS](https://img.shields.io/badge/Node.js_v25-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)](#)
 [![Golang](https://img.shields.io/badge/Rust_v1.92-brown?style=for-the-badge&logo=rust&logoColor=white)](#)
 
 ## Getting start
