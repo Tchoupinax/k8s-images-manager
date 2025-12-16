@@ -40,9 +40,32 @@ dependencies:
   version: 0.1.0
   repository: oci://ghcr.io/tchoupinax
 ```
+## Motivation
+
+If you manager a cluster, you know that Dockerhub's rate limit can be hard if you did not anticipate it. There are many tips to handle it, one is to have an [embedded registry mirror](https://docs.k3s.io/installation/registry-mirror) that I wanted to setup with k3s.
+
+But to check that this registry is working, I need to monitor how images are managed accros the nodes.
+
+That's the reason of this project, and that's all. Sometimes, it's really simple.
+
+## Features
+
+### List images from the cluster
+
+To be done
+
+### Show which nodes have specific images
+![](.github/docs/nodes.png)
 
 ## Roadmap
 
-- [ ] Provide first dashboard
+- [ ] Make agent compatible with Kubernetes distribution
+    - [x] k3s
+    - [ ] Minikube
+    - [ ] EKS
+    - [ ] GKE
+    - [ ] Talos
 - [ ] Make agent compatible with Docker engine
 - [ ] Make agent binary the most light possible (using scratch)
+- [ ] Improve UI
+  - [ ] Nodes dashboard
