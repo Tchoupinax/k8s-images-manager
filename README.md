@@ -17,17 +17,17 @@
 > - [HostNetwork: true](https://github.com/Tchoupinax/k8s-images-manager/blob/master/chart/templates/agents.yaml#L26)
 > 
 > - [Binding containerd socket (k3s only for now!)](https://github.com/Tchoupinax/k8s-images-manager/blob/21bf40b02947c9b23686ebec0cab99133e35908f/chart/templates/agents.yaml#L66)
-> - [Being privilegied](https://github.com/Tchoupinax/k8s-images-manager/blob/21bf40b02947c9b23686ebec0cab99133e35908f/chart/values.yaml#L95)
+> - [Being privileged](https://github.com/Tchoupinax/k8s-images-manager/blob/21bf40b02947c9b23686ebec0cab99133e35908f/chart/values.yaml#L95)
 >
 > Improvements will be done to limit these requirement in the future.
 
-## With `Helm`
+### With `Helm`
 
 ```
 helm install k8s-images-manager oci://ghcr.io/tchoupinax --create-namespace -n k8s-images-manager
 ```
 
-### With `Chart.yaml` and Helm
+### With `Chart.yaml` and `Helm`
 
 ```
 apiVersion: v2
