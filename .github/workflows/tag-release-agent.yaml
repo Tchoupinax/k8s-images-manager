@@ -1,0 +1,62 @@
+name: Release agent
+
+on:
+  push:
+    tags:
+    - v*
+
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  id-token: write
+
+jobs:
+  release-binary:
+    name: "Release agent binary"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Install OpenSSL dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libssl-dev
+      - uses: mlugg/setup-zig@v2
+      - uses: sigstore/cosign-installer@v4.0.0
+      - uses: anchore/sbom-action/download-syft@v0.20.11
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Cache built files by Rust
+        uses: actions/cache@v5
+        with:
+          path: |
+            target/
+            ~/.cargo/git/db/
+            ~/.cargo/registry/cache/
+            ~/.cargo/registry/index/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      - name: Compile with goreleaser and publish release
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          args: release
+          version: "~> v2"
+          workdir: agent
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

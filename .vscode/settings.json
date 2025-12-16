@@ -1,0 +1,46 @@
+{
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "never"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "eslint.format.enable": true,
+  "eslint.ignoreUntitled": true,
+  "eslint.run": "onSave",
+  "eslint.validate": ["javascript", "typescript"],
+
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "[dockerfile]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+
+  "json.format.enable": true,
+  "workbench.colorCustomizations": {
+    "editorWarning.background": "#ff0000",
+    "activityBar.activeBackground": "#e4d4d3",
+    "activityBar.background": "#e4d4d3",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#619e65",
+    "activityBarBadge.foreground": "#15202b",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#e4d4d3",
+    "statusBar.background": "#d1b5b3",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#be9693",
+    "statusBarItem.remoteBackground": "#d1b5b3",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#d1b5b3",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#d1b5b399",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#d1b5b3"
+}

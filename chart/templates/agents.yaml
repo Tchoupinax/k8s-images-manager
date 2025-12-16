@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: "DaemonSet"
+metadata:
+  name: {{ include "chart.agents.fullname" . }}
+  labels:
+    {{- include "chart.agents.labels" . | nindent 4 }}
+
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      {{- include "chart.agents.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.agents.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "chart.agents.labels" . | nindent 8 }}
+        {{- with .Values.agents.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+
+      {{- with .Values.agents.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.agents.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      containers:
+      - name: {{ .Chart.Name }}
+        {{- with .Values.agents.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        image: "{{ .Values.agents.image.repository }}:agent-v{{ .Values.agents.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.agents.image.pullPolicy }}
+
+        volumeMounts:
+        - name: containerd-socket
+          mountPath: /run/k3s/containerd/containerd.sock
+
+        {{- with .Values.agents.resources }}
+        resources:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+
+        env:
+          - name: "PUSH_FREQUENCY_IN_SECOND"
+            value: "{{ .Values.agents.config.pushFrequencyInSecond }}"
+          - name: "SERVER_URL"
+            value: {{ .Values.agents.config.serverUrl | default (printf "http://%s.%s:9999" (include "chart.server.fullname" .) .Release.Namespace) }}
+
+
+      volumes:
+      - name: containerd-socket
+        hostPath:
+          path: /run/k3s/containerd/containerd.sock
+
+      {{- with .Values.agents.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.agents.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.agents.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

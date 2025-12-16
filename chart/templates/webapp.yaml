@@ -1,0 +1,81 @@
+{{- if .Values.webapp.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.webapp.fullname" . }}
+  labels:
+    {{- include "chart.webapp.labels" . | nindent 4 }}
+
+spec:
+  replicas: {{ .Values.webapp.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "chart.webapp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.webapp.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "chart.webapp.labels" . | nindent 8 }}
+        {{- with .Values.webapp.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+
+    spec:
+      {{- with .Values.webapp.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.webapp.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.webapp.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.webapp.image.repository }}:webapp-v{{ .Values.webapp.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.webapp.image.pullPolicy }}
+          ports:
+            - name: web
+              containerPort: {{ .Values.webapp.service.port }}
+              protocol: TCP
+
+          env:
+          - name: NODE_ENV
+            value: "production"
+          - name: "SERVER_URL"
+            value: {{ .Values.webapp.config.serverUrl | default (printf "http://%s.%s:9999" (include "chart.server.fullname" .) .Release.Namespace) }}
+
+          {{- with .Values.webapp.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.webapp.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+      {{- with .Values.webapp.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    
+      {{- with .Values.webapp.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.webapp.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.webapp.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

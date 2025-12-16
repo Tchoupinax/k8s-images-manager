@@ -1,0 +1,8 @@
+.zig-cache
+
+agent/target
+agent/dist
+
+node_modules
+
+server/dist
