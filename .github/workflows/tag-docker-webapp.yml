@@ -25,7 +25,7 @@ jobs:
           cache-dependency-path: webapp/yarn.lock
 
       - name: Cache node_modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "webapp/node_modules"
           key: ${{ runner.os }}-yarn-${{ hashFiles('webapp/yarn.lock') }}
