@@ -28,4 +28,3 @@
   },
   "include": ["scripts", "src", "tests", "types/typescript.ts"]
 }
-

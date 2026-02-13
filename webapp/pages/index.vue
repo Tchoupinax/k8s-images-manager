@@ -46,6 +46,6 @@ import { format } from "timeago.js";
 const $config = useRuntimeConfig();
 
 const { data: images, error } = await useFetch<Array<ImageInfo>>(
-  `${$config.public.serverEndpoint}/api/images`
+  `${$config.public.serverEndpoint}/api/images`,
 );
 </script>

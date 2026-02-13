@@ -71,10 +71,7 @@ async fn main() {
     };
 
     let push_frequency_second = match env::var("PUSH_FREQUENCY_IN_SECOND") {
-        Ok(value) => match value.parse() {
-            Ok(number) => number,
-            Err(_) => 30,
-        },
+        Ok(value) => value.parse().unwrap_or(30),
         Err(_) => 30,
     };
 

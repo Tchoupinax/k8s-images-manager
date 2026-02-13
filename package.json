@@ -1,0 +1,18 @@
+{
+  "name": "k8s-images-manager",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "build:continue": "turbo run build --continue",
+    "check": "gitleaks dir -v && gitleaks git -v",
+    "lint": "turbo run lint --continue",
+    "upgrade": "ncu -i -w",
+    "watch": "turbo run watch"
+  },
+  "devDependencies": {
+    "npm-check-updates": "19.3.2",
+    "turbo": "2.8.7"
+  },
+  "packageManager": "pnpm@10.29.3"
+}
