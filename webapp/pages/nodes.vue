@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto flex max-w-6xl flex-col gap-6 text-slate-900">
+  <div class="flex flex-col max-w-6xl gap-6 mx-auto text-slate-900">
     <header class="flex flex-wrap items-center justify-between gap-3">
       <div>
         <h1 class="text-2xl font-black tracking-tight text-slate-900">
@@ -22,7 +22,7 @@
     </header>
 
     <section
-      class="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur"
+      class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
     >
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -48,26 +48,26 @@
         />
       </div>
 
-      <div v-if="selectedImages.length" class="mt-3 flex flex-wrap gap-2">
+      <div v-if="selectedImages.length" class="flex flex-wrap gap-2 mt-3">
         <div
           v-for="(image, index) in selectedImages"
           :key="image"
           class="inline-flex items-center gap-2 rounded-full border border-black px-3 py-1 text-[11px] font-medium text-white shadow-[3px_3px_0_0_#000]"
           :style="{ backgroundColor: pastelColors[index % pastelColors.length] }"
         >
-          <span class="truncate max-w-xs">{{ image }}</span>
+          <span class="max-w-xs truncate">{{ image }}</span>
         </div>
       </div>
     </section>
 
     <section
-      class="overflow-hidden rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur"
+      class="overflow-hidden border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
     >
       <div
         v-if="pending"
         class="flex min-h-[260px] flex-col items-center justify-center gap-4 p-8"
       >
-        <div class="relative h-12 w-12">
+        <div class="relative w-12 h-12">
           <div
             class="absolute inset-0 rounded-full border-4 border-black bg-[#4EC8D8] opacity-40 animate-ping"
           ></div>
@@ -118,7 +118,7 @@
           class="flex flex-col justify-between rounded-2xl border-4 border-black bg-white px-4 py-3 shadow-[4px_4px_0_0_#000]"
         >
           <div>
-            <p class="truncate text-sm font-semibold text-slate-900">
+            <p class="text-sm font-semibold truncate text-slate-900">
               {{ node }}
             </p>
 
@@ -127,7 +127,7 @@
             </p>
           </div>
 
-          <div v-if="selectedImages.length" class="mt-3 grid grid-cols-4 gap-2">
+          <div v-if="selectedImages.length" class="grid grid-cols-4 gap-2 mt-3">
             <div
               v-for="(image, index) in selectedImages"
               :key="image"
@@ -139,11 +139,11 @@
                 'shadow-none opacity-40': !doesNodeHasThisImage(node, image),
               }"
             >
-              <span class="truncate px-1">
+              <span class="px-1 truncate">
                 {{ index + 1 }}
               </span>
               <span
-                class="absolute -right-1 -top-1 h-4 w-4 rounded-full border-2 border-white"
+                class="absolute w-4 h-4 border-2 border-white rounded-full -right-1 -top-1"
                 :class="
                   doesNodeHasThisImage(node, image) ? 'bg-green-500' : 'bg-red-700'
                 "
@@ -151,7 +151,7 @@
             </div>
           </div>
 
-          <div class="mt-3 flex items-center justify-between text-xs">
+          <div class="flex items-center justify-between mt-3 text-xs">
             <div class="mr-2 font-semibold text-slate-900">
               {{
                 selectedImages.length

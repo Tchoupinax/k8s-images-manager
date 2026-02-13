@@ -5,7 +5,11 @@
   "scripts": {
     "start": "node --no-warnings --experimental-strip-types src/index.mts",
     "watch": "node --no-warnings --experimental-strip-types --watch src/index.mts",
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "pnpm lint:prettier && pnpm lint:eslint",
+    "lint:eslint": "eslint \"{src,apps,libs,test}/**/*.mts\" --fix || true",
+    "lint:inspect": "npx @eslint/config-inspector@latest",
+    "lint:prettier": "prettier . --write"
   },
   "dependencies": {
     "@fastify/cors": "11.2.0",

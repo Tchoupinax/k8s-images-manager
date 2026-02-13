@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto flex max-w-6xl flex-col gap-6">
+  <div class="flex flex-col max-w-6xl gap-6 mx-auto">
     <header class="flex flex-wrap items-center justify-between gap-3">
       <div>
         <h1 class="text-2xl font-black tracking-tight text-slate-900">
@@ -34,9 +34,9 @@
       v-if="images && images.length"
     >
       <div
-        class="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur"
+        class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
       >
-        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">
+        <p class="text-xs font-medium tracking-wide uppercase text-slate-500">
           Total images
         </p>
         <p class="mt-1 text-2xl font-black text-slate-900">
@@ -45,9 +45,9 @@
       </div>
 
       <div
-        class="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur"
+        class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
       >
-        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">
+        <p class="text-xs font-medium tracking-wide uppercase text-slate-500">
           Unique repositories
         </p>
         <p class="mt-1 text-2xl font-black text-slate-900">
@@ -56,9 +56,9 @@
       </div>
 
       <div
-        class="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur"
+        class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
       >
-        <p class="text-xs font-medium uppercase tracking-wide text-slate-500">
+        <p class="text-xs font-medium tracking-wide uppercase text-slate-500">
           Nodes reporting
         </p>
         <p class="mt-1 text-2xl font-black text-slate-900">
@@ -68,10 +68,10 @@
     </section>
 
     <section
-      class="overflow-hidden rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur"
+      class="overflow-hidden border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
     >
       <div
-        class="flex flex-col gap-3 border-b border-slate-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+        class="flex flex-col gap-3 px-4 py-3 border-b border-slate-100 sm:flex-row sm:items-center sm:justify-between"
       >
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
@@ -93,9 +93,9 @@
             class="w-full min-w-[180px] max-w-xs text-xs"
           />
 
-          <span class="relative inline-flex max-w-xs flex-1 items-center">
+          <span class="relative inline-flex items-center flex-1 max-w-xs">
             <i
-              class="pi pi-search pointer-events-none absolute left-2 text-xs text-slate-400"
+              class="absolute text-xs pointer-events-none pi pi-search left-2 text-slate-400"
             ></i>
             <InputText
               v-model="search"
@@ -110,7 +110,7 @@
         v-if="pending"
         class="flex min-h-[260px] flex-col items-center justify-center gap-4 p-8"
       >
-        <div class="relative h-12 w-12">
+        <div class="relative w-12 h-12">
           <div
             class="absolute inset-0 rounded-full border-4 border-black bg-[#4EC8D8] opacity-40 animate-ping"
           ></div>
@@ -154,9 +154,9 @@
       </div>
 
       <div v-else class="overflow-x-auto">
-        <table class="min-w-full border-t border-slate-100 text-left text-xs">
+        <table class="min-w-full text-xs text-left border-t border-slate-100">
           <thead
-            class="sticky top-0 z-10 bg-slate-50/90 backdrop-blur border-b border-slate-100"
+            class="sticky top-0 z-10 border-b bg-slate-50/90 backdrop-blur border-slate-100"
           >
             <tr class="text-[11px] uppercase tracking-[0.18em] text-slate-500">
               <th class="px-4 py-3 font-semibold">
@@ -205,7 +205,7 @@
             <tr
               v-for="image in sortedGroupedImages"
               :key="image.key"
-              class="border-t border-slate-100 bg-white/70 last:border-b hover:bg-sky-50/60 border-l-4"
+              class="border-t border-l-4 border-slate-100 bg-white/70 last:border-b hover:bg-sky-50/60"
               :class="
                 image.nodes.length > 3
                   ? 'border-l-[#4A0AAA]'
@@ -260,7 +260,7 @@
               </td>
 
               <td class="px-4 py-3 align-top">
-                <span class="whitespace-nowrap text-xs text-slate-700">
+                <span class="text-xs whitespace-nowrap text-slate-700">
                   {{ image.lastSeen ? format(image.lastSeen) : "—" }}
                 </span>
               </td>
@@ -274,7 +274,7 @@
                 </span>
               </td>
 
-              <td class="px-4 py-3 align-top text-right">
+              <td class="px-4 py-3 text-right align-top">
                 <Button
                   icon="pi pi-trash"
                   class="!h-8 !w-8 !p-0 bg-red-500 border border-black text-white hover:bg-red-600"
