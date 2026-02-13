@@ -7,7 +7,7 @@
         v-model="selectedImages"
         :options="
           Array.from(
-            new Set(data?.map((node) => `${node.repository}:${node.tag}`))
+            new Set(data?.map((node) => `${node.repository}:${node.tag}`)),
           )
             .sort()
             .map((image) => ({ name: image }))
@@ -31,7 +31,9 @@
       </div>
     </div>
 
-    <div class="inline-grid justify-center grid-cols-3 mt-8 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-5">
+    <div
+      class="inline-grid justify-center grid-cols-3 mt-8 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-5"
+    >
       <div
         v-for="node of nodes"
         class="flex flex-col items-center justify-between p-3 m-2 border-4 border-black rounded-xl size-60"
@@ -56,7 +58,7 @@
                 'shadow-lg': doesNodeHasThisImage(node, selectedImage.name),
                 'shadow-lg opacity-40': !doesNodeHasThisImage(
                   node,
-                  selectedImage.name
+                  selectedImage.name,
                 ),
               }"
             >
@@ -77,7 +79,7 @@
             {{
               countHowManyImagesTheNodeHas(
                 node,
-                selectedImages.map((g) => g.name)
+                selectedImages.map((g) => g.name),
               )
             }}
             / {{ selectedImages.length }}
@@ -86,9 +88,13 @@
           <div
             class="px-2 font-light rounded-md"
             :class="{
-              'bg-green-200': calculateImagePercentageByNode(node, selectedImages) > 60,
-              'bg-yellow-200': calculateImagePercentageByNode(node, selectedImages) < 60 && calculateImagePercentageByNode(node, selectedImages) > 40,
-              'bg-red-200': calculateImagePercentageByNode(node, selectedImages) < 40,
+              'bg-green-200':
+                calculateImagePercentageByNode(node, selectedImages) > 60,
+              'bg-yellow-200':
+                calculateImagePercentageByNode(node, selectedImages) < 60 &&
+                calculateImagePercentageByNode(node, selectedImages) > 40,
+              'bg-red-200':
+                calculateImagePercentageByNode(node, selectedImages) < 40,
             }"
           >
             {{ calculateImagePercentageByNode(node, selectedImages) }}%
@@ -115,7 +121,7 @@ const pastelColors: string[] = [
 
 const $config = useRuntimeConfig();
 const { data } = useFetch<ImageInfo[]>(
-  `${$config.public.serverEndpoint}/api/images`
+  `${$config.public.serverEndpoint}/api/images`,
 );
 
 const selectedImages = ref([
@@ -143,7 +149,7 @@ const doesNodeHasThisImage = (nodeName: string, imageName: string) => {
 };
 const countHowManyImagesTheNodeHas = (
   nodeName: string,
-  imageNames: Array<string>
+  imageNames: Array<string>,
 ) => {
   const allImages =
     data.value
@@ -153,15 +159,15 @@ const countHowManyImagesTheNodeHas = (
 };
 const calculateImagePercentageByNode = (
   nodeName: string,
-  selectedImages: Array<{ name: string }>
+  selectedImages: Array<{ name: string }>,
 ) => {
   return Math.floor(
     (countHowManyImagesTheNodeHas(
       nodeName,
-      selectedImages.map((g) => g.name)
+      selectedImages.map((g) => g.name),
     ) /
       selectedImages.length) *
-      100
+      100,
   );
 };
 </script>

@@ -1,0 +1,9 @@
+packages:
+  - agent
+  - server
+  - webapp
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - esbuild
+  - unrs-resolver

@@ -1,0 +1,11 @@
+{
+  "name": "agent",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cargo build --release",
+    "test": "cargo test",
+    "lint": "cargo clippy -- -D warnings || true",
+    "upgrade": "cargo upgrade --incompatible"
+  }
+}
