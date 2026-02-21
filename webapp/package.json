@@ -33,7 +33,7 @@
     "@types/node": "^25.0.2",
     "eslint": "9.39.2",
     "eslint-plugin-perfectionist": "^5.0.0",
-    "postcss-custom-properties": "14.0.6",
+    "postcss-custom-properties": "15.0.1",
     "prettier": "3.8.1",
     "typescript": "5.9.3",
     "vue-tsc": "3.2.4"
