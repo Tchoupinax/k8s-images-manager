@@ -19,17 +19,17 @@ jobs:
     name: "Push helm chart"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
 
-      - name: Push Helm chart to OCI Github registry2
-        uses: bsord/helm-push@v4.2.0
-        with:
-          useOCIRegistry: true
-          registry-url:  oci://ghcr.io/tchoupinax
-          username: Tchoupinax
-          access-token: ${{ secrets.OCI_PUSH_PASSWORD }}
-          force: true
-          chart-folder: chart
-          update-dependencies: false
+    - name: Push Helm chart to OCI Github registry2
+      uses: bsord/helm-push@v4.2.0
+      with:
+        useOCIRegistry: true
+        registry-url: oci://ghcr.io/tchoupinax
+        username: Tchoupinax
+        access-token: ${{ secrets.OCI_PUSH_PASSWORD }}
+        force: true
+        chart-folder: chart
+        update-dependencies: false

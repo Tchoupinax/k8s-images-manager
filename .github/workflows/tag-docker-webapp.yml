@@ -3,7 +3,7 @@ name: Build webapp + docker image
 on:
   push:
     tags:
-      - v*
+    - v*
 
 permissions:
   contents: read
@@ -14,85 +14,85 @@ jobs:
     name: "📊 Build webapp"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+    - name: Checkout repository
+      uses: actions/checkout@v6
 
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: "webapp/.nvmrc"
-          cache: yarn
-          cache-dependency-path: webapp/yarn.lock
+    - name: Setup Node
+      uses: actions/setup-node@v6
+      with:
+        node-version-file: "webapp/.nvmrc"
+        cache: yarn
+        cache-dependency-path: webapp/yarn.lock
 
-      - name: Cache node_modules
-        uses: actions/cache@v5
-        with:
-          path: "webapp/node_modules"
-          key: ${{ runner.os }}-yarn-${{ hashFiles('webapp/yarn.lock') }}
+    - name: Cache node_modules
+      uses: actions/cache@v5
+      with:
+        path: "webapp/node_modules"
+        key: ${{ runner.os }}-yarn-${{ hashFiles('webapp/yarn.lock') }}
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-        working-directory: webapp
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+      working-directory: webapp
 
-      - name: Build Nuxt.js app
-        run: yarn build
-        working-directory: webapp
+    - name: Build Nuxt.js app
+      run: yarn build
+      working-directory: webapp
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: frontend-build
-          path: webapp/.output
-          retention-days: 1
-          include-hidden-files: true
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: frontend-build
+        path: webapp/.output
+        retention-days: 1
+        include-hidden-files: true
 
   webapp-docker:
     name: "📊 Dockerize webapp"
     runs-on: ubuntu-latest
     needs: webapp-build
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+    - name: Checkout repository
+      uses: actions/checkout@v6
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: frontend-build
-          path: webapp/.output/
+    - name: Download build artifacts
+      uses: actions/download-artifact@v8
+      with:
+        name: frontend-build
+        path: webapp/.output/
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v4
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v4
+      with:
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
 
-      - name: Extract Git tag
-        id: git_tag
-        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+    - name: Extract Git tag
+      id: git_tag
+      run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v6
-        with:
-          context: "./webapp"
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ghcr.io/tchoupinax/k8s-images-manager:webapp-${{ env.TAG }}
-            docker.io/${{ secrets.DOCKER_USERNAME }}/k8s-images-manager:webapp-${{ env.TAG }}
-          labels: "org.opencontainers.image.version=${{ env.TAG }}"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v6
+      with:
+        context: "./webapp"
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: |
+          ghcr.io/tchoupinax/k8s-images-manager:webapp-${{ env.TAG }}
+          docker.io/${{ secrets.DOCKER_USERNAME }}/k8s-images-manager:webapp-${{ env.TAG }}
+        labels: "org.opencontainers.image.version=${{ env.TAG }}"
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
