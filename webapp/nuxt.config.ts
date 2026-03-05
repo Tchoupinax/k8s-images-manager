@@ -17,6 +17,7 @@ export default defineNuxtConfig({
         process.env.SERVER_URL ?? "https://k8s-images-manager.mysupercloud.dev",
     },
   },
+  css: ["~/assets/theme-overrides.css"],
   primevue: {
     options: {
       theme: {

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex min-h-screen bg-gradient-to-br from-sky-100 via-blue-50 to-indigo-100 text-slate-900"
+    class="relative flex flex-col h-screen overflow-hidden bg-gradient-to-br from-sky-100 via-blue-50 to-indigo-100 text-slate-900"
   >
     <aside
       class="fixed flex flex-col items-center w-40 h-full p-4 border-r-4 border-black bg-blue-100/90 backdrop-blur"
@@ -39,8 +39,8 @@
       </nav>
     </aside>
 
-    <main class="flex w-full min-w-0 px-6 py-8 ml-40">
-      <div class="w-full">
+    <main class="flex flex-col flex-1 min-h-0 px-6 py-8 ml-40">
+      <div class="flex flex-col flex-1 min-h-0 overflow-hidden">
         <slot />
       </div>
     </main>

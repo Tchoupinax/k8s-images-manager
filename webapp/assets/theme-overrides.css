@@ -1,0 +1,159 @@
+/* MultiSelect & InputText: light theme matching app (aqua/sky, black border) */
+
+.p-multiselect {
+  background: rgb(255 255 255) !important;
+  border: 2px solid rgb(0 0 0) !important;
+  color: rgb(15 23 42) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.1) !important;
+}
+
+.p-multiselect:hover,
+.p-multiselect.p-focus {
+  border-color: rgb(0 0 0) !important;
+  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.15) !important;
+}
+
+/* Hover/focus: background is black → text white */
+.p-multiselect:hover,
+.p-multiselect:hover *,
+.p-multiselect.p-focus,
+.p-multiselect.p-focus * {
+  color: rgb(255 255 255) !important;
+}
+
+.p-multiselect:hover .p-placeholder,
+.p-multiselect.p-focus .p-placeholder {
+  color: rgb(203 213 225) !important;
+}
+
+.p-multiselect .p-multiselect-label {
+  color: rgb(15 23 42) !important;
+}
+
+.p-multiselect .p-multiselect-trigger {
+  color: rgb(15 23 42) !important;
+}
+
+.p-multiselect .p-multiselect-label.p-placeholder {
+  color: rgb(100 116 139) !important;
+}
+
+/* All text in trigger (closed state) – dark so not white on white */
+.p-multiselect,
+.p-multiselect * {
+  color: rgb(15 23 42) !important;
+}
+
+.p-multiselect .p-placeholder {
+  color: rgb(100 116 139) !important;
+}
+
+/* Dropdown panel (often teleported to body) – force light background + dark text */
+.p-multiselect-panel,
+.p-multiselect-overlay,
+.p-multiselect-panel .p-multiselect-content,
+[data-pc-section="overlay"],
+[data-pc-name="multiselect"] [data-pc-section="panel"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 2px solid rgb(0 0 0) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 4px 4px 0 rgb(0 0 0 / 0.15) !important;
+  color: rgb(15 23 42) !important;
+}
+
+/* All text inside panel – avoid white-on-white */
+.p-multiselect-panel,
+.p-multiselect-panel *,
+.p-multiselect-overlay,
+.p-multiselect-overlay *,
+[data-pc-name="multiselect"] [data-pc-section="panel"],
+[data-pc-name="multiselect"] [data-pc-section="panel"] * {
+  color: rgb(15 23 42) !important;
+}
+
+.p-multiselect-panel .p-multiselect-item:hover,
+.p-multiselect-panel .p-multiselect-item.p-highlight {
+  color: rgb(15 23 42) !important;
+}
+
+/* Inner content of popup (PrimeVue structure) */
+.p-multiselect-panel .p-multiselect-content,
+.p-multiselect-panel [class*="content"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+.p-multiselect-panel .p-multiselect-list,
+.p-multiselect-panel .p-multiselect-items,
+.p-multiselect-panel .p-multiselect-list-wrapper {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+.p-multiselect-panel .p-multiselect-header {
+  background: rgb(248 250 252) !important;
+  border-color: rgb(226 232 240) !important;
+  color: rgb(15 23 42) !important;
+}
+
+.p-multiselect-panel .p-multiselect-item {
+  color: rgb(15 23 42) !important;
+}
+
+/* Panel item hover: background is black → text white */
+.p-multiselect-panel .p-multiselect-item:hover,
+.p-multiselect-panel .p-multiselect-item:hover * {
+  background: rgb(0 0 0) !important;
+  color: rgb(255 255 255) !important;
+}
+
+.p-multiselect-panel .p-multiselect-item.p-highlight,
+.p-multiselect-panel .p-multiselect-item.p-highlight * {
+  background: rgb(0 0 0) !important;
+  color: rgb(255 255 255) !important;
+}
+
+.p-multiselect-panel .p-multiselect-close {
+  color: rgb(15 23 42) !important;
+}
+
+.p-multiselect-panel .p-multiselect-filter-container .p-inputtext {
+  background: rgb(255 255 255) !important;
+  border: 1px solid rgb(203 213 225) !important;
+  color: rgb(15 23 42) !important;
+  border-radius: 0.5rem !important;
+}
+
+.p-multiselect-panel .p-multiselect-filter-container .p-inputtext::placeholder {
+  color: rgb(148 163 184) !important;
+}
+
+/* Chips inside multiselect */
+.p-multiselect .p-multiselect-chip {
+  background: rgb(186 230 253) !important;
+  color: rgb(15 23 42) !important;
+  border: 1px solid rgb(0 0 0) !important;
+  border-radius: 9999px !important;
+}
+
+.p-multiselect .p-multiselect-chip .p-multiselect-chip-remove-icon {
+  color: rgb(15 23 42) !important;
+}
+
+/* InputText (search) - ensure light */
+.p-inputtext {
+  background: rgb(255 255 255) !important;
+  border-color: rgb(203 213 225) !important;
+  color: rgb(15 23 42) !important;
+}
+
+.p-inputtext::placeholder {
+  color: rgb(148 163 184) !important;
+}
+
+.p-inputtext:enabled:focus {
+  border-color: rgb(14 165 233) !important;
+  box-shadow: 0 0 0 1px rgb(14 165 233) !important;
+}
