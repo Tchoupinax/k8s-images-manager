@@ -8,11 +8,7 @@
     "postinstall": "nuxt prepare",
     "preview": "nuxt preview",
     "watch": "nuxt dev",
-    "lint": "pnpm lint:prettier && pnpm lint:vue:check && pnpm lint:eslint",
-    "lint:eslint": "eslint . --ignore-pattern 'public/*'",
-    "lint:fix": "eslint . --fix --ignore-pattern 'public/*' && prettier --write.",
-    "lint:inspect": "npx @eslint/config-inspector@latest",
-    "lint:prettier": "prettier . --write",
+    "lint": "eslint . --fix && pnpm lint:vue:check",
     "lint:vue:check": "vue-tsc --noEmit || true"
   },
   "dependencies": {
@@ -32,9 +28,9 @@
     "@primevue/nuxt-module": "4.5.4",
     "@types/node": "25.3.3",
     "eslint": "10.0.2",
+    "eslint-config-tchoupinax": "2.4.0",
     "eslint-plugin-perfectionist": "5.6.0",
     "postcss-custom-properties": "15.0.1",
-    "prettier": "3.8.1",
     "typescript": "5.9.3",
     "vue-tsc": "3.2.5"
   }

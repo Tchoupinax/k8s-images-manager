@@ -1,4 +1,4 @@
 packages:
-  - agent
-  - server
-  - webapp
+- agent
+- server
+- webapp

@@ -37,13 +37,13 @@
         <MultiSelect
           v-model="selectedImages"
           :options="imageOptions"
-          optionLabel="label"
-          optionValue="value"
+          option-label="label"
+          option-value="value"
           filter
           display="chip"
           placeholder="Select images"
-          :maxSelectedLabels="3"
-          :highlightOnSelect="true"
+          :max-selected-labels="3"
+          :highlight-on-select="true"
           class="w-full min-w-[240px] max-w-xl text-xs"
         />
       </div>

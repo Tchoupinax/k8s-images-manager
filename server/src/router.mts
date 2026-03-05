@@ -1,9 +1,9 @@
 import fastifyRequestContext from "@fastify/request-context";
 
 import { type FastifyInstance } from "fastify";
-import { prometheus } from "./tools/metrics.mts";
 
 import { logger } from "./logger.mts";
+import { prometheus } from "./tools/metrics.mts";
 
 type ImageRecord = Record<string, string>;
 
@@ -16,18 +16,18 @@ const data = new Map<string, Array<ImageRecord>>();
 const deletions: DeletionCommand[] = [];
 
 const upsertDeletion = (repository: string, tag: string) => {
-  if (!deletions.some((d) => d.repository === repository && d.tag === tag)) {
+  if (!deletions.some(d => d.repository === repository && d.tag === tag)) {
     deletions.push({ repository, tag });
   }
 };
 
 const cleanupDeletions = () => {
   for (let i = deletions.length - 1; i >= 0; i--) {
-    // @ts-expect-error
+    // @ts-expect-error legacy
     const { repository, tag } = deletions[i];
-    const stillPresent = Array.from(data.values()).some((images) =>
+    const stillPresent = Array.from(data.values()).some(images =>
       images.some(
-        (image) => image.repository === repository && image.tag === tag,
+        image => image.repository === repository && image.tag === tag,
       ),
     );
 
@@ -62,8 +62,8 @@ export function router(fastify: FastifyInstance) {
       });
 
       app.get("/images", (_, reply) => {
-        const returnedValues = Array.from(data.keys()).map((key) => {
-          return data.get(key)!.map((image) => ({
+        const returnedValues = Array.from(data.keys()).map(key => {
+          return data.get(key)!.map(image => ({
             hostname: key,
             ...image,
           }));
@@ -92,7 +92,7 @@ export function router(fastify: FastifyInstance) {
 
         for (const [hostname, images] of data.entries()) {
           const filtered = images.filter(
-            (image) => !(image.repository === repository && image.tag === tag),
+            image => !(image.repository === repository && image.tag === tag),
           );
           data.set(hostname, filtered);
         }
