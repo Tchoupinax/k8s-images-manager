@@ -12,4 +12,6 @@ COPY server/src src
 COPY server/prisma prisma
 COPY server/prisma.config.mts prisma.config.mts
 
+RUN npx prisma generate
+
 CMD ["node", "src/index.mts"]
