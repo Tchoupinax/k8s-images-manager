@@ -2,6 +2,6 @@ FROM node:25-alpine
 
 WORKDIR /app
 
-COPY .output /app/output
+COPY webapp/.output .output
 
-CMD ["node", "output/server/index.mjs"]
+CMD ["node", ".output/server/index.mjs"]

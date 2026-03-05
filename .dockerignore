@@ -1,0 +1,15 @@
+**
+
+!pnpm-lock.yaml
+
+# server
+!server/package.json
+!server/src
+
+# webapp
+!webapp/.output
+
+# agent
+!agent/src
+!agent/Cargo.toml
+!agent/Cargo.lock

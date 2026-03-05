@@ -2,10 +2,12 @@ FROM node:25-alpine
 
 WORKDIR /app
 
-COPY package.json yarn.lock .
+RUN npm i -g pnpm
 
-RUN yarn --production --network-timeout 200000
+COPY server/package.json pnpm-lock.yaml .
 
-COPY . .
+RUN pnpm install
 
-CMD ["yarn", "start"]
+COPY server/src src
+
+CMD ["node", "src/index.mts"]
