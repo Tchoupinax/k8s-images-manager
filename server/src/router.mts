@@ -23,6 +23,7 @@ const upsertDeletion = (repository: string, tag: string) => {
 
 const cleanupDeletions = () => {
   for (let i = deletions.length - 1; i >= 0; i--) {
+    // @ts-expect-error
     const { repository, tag } = deletions[i];
     const stillPresent = Array.from(data.values()).some((images) =>
       images.some(
@@ -97,9 +98,6 @@ export function router(fastify: FastifyInstance) {
         }
 
         reply.code(200).send({ ok: true });
-      });
-
-          .send(returnedValues.flat());
       });
 
       done();
