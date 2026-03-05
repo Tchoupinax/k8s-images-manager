@@ -2,7 +2,7 @@ import fastifyRequestContext from "@fastify/request-context";
 
 import { type FastifyInstance } from "fastify";
 
-import { logger } from "./logger.mts";
+import { logger } from "./tools/logger.mts";
 import { prometheus } from "./tools/metrics.mts";
 
 type ImageRecord = Record<string, string>;
@@ -10,31 +10,6 @@ type ImageRecord = Record<string, string>;
 type DeletionCommand = {
   repository: string;
   tag: string;
-};
-
-const data = new Map<string, Array<ImageRecord>>();
-const deletions: DeletionCommand[] = [];
-
-const upsertDeletion = (repository: string, tag: string) => {
-  if (!deletions.some(d => d.repository === repository && d.tag === tag)) {
-    deletions.push({ repository, tag });
-  }
-};
-
-const cleanupDeletions = () => {
-  for (let i = deletions.length - 1; i >= 0; i--) {
-    // @ts-expect-error legacy
-    const { repository, tag } = deletions[i];
-    const stillPresent = Array.from(data.values()).some(images =>
-      images.some(
-        image => image.repository === repository && image.tag === tag,
-      ),
-    );
-
-    if (!stillPresent) {
-      deletions.splice(i, 1);
-    }
-  }
 };
 
 export function router(fastify: FastifyInstance) {
@@ -47,35 +22,84 @@ export function router(fastify: FastifyInstance) {
   });
 
   fastify.register(
-    function (app, _, done) {
-      app.post("/register", (request, reply) => {
-        data.set(
-          request.headers.hostname as string,
-          request.body as Array<ImageRecord>,
-        );
+    function (app) {
+      app.post("/register", async (request, reply) => {
+        const prisma = request.server.prisma;
+        const hostname = request.headers.hostname as string;
+        const payload = request.body as Array<ImageRecord>;
 
-        cleanupDeletions();
-        reply
-          .code(200)
-          .header("Content-Type", "application/json; charset=utf-8")
-          .send({ ok: true, deletions });
-      });
+        async function cleanupDeletions() {
+          const pending = await prisma.pendingDeletion.findMany();
+          for (const { repository, tag } of pending) {
+            const count = await prisma.image.count({
+              where: { repository, tag },
+            });
+            if (count === 0) {
+              await prisma.pendingDeletion.deleteMany({
+                where: { repository, tag },
+              });
+            }
+          }
+        }
 
-      app.get("/images", (_, reply) => {
-        const returnedValues = Array.from(data.keys()).map(key => {
-          return data.get(key)!.map(image => ({
-            hostname: key,
-            ...image,
-          }));
+        await prisma.$transaction(async tx => {
+          const node =
+            (await tx.node.findUnique({ where: { hostname } })) ??
+            (await tx.node.create({ data: { hostname } }));
+
+          await tx.image.deleteMany({ where: { nodeId: node.id } });
+
+          if (payload.length > 0) {
+            await tx.image.createMany({
+              data: payload.map(img => ({
+                nodeId: node.id,
+                repository: img.repository ?? "",
+                tag: img.tag ?? "",
+                digest: img.digest ?? "",
+                size: img.size ?? "",
+                date: (img as { date?: string }).date ?? new Date().toISOString(),
+              })),
+            });
+          }
         });
 
+        await cleanupDeletions();
+
+        const deletions = await prisma.pendingDeletion.findMany();
+        const deletionCommands: DeletionCommand[] = deletions.map(d => ({
+          repository: d.repository,
+          tag: d.tag,
+        }));
+
         reply
           .code(200)
           .header("Content-Type", "application/json; charset=utf-8")
-          .send(returnedValues.flat());
+          .send({ ok: true, deletions: deletionCommands });
       });
 
-      app.delete("/images", (request, reply) => {
+      app.get("/images", async (request, reply) => {
+        const prisma = request.server.prisma;
+        const images = await prisma.image.findMany({
+          include: { node: true },
+        });
+
+        const flat = images.map(img => ({
+          hostname: img.node.hostname,
+          repository: img.repository,
+          tag: img.tag,
+          digest: img.digest,
+          size: img.size,
+          date: img.date,
+        }));
+
+        reply
+          .code(200)
+          .header("Content-Type", "application/json; charset=utf-8")
+          .send(flat);
+      });
+
+      app.delete("/images", async (request, reply) => {
+        const prisma = request.server.prisma;
         const { repository, tag } = request.query as {
           repository?: string;
           tag?: string;
@@ -88,19 +112,20 @@ export function router(fastify: FastifyInstance) {
           return;
         }
 
-        upsertDeletion(repository, tag);
+        await prisma.pendingDeletion.upsert({
+          where: {
+            repository_tag: { repository, tag },
+          },
+          create: { repository, tag },
+          update: {},
+        });
 
-        for (const [hostname, images] of data.entries()) {
-          const filtered = images.filter(
-            image => !(image.repository === repository && image.tag === tag),
-          );
-          data.set(hostname, filtered);
-        }
+        await prisma.image.deleteMany({
+          where: { repository, tag },
+        });
 
         reply.code(200).send({ ok: true });
       });
-
-      done();
     },
     { prefix: "/api" },
   );

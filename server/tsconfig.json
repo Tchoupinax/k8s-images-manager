@@ -1,30 +1,35 @@
 {
+  "include": ["scripts", "src", "tests"],
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "allowJs": false,
-    "allowSyntheticDefaultImports": true,
-    "declaration": false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "incremental": true,
-    "isolatedModules": true,
-    "lib": ["ESNext"],
     "module": "NodeNext",
+    "target": "ES2022",
+    "lib": ["ESNext"],
     "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "rootDir": ".",
+    "resolvePackageJsonImports": true,
+    "typeRoots": ["#types", "node_modules/@types"],
+
+    "allowImportingTsExtensions": true,
+
+    "allowJs": false,
+    "strict": true,
+    "isolatedModules": true,
     "noEmit": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "incremental": true,
+    "esModuleInterop": true,
+
+    "declaration": false,
     "noEmitOnError": true,
+    "pretty": true,
+    "sourceMap": true,
+
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "outDir": "dist",
-    "pretty": true,
-    "resolveJsonModule": true,
-    "resolvePackageJsonImports": true,
-    "rootDir": "..",
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "ES2022",
-    "typeRoots": ["#types", "node_modules/@types"]
-  },
-  "include": ["scripts", "src", "tests", "types/typescript.ts"]
+  }
 }
+

@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider   = "prisma-client-js"
+  output     = "./generated/prisma"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Node {
+  id        String   @id @default(uuid())
+  hostname  String   @unique
+  updatedAt DateTime @updatedAt @map("updated_at")
+  images    Image[]
+
+  @@map("nodes")
+}
+
+model Image {
+  id         String   @id @default(uuid())
+  nodeId     String   @map("node_id")
+  node       Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  repository String
+  tag        String
+  digest     String
+  size       String
+  date       String
+
+  @@map("images")
+}
+
+model PendingDeletion {
+  id         String   @id @default(uuid())
+  repository String
+  tag        String
+
+  @@unique([repository, tag])
+  @@map("pending_deletions")
+}
