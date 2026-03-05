@@ -1,3 +1,4 @@
+use log::{error, info};
 use std::process::Command;
 
 const FAKE_ANSWER: &str = r#"
@@ -21,4 +22,32 @@ pub fn execute_list_image_command() -> Result<String, std::io::Error> {
         }
         Err(_) => Ok(FAKE_ANSWER.to_string()),
     }
+}
+
+pub fn execute_remove_image_command(repository: &str, tag: &str) -> Result<(), std::io::Error> {
+    let image_ref = format!("{repository}:{tag}");
+
+    match Command::new("crictl")
+        .arg("--runtime-endpoint")
+        .arg("unix:///run/k3s/containerd/containerd.sock")
+        .arg("rmi")
+        .arg(&image_ref)
+        .status()
+    {
+        Ok(status) => {
+            if status.success() {
+                info!("Successfully requested removal of image {}", image_ref);
+            } else {
+                error!(
+                    "Failed to remove image {}. Exit status: {}",
+                    image_ref, status
+                );
+            }
+        }
+        Err(e) => {
+            error!("Error executing crictl rmi for {}: {}", image_ref, e);
+        }
+    }
+
+    Ok(())
 }

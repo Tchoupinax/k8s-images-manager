@@ -1,3 +1,4 @@
+use crate::commands;
 use log::{error, info};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
@@ -10,6 +11,19 @@ pub struct ImageInfo {
     pub digest: String,
     pub size: String,
     pub date: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeletionCommand {
+    pub repository: String,
+    pub tag: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ServerResponse {
+    pub ok: bool,
+    #[serde(default)]
+    pub deletions: Vec<DeletionCommand>,
 }
 
 pub async fn send_to_server(
@@ -28,7 +42,19 @@ pub async fn send_to_server(
         .await?;
 
     if response.status().is_success() {
+        let body = response.json::<ServerResponse>().await?;
         info!("Data sent successfully");
+
+        for deletion in body.deletions {
+            if let Err(e) =
+                commands::execute_remove_image_command(&deletion.repository, &deletion.tag)
+            {
+                error!(
+                    "Error while trying to remove image {}:{} - {}",
+                    deletion.repository, deletion.tag, e
+                );
+            }
+        }
     } else {
         error!("Failed to send data: {}", response.status());
     }

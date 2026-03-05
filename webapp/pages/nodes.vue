@@ -1,101 +1,187 @@
 <template>
-  <div class="p-6 mx-auto text-black max-w-7xl bg-whmarker:ite">
-    <div>
-      <MultiSelect
-        name="city"
-        checkmark
-        v-model="selectedImages"
-        :options="
-          Array.from(
-            new Set(data?.map((node) => `${node.repository}:${node.tag}`))
-          )
-            .sort()
-            .map((image) => ({ name: image }))
-        "
-        optionLabel="name"
-        filter
-        placeholder="Select images"
-        :maxSelectedLabels="3"
-        :highlightOnSelect="true"
-        class="w-full h-full text-xl"
-      />
-    </div>
-
-    <div class="my-4">
-      <div
-        v-for="(selectedImage, selectedImageIndex) of selectedImages"
-        class="p-1 px-4 pl-4 mt-2 text-2xl text-white border"
-        :style="{ backgroundColor: pastelColors[selectedImageIndex] }"
-      >
-        {{ selectedImage.name }}
+  <div class="mx-auto flex max-w-6xl flex-col gap-6 text-slate-900">
+    <header class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-2xl font-black tracking-tight text-slate-900">
+          Nodes
+        </h1>
+        <p class="mt-1 text-sm text-slate-600">
+          See how selected images are distributed across your cluster nodes.
+        </p>
       </div>
-    </div>
 
-    <div class="inline-grid justify-center grid-cols-3 mt-8 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-5">
-      <div
-        v-for="node of nodes"
-        class="flex flex-col items-center justify-between p-3 m-2 border-4 border-black rounded-xl size-60"
-      >
+      <div class="flex items-center gap-2">
+        <Button
+          icon="pi pi-refresh"
+          rounded
+          raised
+          class="inline-flex bg-[#4EC8D8] border border-black text-slate-900 hover:bg-[#3bb6c7]"
+          @click="refresh()"
+        />
+      </div>
+    </header>
+
+    <section
+      class="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur"
+    >
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p class="w-48 text-xl text-center truncate">
-            {{ node }}
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Images focus
           </p>
-
-          <p v-if="selectedImages.length === 0" class="text-2xl">
-            {{ getImagesCountByNodeName(node) }}
+          <p class="mt-1 text-xs text-slate-500">
+            Select images to see which nodes are running them.
           </p>
+        </div>
 
-          <div v-else class="grid grid-cols-4 gap-2 mt-4">
+        <MultiSelect
+          v-model="selectedImages"
+          :options="imageOptions"
+          optionLabel="label"
+          optionValue="value"
+          filter
+          display="chip"
+          placeholder="Select images"
+          :maxSelectedLabels="3"
+          :highlightOnSelect="true"
+          class="w-full min-w-[240px] max-w-xl text-xs"
+        />
+      </div>
+
+      <div v-if="selectedImages.length" class="mt-3 flex flex-wrap gap-2">
+        <div
+          v-for="(image, index) in selectedImages"
+          :key="image"
+          class="inline-flex items-center gap-2 rounded-full border border-black px-3 py-1 text-[11px] font-medium text-white shadow-[3px_3px_0_0_#000]"
+          :style="{ backgroundColor: pastelColors[index % pastelColors.length] }"
+        >
+          <span class="truncate max-w-xs">{{ image }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="overflow-hidden rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur"
+    >
+      <div
+        v-if="pending"
+        class="flex min-h-[260px] flex-col items-center justify-center gap-4 p-8"
+      >
+        <div class="relative h-12 w-12">
+          <div
+            class="absolute inset-0 rounded-full border-4 border-black bg-[#4EC8D8] opacity-40 animate-ping"
+          ></div>
+          <div
+            class="absolute inset-1 rounded-full border-4 border-black bg-[#4A0AAA] animate-[spin_1.1s_linear_infinite]"
+          ></div>
+        </div>
+        <p class="text-sm font-medium text-slate-800">Loading node information…</p>
+      </div>
+
+      <div
+        v-else-if="error"
+        class="flex min-h-[260px] flex-col items-center justify-center gap-3 p-8 text-center"
+      >
+        <p class="text-sm font-semibold text-red-700">
+          Something went wrong while loading nodes.
+        </p>
+        <p class="text-xs text-slate-600">
+          {{ error?.message || "Please try again in a moment." }}
+        </p>
+        <Button
+          label="Retry"
+          icon="pi pi-refresh"
+          rounded
+          raised
+          class="mt-2 bg-[#4EC8D8] border border-black text-slate-900 hover:bg-[#3bb6c7]"
+          @click="refresh()"
+        />
+      </div>
+
+      <div
+        v-else-if="!nodesArray.length"
+        class="flex min-h-[220px] flex-col items-center justify-center gap-2 p-8 text-center"
+      >
+        <p class="text-sm font-semibold text-slate-800">
+          No nodes reported yet.
+        </p>
+        <p class="text-xs text-slate-500">
+          Agents may still be sending their first heartbeat. Check again in a few
+          seconds.
+        </p>
+      </div>
+
+      <div v-else class="grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          v-for="node in nodesArray"
+          :key="node"
+          class="flex flex-col justify-between rounded-2xl border-4 border-black bg-white px-4 py-3 shadow-[4px_4px_0_0_#000]"
+        >
+          <div>
+            <p class="truncate text-sm font-semibold text-slate-900">
+              {{ node }}
+            </p>
+
+            <p v-if="!selectedImages.length" class="mt-1 text-xs text-slate-500">
+              {{ getImagesCountByNodeName(node) }} images detected
+            </p>
+          </div>
+
+          <div v-if="selectedImages.length" class="mt-3 grid grid-cols-4 gap-2">
             <div
-              v-for="(selectedImage, selectedImageIndex) in selectedImages"
-              :key="selectedImageIndex"
-              v-tippy="{ content: selectedImage.name }"
-              class="relative flex items-center justify-center transition-transform transform rounded-lg size-10 hover:scale-105"
-              :style="{ backgroundColor: pastelColors[selectedImageIndex] }"
+              v-for="(image, index) in selectedImages"
+              :key="image"
+              v-tippy="{ content: image }"
+              class="relative flex items-center justify-center rounded-lg border border-black text-[10px] font-semibold text-white transition-transform hover:scale-105"
+              :style="{ backgroundColor: pastelColors[index % pastelColors.length] }"
               :class="{
-                'shadow-lg': doesNodeHasThisImage(node, selectedImage.name),
-                'shadow-lg opacity-40': !doesNodeHasThisImage(
-                  node,
-                  selectedImage.name
-                ),
+                'shadow-[2px_2px_0_0_#000] opacity-100': doesNodeHasThisImage(node, image),
+                'shadow-none opacity-40': !doesNodeHasThisImage(node, image),
               }"
             >
+              <span class="truncate px-1">
+                {{ index + 1 }}
+              </span>
               <span
-                class="absolute top-0 right-0 w-6 h-6 -mt-1 -mr-1 border-2 border-white rounded-full"
+                class="absolute -right-1 -top-1 h-4 w-4 rounded-full border-2 border-white"
                 :class="
-                  doesNodeHasThisImage(node, selectedImage.name)
-                    ? 'bg-green-500'
-                    : 'bg-red-700'
+                  doesNodeHasThisImage(node, image) ? 'bg-green-500' : 'bg-red-700'
                 "
               ></span>
             </div>
           </div>
-        </div>
 
-        <div class="flex justify-between w-full text-2xl">
-          <div class="mr-2">
-            {{
-              countHowManyImagesTheNodeHas(
-                node,
-                selectedImages.map((g) => g.name)
-              )
-            }}
-            / {{ selectedImages.length }}
-          </div>
+          <div class="mt-3 flex items-center justify-between text-xs">
+            <div class="mr-2 font-semibold text-slate-900">
+              {{
+                selectedImages.length
+                  ? `${countHowManyImagesTheNodeHas(
+                      node,
+                      selectedImages
+                    )} / ${selectedImages.length} images`
+                  : 'No reference images selected'
+              }}
+            </div>
 
-          <div
-            class="px-2 font-light rounded-md"
-            :class="{
-              'bg-green-200': calculateImagePercentageByNode(node, selectedImages) > 60,
-              'bg-yellow-200': calculateImagePercentageByNode(node, selectedImages) < 60 && calculateImagePercentageByNode(node, selectedImages) > 40,
-              'bg-red-200': calculateImagePercentageByNode(node, selectedImages) < 40,
-            }"
-          >
-            {{ calculateImagePercentageByNode(node, selectedImages) }}%
+            <div
+              v-if="selectedImages.length"
+              class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold"
+              :class="{
+                'bg-green-200 text-green-900':
+                  calculateImagePercentageByNode(node, selectedImages) > 60,
+                'bg-yellow-200 text-yellow-900':
+                  calculateImagePercentageByNode(node, selectedImages) <= 60 &&
+                  calculateImagePercentageByNode(node, selectedImages) >= 40,
+                'bg-red-200 text-red-900':
+                  calculateImagePercentageByNode(node, selectedImages) < 40,
+              }"
+            >
+              {{ calculateImagePercentageByNode(node, selectedImages) }}%
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -114,24 +200,27 @@ const pastelColors: string[] = [
 ];
 
 const $config = useRuntimeConfig();
-const { data } = useFetch<ImageInfo[]>(
+const { data, pending, error, refresh } = useFetch<ImageInfo[]>(
   `${$config.public.serverEndpoint}/api/images`
 );
 
-const selectedImages = ref([
-  //{ name: "docker.io/coredns/coredns:1.13.1" },
-  //{ name: "docker.io/grafana/alloy:v1.12.0" },
-  //{ name: "docker.io/longhornio/csi-node-driver-registrar:v2.15.0-20251030" },
-  //{ name: "docker.io/longhornio/livenessprobe:v2.17.0-20251030" },
-  //{ name: "docker.io/chrislusf/seaweedfs:4.02" },
-  //{ name: "docker.io/n8nio/n8n:1.123.4" },
-  //{ name: "docker.io/mattermost/mattermost-team-edition:10.12.0" },
-  //{ name: "docker.io/marlonb/mailcrab:latest" },
-]);
+const selectedImages = ref<string[]>([]);
 
-const nodes = computed(() => new Set(data.value?.map((node) => node.hostname)));
+const imageOptions = computed(() =>
+  Array.from(
+    new Set(
+      (data.value || []).map((node) => `${node.repository}:${node.tag}`)
+    )
+  )
+    .sort()
+    .map((image) => ({ label: image, value: image }))
+);
+
+const nodesArray = computed(
+  () => Array.from(new Set(data.value?.map((node) => node.hostname) || [])).sort()
+);
 const getImagesCountByNodeName = (nodeName: string) => {
-  return data.value?.filter((node) => node.hostname === nodeName)?.length;
+  return data.value?.filter((node) => node.hostname === nodeName)?.length ?? 0;
 };
 const doesNodeHasThisImage = (nodeName: string, imageName: string) => {
   return (
@@ -141,25 +230,18 @@ const doesNodeHasThisImage = (nodeName: string, imageName: string) => {
     undefined
   );
 };
-const countHowManyImagesTheNodeHas = (
-  nodeName: string,
-  imageNames: Array<string>
-) => {
+const countHowManyImagesTheNodeHas = (nodeName: string, imageNames: string[]) => {
   const allImages =
     data.value
       ?.filter((node) => node.hostname === nodeName)
       .map((node) => `${node.repository}:${node.tag}`) ?? [];
   return imageNames.filter((v) => allImages.includes(v)).length;
 };
-const calculateImagePercentageByNode = (
-  nodeName: string,
-  selectedImages: Array<{ name: string }>
-) => {
+const calculateImagePercentageByNode = (nodeName: string, selectedImages: string[]) => {
+  if (!selectedImages.length) return 0;
+
   return Math.floor(
-    (countHowManyImagesTheNodeHas(
-      nodeName,
-      selectedImages.map((g) => g.name)
-    ) /
+    (countHowManyImagesTheNodeHas(nodeName, selectedImages) /
       selectedImages.length) *
       100
   );
