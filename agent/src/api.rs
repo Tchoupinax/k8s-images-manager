@@ -42,9 +42,20 @@ pub async fn send_to_server(
         .await?;
 
     if response.status().is_success() {
-        let body = response.json::<ServerResponse>().await?;
         info!("Data sent successfully");
 
+        let body = response.json::<ServerResponse>().await?;
+        info!(
+            "Received {} image deletion command(s) from server",
+            body.deletions.len()
+        );
+        for deletion in &body.deletions {
+            info!(
+                "Deletion requested for image {}:{}",
+                deletion.repository, deletion.tag
+            );
+        }
+        
         for deletion in body.deletions {
             if let Err(e) =
                 commands::execute_remove_image_command(&deletion.repository, &deletion.tag)

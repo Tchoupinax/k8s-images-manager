@@ -1,11 +1,13 @@
 import cors from "@fastify/cors";
 
-import Fastify from "fastify";
+import Fastify, { type FastifyInstance } from "fastify";
 
-import { logger, loggerConfig } from "./logger.mts";
+import type { PrismaClient as PrismaClientType } from "../prisma/generated/prisma/index.js";
+import { prisma as defaultPrisma } from "./prisma-client.mts";
 import { router } from "./router.mts";
 import { type Store } from "./store.mts";
 import { env } from "./tools/env.mts";
+import { logger, loggerConfig } from "./tools/logger.mts";
 
 declare module "@fastify/request-context" {
   interface RequestContextData {
@@ -13,10 +15,24 @@ declare module "@fastify/request-context" {
   }
 }
 
-export async function createServer() {
-  const fastify = Fastify({ logger: loggerConfig });
+declare module "fastify" {
+  interface FastifyInstance {
+    prisma: PrismaClientType;
+  }
+}
 
-  // https://github.com/fastify/fastify-cors
+export type CreateServerOptions = {
+  prisma?: PrismaClientType;
+};
+
+export async function createServer(
+  options?: CreateServerOptions,
+): Promise<FastifyInstance> {
+  const fastify = Fastify({ logger: loggerConfig });
+  const prisma = options?.prisma ?? defaultPrisma;
+
+  fastify.decorate("prisma", prisma);
+
   fastify.register(cors, {
     origin: "http://localhost:3000",
     credentials: true,

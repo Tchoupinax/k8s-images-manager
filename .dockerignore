@@ -5,6 +5,8 @@
 # server
 !server/package.json
 !server/src
+!server/prisma
+!server/prisma.config.mts
 
 # webapp
 !webapp/.output

@@ -8,6 +8,18 @@
 [![NodeJS](https://img.shields.io/badge/Node.js_v25-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)](#)
 [![Golang](https://img.shields.io/badge/Rust_v1.92-brown?style=for-the-badge&logo=rust&logoColor=white)](#)
 
+## Development
+
+The server uses PostgreSQL and Prisma. To run locally with Docker:
+
+```bash
+docker compose up -d
+cd server && pnpm migrate
+DATABASE_URL=postgresql://postgres:mysecret@localhost:5439/postgres pnpm start
+```
+
+Or set `DATABASE_URL` (or `POSTGRES_*` env vars) and run the server. Default without env: `postgresql://postgres:mysecret@localhost:5439/postgres`.
+
 ## Getting start
 
 > [!WARNING]
