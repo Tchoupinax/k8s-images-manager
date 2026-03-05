@@ -20,22 +20,15 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v6
       with:
-        node-version-file: "webapp/.nvmrc"
-        cache: yarn
-        cache-dependency-path: webapp/yarn.lock
-
-    - name: Cache node_modules
-      uses: actions/cache@v5
-      with:
-        path: "webapp/node_modules"
-        key: ${{ runner.os }}-yarn-${{ hashFiles('webapp/yarn.lock') }}
+        node-version: "25"
+        cache: pnpm
 
     - name: Install dependencies
-      run: yarn install --frozen-lockfile
+      run: pnpm install --frozen-lockfile
       working-directory: webapp
 
     - name: Build Nuxt.js app
-      run: yarn build
+      run: pnpm build
       working-directory: webapp
 
     - name: Upload build artifacts
@@ -87,7 +80,7 @@ jobs:
     - name: Build and push Docker images
       uses: docker/build-push-action@v6
       with:
-        dockerfile: "webapp/Dockerfile"
+        file: "webapp/Dockerfile"
         context: "."
         platforms: linux/amd64,linux/arm64
         push: true
