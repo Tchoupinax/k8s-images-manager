@@ -3,7 +3,7 @@ name: Build server + docker image
 on:
   push:
     tags:
-      - v*
+    - v*
 
 permissions:
   contents: read
@@ -14,42 +14,42 @@ jobs:
     name: "⭐️ Build server"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+    - name: Checkout repository
+      uses: actions/checkout@v6
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v4
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v4
+      with:
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
 
-      - name: Extract Git tag
-        id: git_tag
-        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+    - name: Extract Git tag
+      id: git_tag
+      run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v6
-        with:
-          context: "./server"
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ghcr.io/tchoupinax/k8s-images-manager:server-${{ env.TAG }}
-            docker.io/${{ secrets.DOCKER_USERNAME }}/k8s-images-manager:server-${{ env.TAG }}
-          labels: "org.opencontainers.image.version=${{ env.TAG }}"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v6
+      with:
+        context: "./server"
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: |
+          ghcr.io/tchoupinax/k8s-images-manager:server-${{ env.TAG }}
+          docker.io/${{ secrets.DOCKER_USERNAME }}/k8s-images-manager:server-${{ env.TAG }}
+        labels: "org.opencontainers.image.version=${{ env.TAG }}"
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
