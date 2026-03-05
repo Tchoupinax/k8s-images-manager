@@ -48,6 +48,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+
 import { pastelColors } from "./colors";
 
 export default defineComponent({

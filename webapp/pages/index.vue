@@ -30,8 +30,8 @@
     </header>
 
     <section
-      class="grid gap-3 sm:grid-cols-3"
       v-if="images && images.length"
+      class="grid gap-3 sm:grid-cols-3"
     >
       <div
         class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
@@ -86,8 +86,8 @@
           <MultiSelect
             v-model="selectedHostnames"
             :options="hostnameOptions"
-            optionLabel="label"
-            optionValue="value"
+            option-label="label"
+            option-value="value"
             placeholder="Filter by node"
             display="chip"
             class="w-full min-w-[180px] max-w-xs text-xs"
@@ -276,9 +276,9 @@
 
               <td class="px-4 py-3 text-right align-top">
                 <Button
+                  v-tooltip.top="'Remove this image on all nodes'"
                   icon="pi pi-trash"
                   class="!h-8 !w-8 !p-0 bg-red-500 border border-black text-white hover:bg-red-600"
-                  v-tooltip.top="'Remove this image on all nodes'"
                   :loading="isDeleting(image)"
                   @click="onRemoveImage(image)"
                 />
@@ -292,8 +292,8 @@
 </template>
 
 <script setup lang="ts">
-import { format } from "timeago.js";
 import { useToast } from "primevue/usetoast";
+import { format } from "timeago.js";
 
 const $config = useRuntimeConfig();
 const toast = useToast();

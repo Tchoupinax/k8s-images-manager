@@ -22,8 +22,8 @@
         <tr>
           <th>
             <button
-              @click="changeSortBy('hostname')"
               class="flex items-center justify-between"
+              @click="changeSortBy('hostname')"
             >
               Hostname
               <span class="text-xs text-gray-400">
@@ -34,8 +34,8 @@
           </th>
           <th>
             <button
-              @click="changeSortBy('count')"
               class="flex items-center justify-between"
+              @click="changeSortBy('count')"
             >
               Nombre d'images
               <span class="text-xs text-gray-400">

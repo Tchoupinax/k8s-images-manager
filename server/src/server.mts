@@ -1,5 +1,6 @@
-import Fastify from "fastify";
 import cors from "@fastify/cors";
+
+import Fastify from "fastify";
 
 import { logger, loggerConfig } from "./logger.mts";
 import { router } from "./router.mts";
@@ -15,7 +16,7 @@ declare module "@fastify/request-context" {
 export async function createServer() {
   const fastify = Fastify({ logger: loggerConfig });
 
-  //https://github.com/fastify/fastify-cors
+  // https://github.com/fastify/fastify-cors
   fastify.register(cors, {
     origin: "http://localhost:3000",
     credentials: true,

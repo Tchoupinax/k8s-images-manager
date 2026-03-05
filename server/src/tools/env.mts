@@ -1,4 +1,4 @@
-import { optional, validate, number } from "valienv";
+import { number, optional, validate } from "valienv";
 
 export const env = validate({
   env: process.env,
