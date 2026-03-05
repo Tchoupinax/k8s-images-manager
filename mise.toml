@@ -1,5 +1,6 @@
 [tools]
 cargo = "0.93.0"
+gitleaks = "8.30.0"
 go = "1.25.7"
 goreleaser = "latest"
 node = "25"
