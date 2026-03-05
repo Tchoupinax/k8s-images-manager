@@ -1,5 +1,5 @@
 {
-  "include": ["scripts", "src", "tests"],
+  "include": ["scripts", "src", "tests", "prisma.config.mts", "vitest.e2e.config.mts"],
   "compilerOptions": {
     "module": "NodeNext",
     "target": "ES2022",

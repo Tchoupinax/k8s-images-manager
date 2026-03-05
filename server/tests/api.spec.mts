@@ -18,7 +18,8 @@ describe("e2e /api/images", () => {
   });
 
   it("POST /register then GET /images returns registered data", async () => {
-    await testWithApp(async ({ inject }) => {
+    await testWithApp(async ({ inject, prisma }) => {
+      const registeredAt = new Date().toISOString();
       const registerRes = await inject({
         method: "POST",
         url: "/api/register",
@@ -32,7 +33,7 @@ describe("e2e /api/images", () => {
             tag: "v1",
             digest: "sha256:abc",
             size: "100MB",
-            date: new Date().toISOString(),
+            date: registeredAt,
           },
         ]),
       });
@@ -41,6 +42,26 @@ describe("e2e /api/images", () => {
         registerRes.payload ?? "{}",
       ) as { ok: boolean };
       expect(registerJson.ok).toBe(true);
+
+      const node = await prisma.node.findUnique({
+        where: { hostname: "node-a" },
+      });
+      expect(node).not.toBeNull();
+
+      const imagesInDb = await prisma.image.findMany({
+        include: {
+          node: true,
+        },
+      });
+      expect(imagesInDb).toHaveLength(1);
+      expect(imagesInDb[0]?.node.hostname).toBe("node-a");
+      expect(imagesInDb[0]?.repository).toBe("docker.io/foo/bar");
+      expect(imagesInDb[0]?.tag).toBe("v1");
+      expect(imagesInDb[0]?.digest).toBe("sha256:abc");
+      expect(imagesInDb[0]?.size).toBe("100MB");
+      expect(new Date(String(imagesInDb[0]?.date)).toISOString()).toBe(
+        registeredAt,
+      );
 
       const listRes = await inject({
         method: "GET",
@@ -62,7 +83,7 @@ describe("e2e /api/images", () => {
   });
 
   it("DELETE /images removes image", async () => {
-    await testWithApp(async ({ inject }) => {
+    await testWithApp(async ({ inject, prisma }) => {
       await inject({
         method: "POST",
         url: "/api/register",
@@ -86,6 +107,21 @@ describe("e2e /api/images", () => {
         url: "/api/images?repository=docker.io/remove/me&tag=v2",
       });
       expect(deleteRes.statusCode).toBe(200);
+
+      const pendingDeletion = await prisma.pendingDeletion.findUnique({
+        where: {
+          repository_tag: {
+            repository: "docker.io/remove/me",
+            tag: "v2",
+          },
+        },
+      });
+      expect(pendingDeletion).not.toBeNull();
+      expect(pendingDeletion?.repository).toBe("docker.io/remove/me");
+      expect(pendingDeletion?.tag).toBe("v2");
+
+      const imagesInDb = await prisma.image.findMany();
+      expect(imagesInDb).toHaveLength(0);
 
       const listRes = await inject({
         method: "GET",

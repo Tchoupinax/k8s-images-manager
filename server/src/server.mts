@@ -30,6 +30,7 @@ export async function createServer(
 ): Promise<FastifyInstance> {
   const fastify = Fastify({ logger: loggerConfig });
   const prisma = options?.prisma ?? defaultPrisma;
+
   fastify.decorate("prisma", prisma);
 
   fastify.register(cors, {
