@@ -7,14 +7,24 @@
       class="relative flex items-center justify-center transition-transform transform rounded-lg size-10 hover:scale-105"
       :style="{ backgroundColor: pastelColors[selectedImageIndex] }"
       :class="{
-        'border-4 border-green-500': doesNodeHasThisImage(node, selectedImage.name),
-        'border-4 border-red-500': !doesNodeHasThisImage(node, selectedImage.name)
+        'border-4 border-green-500': doesNodeHasThisImage(
+          node,
+          selectedImage.name,
+        ),
+        'border-4 border-red-500': !doesNodeHasThisImage(
+          node,
+          selectedImage.name,
+        ),
       }"
     >
       <!-- Badge en coin pour signal positif/négatif -->
       <span
         class="absolute w-4 h-4 border-2 border-white rounded-full top-1 right-1"
-        :class="doesNodeHasThisImage(node, selectedImage.name) ? 'bg-green-500' : 'bg-red-500'"
+        :class="
+          doesNodeHasThisImage(node, selectedImage.name)
+            ? 'bg-green-500'
+            : 'bg-red-500'
+        "
       ></span>
 
       <!-- SVG au centre -->
@@ -44,7 +54,7 @@ export default defineComponent({
   name: "PastelGrid",
   props: {
     node: { type: Object, required: true },
-    selectedImages: { type: Array, required: true }
+    selectedImages: { type: Array, required: true },
   },
   setup() {
     return { pastelColors };
@@ -53,8 +63,8 @@ export default defineComponent({
     doesNodeHasThisImage(node: any, imageName: string) {
       // Exemple de logique positive/négative
       return node.images?.includes(imageName);
-    }
-  }
+    },
+  },
 });
 </script>
 

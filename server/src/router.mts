@@ -36,10 +36,10 @@ const cleanupDeletions = () => {
   }
 };
 
-export async function router(fastify: FastifyInstance) {
+export function router(fastify: FastifyInstance) {
   fastify.register(fastifyRequestContext);
 
-  fastify.get("/health", async () => "OK");
+  fastify.get("/health", () => "OK");
   fastify.get("/metrics", async (_, reply) => {
     reply.header("Content-Type", prometheus.contentType);
     return await prometheus.metrics();
@@ -54,7 +54,6 @@ export async function router(fastify: FastifyInstance) {
         );
 
         cleanupDeletions();
-
         reply
           .code(200)
           .header("Content-Type", "application/json; charset=utf-8")
@@ -98,6 +97,9 @@ export async function router(fastify: FastifyInstance) {
         }
 
         reply.code(200).send({ ok: true });
+      });
+
+          .send(returnedValues.flat());
       });
 
       done();
