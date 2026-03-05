@@ -1,5 +1,7 @@
 <template>
-  <div class="flex flex-col max-w-6xl gap-6 mx-auto text-slate-900">
+  <div
+    class="flex w-full flex-1 flex-col gap-6 overflow-hidden text-slate-900 [@media(min-aspect-ratio:21/9)]:max-w-[1920px] [@media(min-aspect-ratio:21/9)]:mx-auto"
+  >
     <header class="flex flex-wrap items-center justify-between gap-3">
       <div>
         <h1 class="text-2xl font-black tracking-tight text-slate-900">

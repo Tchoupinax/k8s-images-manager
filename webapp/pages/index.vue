@@ -1,6 +1,8 @@
 <template>
-  <div class="flex flex-col max-w-6xl gap-6 mx-auto">
-    <header class="flex flex-wrap items-center justify-between gap-3">
+  <div
+    class="flex w-full flex-1 flex-col gap-6 overflow-hidden [@media(min-aspect-ratio:21/9)]:max-w-[1920px] [@media(min-aspect-ratio:21/9)]:mx-auto"
+  >
+    <header class="flex shrink-0 flex-wrap items-center justify-between gap-3">
       <div>
         <h1 class="text-2xl font-black tracking-tight text-slate-900">
           Images
@@ -31,7 +33,7 @@
 
     <section
       v-if="images && images.length"
-      class="grid gap-3 sm:grid-cols-3"
+      class="grid shrink-0 gap-3 sm:grid-cols-3"
     >
       <div
         class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
@@ -68,10 +70,10 @@
     </section>
 
     <section
-      class="overflow-hidden border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
+      class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur"
     >
       <div
-        class="flex flex-col gap-3 px-4 py-3 border-b border-slate-100 sm:flex-row sm:items-center sm:justify-between"
+        class="flex shrink-0 flex-col gap-3 border-b border-slate-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
       >
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
@@ -153,8 +155,8 @@
         </p>
       </div>
 
-      <div v-else class="overflow-x-auto">
-        <table class="min-w-full text-xs text-left border-t border-slate-100">
+      <div v-else class="min-h-0 flex-1 overflow-auto">
+        <table class="min-w-full border-t border-slate-100 text-left text-xs">
           <thead
             class="sticky top-0 z-10 border-b bg-slate-50/90 backdrop-blur border-slate-100"
           >
