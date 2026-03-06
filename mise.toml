@@ -1,7 +1,7 @@
 [tools]
 cargo = "0.93.0"
 gitleaks = "8.30.0"
-go = "1.26.0"
+go = "1.26.1"
 goreleaser = "latest"
 node = "25"
 rust = "1.94.0"
