@@ -50,6 +50,19 @@ spec:
           - name: NODE_ENV
             value: "production"
 
+          {{- range $key, $value := .Values.server.env }}
+          - name: {{ $key | quote }}
+            value: {{ $value | quote }}
+          {{- end }}
+
+          {{- range $key, $value := .Values.server.envFromSecret }}
+          - name: {{ $key | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ $value.name | quote }}
+                key: {{ $value.key | quote }}
+          {{- end }}
+
           {{- with .Values.server.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
