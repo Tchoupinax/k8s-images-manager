@@ -6,6 +6,9 @@ server:
     pullPolicy: IfNotPresent
     tag: ""
 
+  env: []
+  envFromSecret: []
+
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
@@ -25,25 +28,25 @@ server:
     className: ""
     annotations: {}
     hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
+    - host: chart-example.local
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
     tls: []
 
   httpRoute:
     enabled: false
     annotations: {}
     parentRefs:
-      - name: gateway
-        sectionName: http
+    - name: gateway
+      sectionName: http
     hostnames:
-      - chart-example.local
+    - chart-example.local
     rules:
-      - matches:
-          - path:
-              type: PathPrefix
-              value: /headers
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /headers
 
   livenessProbe:
     httpGet:
@@ -70,6 +73,9 @@ agents:
     repository: docker.io/tchoupinax/k8s-images-manager
     pullPolicy: IfNotPresent
     tag: ""
+
+  env: []
+  envFromSecret: []
 
   config:
     pushFrequencyInSecond: 60
@@ -106,6 +112,9 @@ webapp:
     pullPolicy: IfNotPresent
     tag: ""
 
+  env: []
+  envFromSecret: []
+
   config:
     serverUrl: ""
 
@@ -122,25 +131,25 @@ webapp:
     className: ""
     annotations: {}
     hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
+    - host: chart-example.local
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
     tls: []
 
   httpRoute:
     enabled: false
     annotations: {}
     parentRefs:
-      - name: gateway
-        sectionName: http
+    - name: gateway
+      sectionName: http
     hostnames:
-      - chart-example.local
+    - chart-example.local
     rules:
-      - matches:
-          - path:
-              type: PathPrefix
-              value: /headers
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /headers
 
   affinity: {}
   nodeSelector: {}

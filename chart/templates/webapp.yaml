@@ -52,6 +52,19 @@ spec:
           - name: "SERVER_URL"
             value: {{ .Values.webapp.config.serverUrl | default (printf "http://%s.%s:9999" (include "chart.server.fullname" .) .Release.Namespace) }}
 
+          {{- range $key, $value := .Values.webapp.env }}
+          - name: {{ $key | quote }}
+            value: {{ $value | quote }}
+          {{- end }}
+
+          {{- range $key, $value := .Values.webapp.envFromSecret }}
+          - name: {{ $key | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ $value.name | quote }}
+                key: {{ $value.key | quote }}
+          {{- end }}
+
           {{- with .Values.webapp.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -65,7 +78,7 @@ spec:
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    
+
       {{- with .Values.webapp.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

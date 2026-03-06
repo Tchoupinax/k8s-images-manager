@@ -59,6 +59,18 @@ spec:
           - name: "SERVER_URL"
             value: {{ .Values.agents.config.serverUrl | default (printf "http://%s.%s:9999" (include "chart.server.fullname" .) .Release.Namespace) }}
 
+          {{- range $key, $value := .Values.agents.env }}
+          - name: {{ $key | quote }}
+            value: {{ $value | quote }}
+          {{- end }}
+
+          {{- range $key, $value := .Values.agents.envFromSecret }}
+          - name: {{ $key | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ $value.name | quote }}
+                key: {{ $value.key | quote }}
+          {{- end }}
 
       volumes:
       - name: containerd-socket
