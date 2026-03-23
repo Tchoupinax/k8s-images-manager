@@ -33,7 +33,7 @@
     "nodemon": "3.1.14",
     "pglite-prisma-adapter": "0.7.2",
     "typescript": "5.9.3",
-    "vite-node": "5.3.0",
+    "vite-node": "6.0.0",
     "vitest": "4.0.18"
   },
   "prisma": {
