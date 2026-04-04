@@ -12,8 +12,8 @@ importers:
         specifier: 6.0.5
         version: 6.0.5(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)
       npm-check-updates:
-        specifier: 19.6.3
-        version: 19.6.3
+        specifier: 20.0.0
+        version: 20.0.0
       turbo:
         specifier: 2.8.14
         version: 2.8.14
@@ -4615,8 +4615,8 @@ packages:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
 
-  npm-check-updates@19.6.3:
-    resolution: {integrity: sha512-VAt9Bp26eLaymZ0nZyh5n/by+YZIuegXlvWR0yv1zBqd984f8VnEnBbn+1lS3nN5LyEjn62BJ+yYgzNSpb6Gzg==}
+  npm-check-updates@20.0.0:
+    resolution: {integrity: sha512-qCs02x51irGf0okCttwv8lHEO2NxT903IJ2bKpG82kIzkm6pfT3CoWB5YIvqY/wi/DdnYRfI7eVfCYYymQgvCg==}
     engines: {node: '>=20.0.0', npm: '>=8.12.1'}
     hasBin: true
 
@@ -11426,7 +11426,7 @@ snapshots:
 
   normalize-path@3.0.0: {}
 
-  npm-check-updates@19.6.3: {}
+  npm-check-updates@20.0.0: {}
 
   npm-run-path@5.3.0:
     dependencies:
