@@ -3,18 +3,18 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "prewatch": "docker compose up -d",
-    "watch": "turbo run watch",
-    "test": "turbo run test",
-    "lint": "turbo run lint",
+    "check": "gitleaks dir -v && gitleaks git -v",
     "knip": "knip",
-    "upgrade": "npx ncu -i -w",
-    "check": "gitleaks dir -v && gitleaks git -v"
+    "lint": "turbo run lint",
+    "prewatch": "docker compose up -d",
+    "test": "turbo run test",
+    "upgrade": "pnpm ncu -p pnpm -i --cooldown 3 --format group",
+    "watch": "turbo run watch"
   },
   "devDependencies": {
     "knip": "6.0.5",
     "npm-check-updates": "19.6.3",
-    "turbo": "2.8.14"
+    "turbo": "2.9.6"
   },
-  "packageManager": "pnpm@10.30.3"
+  "packageManager": "pnpm@10.33.0"
 }

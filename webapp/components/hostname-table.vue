@@ -56,14 +56,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 
 const $props = defineProps({
   data: {
     type: Object,
-    required: true,
-  },
-});
+    required: true
+  }
+})
 
 // Ref pour le critère de tri et la direction
 const sortBy = ref<"hostname" | "count">("hostname");

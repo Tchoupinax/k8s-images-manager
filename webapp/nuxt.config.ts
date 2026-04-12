@@ -9,20 +9,20 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "@nuxtjs/tailwindcss",
     "@primevue/nuxt-module",
-    "nuxt3-notifications",
+    "nuxt3-notifications"
   ],
   runtimeConfig: {
     public: {
       serverEndpoint:
-        process.env.SERVER_URL ?? "https://k8s-images-manager.mysupercloud.dev",
-    },
+        process.env.SERVER_URL ?? "https://k8s-images-manager.mysupercloud.dev"
+    }
   },
   css: ["~/assets/theme-overrides.css"],
   primevue: {
     options: {
       theme: {
-        preset: Aura,
-      },
-    },
-  },
+        preset: Aura
+      }
+    }
+  }
 });

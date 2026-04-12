@@ -1,13 +1,13 @@
 // plugins/tippy.ts
 
-import VueTippy from "vue-tippy";
 import "tippy.js/dist/tippy.css";
+import VueTippy from "vue-tippy";
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(nuxtApp => {
   nuxtApp.vueApp.use(VueTippy, {
     defaultProps: {
-      arrow: true,
+      arrow: true
     },
-    flipDuration: 0,
+    flipDuration: 0
   });
 });

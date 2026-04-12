@@ -49,23 +49,24 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import { pastelColors } from "./colors";
+import { pastelColors } from "./colors"
 
 export default defineComponent({
   name: "PastelGrid",
   props: {
     node: { type: Object, required: true },
-    selectedImages: { type: Array, required: true },
+    selectedImages: { type: Array, required: true }
   },
   setup() {
     return { pastelColors };
   },
   methods: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     doesNodeHasThisImage(node: any, imageName: string) {
       // Exemple de logique positive/négative
-      return node.images?.includes(imageName);
-    },
-  },
+      return node.images?.includes(imageName)
+    }
+  }
 });
 </script>
 

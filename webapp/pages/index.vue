@@ -2,7 +2,7 @@
   <div
     class="flex w-full flex-1 flex-col gap-6 overflow-hidden [@media(min-aspect-ratio:21/9)]:max-w-[1920px] [@media(min-aspect-ratio:21/9)]:mx-auto"
   >
-    <header class="flex shrink-0 flex-wrap items-center justify-between gap-3">
+    <header class="flex flex-wrap items-center justify-between gap-3 shrink-0">
       <div>
         <h1 class="text-2xl font-black tracking-tight text-slate-900">
           Images
@@ -33,7 +33,7 @@
 
     <section
       v-if="images && images.length"
-      class="grid shrink-0 gap-3 sm:grid-cols-3"
+      class="grid gap-3 shrink-0 sm:grid-cols-3"
     >
       <div
         class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
@@ -70,10 +70,10 @@
     </section>
 
     <section
-      class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur"
+      class="flex flex-col flex-1 min-h-0 overflow-hidden border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
     >
       <div
-        class="flex shrink-0 flex-col gap-3 border-b border-slate-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+        class="flex flex-col gap-3 px-4 py-3 border-b shrink-0 border-slate-100 sm:flex-row sm:items-center sm:justify-between"
       >
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
@@ -155,8 +155,8 @@
         </p>
       </div>
 
-      <div v-else class="min-h-0 flex-1 overflow-auto">
-        <table class="min-w-full border-t border-slate-100 text-left text-xs">
+      <div v-else class="flex-1 min-h-0 overflow-auto">
+        <table class="min-w-full text-xs text-left border-t border-slate-100">
           <thead
             class="sticky top-0 z-10 border-b bg-slate-50/90 backdrop-blur border-slate-100"
           >
@@ -308,16 +308,16 @@ const allImages = computed(() => images.value || []);
 
 const totalImages = computed(() => allImages.value.length);
 const totalRepositories = computed(
-  () => new Set(allImages.value.map((img) => img.repository)).size
+  () => new Set(allImages.value.map(img => img.repository)).size
 );
 const totalNodes = computed(
-  () => new Set(allImages.value.map((img) => img.hostname)).size
+  () => new Set(allImages.value.map(img => img.hostname)).size
 );
 
 const hostnameOptions = computed(() =>
-  Array.from(new Set(allImages.value.map((img) => img.hostname)))
+  Array.from(new Set(allImages.value.map(img => img.hostname)))
     .sort()
-    .map((hostname) => ({ label: hostname, value: hostname }))
+    .map(hostname => ({ label: hostname, value: hostname }))
 );
 
 const search = ref("");
@@ -326,7 +326,7 @@ const selectedHostnames = ref<string[]>([]);
 const filteredImages = computed(() => {
   const q = search.value.trim().toLowerCase();
 
-  return allImages.value.filter((img) => {
+  return allImages.value.filter(img => {
     if (
       selectedHostnames.value.length &&
       !selectedHostnames.value.includes(img.hostname)
@@ -334,7 +334,7 @@ const filteredImages = computed(() => {
       return false;
     }
 
-    if (!q) return true;
+    if (!q) {return true;}
 
     const haystack = `${img.repository}:${img.tag} ${img.hostname} ${img.digest}`.toLowerCase();
 
@@ -366,9 +366,9 @@ const groupedImages = computed(() => {
         tag: img.tag,
         size: img.size,
         digest: img.digest,
-        lastSeen: (img as any).date ?? null,
+        lastSeen: img.date ?? null,
         nodes: new Set<string>(),
-        count: 0,
+        count: 0
       };
       groups.set(key, group);
     }
@@ -376,13 +376,13 @@ const groupedImages = computed(() => {
     group.count += 1;
     group.nodes.add(img.hostname);
 
-    const date = (img as any).date;
+    const date = img.date;
     if (date && (!group.lastSeen || new Date(date) > new Date(group.lastSeen))) {
       group.lastSeen = date;
     }
   }
 
-  return Array.from(groups.values()).map((g) => ({
+  return Array.from(groups.values()).map(g => ({
     key: `${g.repository}:${g.tag}`,
     repository: g.repository,
     tag: g.tag,
@@ -390,7 +390,7 @@ const groupedImages = computed(() => {
     digest: g.digest,
     lastSeen: g.lastSeen,
     nodes: Array.from(g.nodes).sort(),
-    count: g.count,
+    count: g.count
   }));
 });
 
@@ -404,9 +404,9 @@ const sortBy = ref<"name" | "size">("name");
 const sortDirection = ref<"asc" | "desc">("asc");
 
 const parseSize = (size: string | undefined) => {
-  if (!size) return 0;
+  if (!size) {return 0;}
   const match = size.match(/([\d.]+)\s*([KMG])?B?/i);
-  if (!match) return 0;
+  if (!match) {return 0;}
   const value = parseFloat(match[1] ?? "0");
   const unit = (match[2] ?? "").toUpperCase();
   const factor =
@@ -450,7 +450,7 @@ const isDeleting = (image: RemovableImage) =>
   deletingKey.value === makeImageKey(image);
 
 const onRemoveImage = async (image: RemovableImage) => {
-  if (isDeleting(image)) return;
+  if (isDeleting(image)) {return;}
 
   deletingKey.value = makeImageKey(image);
   try {
@@ -470,17 +470,19 @@ const onRemoveImage = async (image: RemovableImage) => {
       severity: "success",
       summary: "Image removed",
       detail: `Removed ${image.repository}:${image.tag} on all nodes`,
-      life: 3500,
+      life: 3500
     });
 
     await refresh();
-  } catch (e: any) {
-    toast.add({
-      severity: "error",
-      summary: "Removal failed",
-      detail: e?.message ?? "Unable to remove image",
-      life: 4500,
-    });
+  } catch (e) {
+    if (e instanceof Error) {
+      toast.add({
+        severity: "error",
+        summary: "Removal failed",
+        detail: e?.message ?? "Unable to remove image",
+        life: 4500
+      });
+    }
   } finally {
     deletingKey.value = null;
   }
