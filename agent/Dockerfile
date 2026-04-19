@@ -10,7 +10,8 @@ FROM ubuntu
 
 # ARG TARGETPLATFORM
 
-ENTRYPOINT ["/usr/bin/k8s-images-manager-agent/k8s-images-manager-agent"]
+RUN addgroup --system --gid 999 k8simagemanager && \
+    adduser --system --uid 999 -G k8simagemanager k8simagemanager
 
 RUN apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
@@ -29,6 +30,12 @@ RUN chmod +x /usr/local/bin/crictl
 # $TARGETPLATFORM seems to not to work
 # COPY linux/$TARGETPLATFORM/k8s-images-manager-agent /usr/bin/
 COPY linux/amd64 /usr/bin/k8s-images-manager-agent
+
+RUN chown -R k8simagemanager:k8simagemanager /usr/bin/k8s-images-manager-agent
+
+USER k8simagemanager
+
+ENTRYPOINT ["/usr/bin/k8s-images-manager-agent/k8s-images-manager-agent"]
 
 # rustup target add x86_64-unknown-linux-musl
 # cargo build --release --target x86_64-unknown-linux-musl

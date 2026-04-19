@@ -1,5 +1,8 @@
 FROM node:25-alpine
 
+RUN addgroup -S -g 999 k8simagemanager && \
+    adduser -S -u 999 -G k8simagemanager k8simagemanager
+
 WORKDIR /app
 
 RUN npm i -g pnpm
@@ -13,5 +16,9 @@ COPY server/prisma prisma
 COPY server/prisma.config.mts prisma.config.mts
 
 RUN npx prisma generate
+
+RUN chown -R k8simagemanager:k8simagemanager /app
+
+USER k8simagemanager
 
 CMD ["node", "src/index.mts"]
