@@ -74,7 +74,7 @@ jobs:
         VAULT_TOKEN: "_"
 
   build-agent:
-    name: "Build agent binary"
+    name: "🟡 Build agent binary"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
@@ -85,7 +85,7 @@ jobs:
     - uses: mlugg/setup-zig@v2
     #- uses: sigstore/cosign-installer@v4.1.1
     #- uses: anchore/sbom-action/download-syft@v0.24.0
-    - name: Compile with goreleaser and publish release
+    - name: Compile with goreleaser
       uses: goreleaser/goreleaser-action@v7
       with:
         args: "build --clean --snapshot"
