@@ -53,7 +53,7 @@ jobs:
         node-version: 24
         cache: "pnpm"
 
-    - name: Build, lint and test the package
+    - name: "🔵 Build, lint and test the package"
       run: |
         pnpm install --frozen-lockfile --filter server
         pnpm build --filter server
@@ -78,15 +78,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-    - name: Install OpenSSL dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y pkg-config libssl-dev
-    - uses: mlugg/setup-zig@v2
-    - uses: sigstore/cosign-installer@v4.1.1
-    - uses: anchore/sbom-action/download-syft@v0.24.0
+    #- name: Install OpenSSL dependencies
+    #  run: |
+    #    sudo apt-get update
+    #    sudo apt-get install -y pkg-config libssl-dev
+    #- uses: mlugg/setup-zig@v2
+    #- uses: sigstore/cosign-installer@v4.1.1
+    #- uses: anchore/sbom-action/download-syft@v0.24.0
     - name: Compile with goreleaser and publish release
       uses: goreleaser/goreleaser-action@v7
       with:
