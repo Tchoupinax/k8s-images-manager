@@ -5,6 +5,8 @@ on:
     paths:
     - "agent/**"
     - ".github/workflows/master-build-agent.yaml"
+  branch:
+    - "master"
 
 permissions:
   contents: write
