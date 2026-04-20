@@ -34,17 +34,30 @@ pub async fn send_to_server(
     let server_url = format!("{base_url}/api/register");
 
     let client = Client::new();
-    let response = client
+    let response = match client
         .post(server_url)
         .header("hostname", hostname)
         .json(&images)
         .send()
-        .await?;
+        .await
+    {
+        Ok(response) => response,
+        Err(e) => {
+            error!("Failed to send data to server: {}", e);
+            return Ok(());
+        }
+    };
 
     if response.status().is_success() {
         info!("Data sent successfully");
 
-        let body = response.json::<ServerResponse>().await?;
+        let body = match response.json::<ServerResponse>().await {
+            Ok(body) => body,
+            Err(e) => {
+                error!("Server response could not be parsed: {}", e);
+                return Ok(());
+            }
+        };
         info!(
             "Received {} image deletion command(s) from server",
             body.deletions.len()
