@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   build-agent:
-    name: "🟡 Build agent binary"
+    name: "🔵 Build agent binary"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6

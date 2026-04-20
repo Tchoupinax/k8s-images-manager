@@ -53,7 +53,7 @@ jobs:
         node-version: 24
         cache: "pnpm"
 
-    - name: "🔵 Build, lint and test the package"
+    - name: "Build, lint and test the package"
       run: |
         pnpm install --frozen-lockfile --filter server
         pnpm build --filter server
@@ -74,7 +74,7 @@ jobs:
         VAULT_TOKEN: "_"
 
   build-agent:
-    name: "🟡 Build agent binary"
+    name: "🔵 Build agent binary"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
