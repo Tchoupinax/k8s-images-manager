@@ -3,7 +3,7 @@ mod commands;
 mod logger;
 use chrono::{DateTime, Utc};
 use gethostname::gethostname;
-use log::info;
+use log::{error, info};
 use std::env;
 use std::process::exit;
 use std::thread::sleep;
@@ -90,8 +90,7 @@ async fn main() {
         info!("{} images detected", images.len());
 
         if let Err(e) = api::send_to_server(images, name.clone(), server_url.clone()).await {
-            eprintln!("Error sending data: {}", e);
-            break;
+            error!("Unexpected error while processing server communication: {}", e);
         }
 
         sleep(next_time - Instant::now());
