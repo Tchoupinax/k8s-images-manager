@@ -20,6 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0 # For GoReleaser
+        fetch-tags: true # For GoReleaser
     #- name: Install OpenSSL dependencies
     #  run: |
     #    sudo apt-get update
