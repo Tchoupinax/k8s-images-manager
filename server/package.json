@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node --no-warnings --experimental-strip-types src/index.mts",
+    "prewatch": "pnpm migrate",
     "watch": "node --no-warnings --experimental-strip-types --watch src/index.mts",
     "build": "npx prisma generate && tsc",
     "lint": "eslint . --fix",

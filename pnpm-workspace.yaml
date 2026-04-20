@@ -2,3 +2,7 @@ packages:
 - agent
 - server
 - webapp
+
+allowBuilds:
+  '@prisma/engines': true
+  prisma: true
