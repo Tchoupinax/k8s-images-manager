@@ -8,6 +8,7 @@
     "lint": {
       "dependsOn": ["^lint"]
     },
+    "lint:dockerfile": {},
     "test": {
       "dependsOn": ["^test"]
     },

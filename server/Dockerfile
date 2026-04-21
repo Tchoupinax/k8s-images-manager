@@ -7,7 +7,7 @@ WORKDIR /app
 
 RUN npm i -g pnpm
 
-COPY server/package.json pnpm-lock.yaml .
+COPY server/package.json pnpm-lock.yaml ./
 
 RUN pnpm install
 
@@ -15,9 +15,8 @@ COPY server/src src
 COPY server/prisma prisma
 COPY server/prisma.config.mts prisma.config.mts
 
-RUN npx prisma generate
-
-RUN chown -R k8simagemanager:k8simagemanager /app
+RUN npx prisma generate && \
+    chown -R k8simagemanager:k8simagemanager /app
 
 USER k8simagemanager
 
