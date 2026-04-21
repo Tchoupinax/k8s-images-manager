@@ -88,6 +88,6 @@ jobs:
     - name: Compile with goreleaser
       uses: goreleaser/goreleaser-action@v7
       with:
-        args: "build --clean --snapshot"
+        args: "release --clean --snapshot"
         version: "~> v2"
         workdir: "agent"
