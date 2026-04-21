@@ -5,9 +5,8 @@ use chrono::{DateTime, Utc};
 use gethostname::gethostname;
 use log::{error, info};
 use std::env;
-use std::process::exit;
-use std::thread::sleep;
-use std::time::{Duration, Instant, SystemTime};
+use std::time::{Duration, SystemTime};
+use tokio::time;
 
 fn parse_images(output: &str) -> Vec<api::ImageInfo> {
     let mut images = Vec::new();
@@ -76,24 +75,50 @@ async fn main() {
     };
 
     let interval = Duration::from_secs(push_frequency_second);
-    let mut next_time = Instant::now() + interval;
+    let mut ticker = time::interval(interval);
 
     loop {
-        let output = match commands::execute_list_image_command() {
-            Ok(output) => output,
-            Err(_) => {
-                exit(1);
+        tokio::select! {
+            _ = shutdown_signal() => {
+                info!("Shutdown signal received, stopping agent");
+                break;
             }
-        };
+            _ = ticker.tick() => {
+                let output = match commands::execute_list_image_command() {
+                    Ok(output) => output,
+                    Err(e) => {
+                        error!("Unexpected error while listing images: {}", e);
+                        continue;
+                    }
+                };
 
-        let images: Vec<api::ImageInfo> = parse_images(&output);
-        info!("{} images detected", images.len());
+                let images: Vec<api::ImageInfo> = parse_images(&output);
+                info!("{} images detected", images.len());
 
-        if let Err(e) = api::send_to_server(images, name.clone(), server_url.clone()).await {
-            error!("Unexpected error while processing server communication: {}", e);
+                if let Err(e) = api::send_to_server(images, name.clone(), server_url.clone()).await {
+                    error!("Unexpected error while processing server communication: {}", e);
+                }
+            }
         }
+    }
+}
 
-        sleep(next_time - Instant::now());
-        next_time += interval;
+async fn shutdown_signal() {
+    #[cfg(unix)]
+    {
+        use tokio::signal::unix::{signal, SignalKind};
+
+        let mut terminate = signal(SignalKind::terminate()).expect("failed to install SIGTERM handler");
+        tokio::select! {
+            _ = tokio::signal::ctrl_c() => {}
+            _ = terminate.recv() => {}
+        }
+    }
+
+    #[cfg(not(unix))]
+    {
+        tokio::signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
     }
 }
