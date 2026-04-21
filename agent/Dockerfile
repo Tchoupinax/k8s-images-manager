@@ -10,8 +10,8 @@ FROM ubuntu:24.04
 
 # ARG TARGETPLATFORM
 
-RUN addgroup --system --gid 999 k8simagemanager && \
-    adduser --system --uid 999 -G k8simagemanager k8simagemanager
+RUN groupadd --system --gid 999 k8simagemanager && \
+    useradd --system --uid 999 -g k8simagemanager k8simagemanager
 
 # hadolint ignore=DL3008
 RUN apt-get update \
@@ -35,6 +35,3 @@ RUN chown -R k8simagemanager:k8simagemanager /usr/bin/k8s-images-manager-agent
 USER k8simagemanager
 
 ENTRYPOINT ["/usr/bin/k8s-images-manager-agent/k8s-images-manager-agent"]
-
-# rustup target add x86_64-unknown-linux-musl
-# cargo build --release --target x86_64-unknown-linux-musl
