@@ -6,29 +6,35 @@
 # alpine 3.23.0
 # FROM alpine@sha256:51183f2cfa6320055da30872f211093f9ff1d3cf06f39a0bdb212314c5dc7375
 
-FROM ubuntu
+FROM ubuntu:24.04
 
 # ARG TARGETPLATFORM
 
-ENTRYPOINT ["/usr/bin/k8s-images-manager-agent/k8s-images-manager-agent"]
+RUN addgroup --system --gid 999 k8simagemanager && \
+    adduser --system --uid 999 -G k8simagemanager k8simagemanager
 
-RUN apt-get clean \
- && rm -rf /var/lib/apt/lists/* \
- && apt-get update \
+# hadolint ignore=DL3008
+RUN apt-get update \
  && apt-get install -y --no-install-recommends \
+    ca-certificates \
     curl \
     libsasl2-modules \
+    wget \
+ && wget --progress=dot:giga https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.35.0/crictl-v1.35.0-linux-amd64.tar.gz \
+ && tar -C /usr/local/bin -xzf crictl-v1.35.0-linux-amd64.tar.gz \
+ && chmod +x /usr/local/bin/crictl \
+ && rm -f crictl-v1.35.0-linux-amd64.tar.gz \
  && rm -rf /var/lib/apt/lists/*
-
-RUN apt update && apt install -y ca-certificates
-RUN apt install -y wget
-RUN wget https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.35.0/crictl-v1.35.0-linux-amd64.tar.gz
-RUN tar -C /usr/local/bin -xzf crictl-v1.35.0-linux-amd64.tar.gz
-RUN chmod +x /usr/local/bin/crictl
 
 # $TARGETPLATFORM seems to not to work
 # COPY linux/$TARGETPLATFORM/k8s-images-manager-agent /usr/bin/
 COPY linux/amd64 /usr/bin/k8s-images-manager-agent
+
+RUN chown -R k8simagemanager:k8simagemanager /usr/bin/k8s-images-manager-agent
+
+USER k8simagemanager
+
+ENTRYPOINT ["/usr/bin/k8s-images-manager-agent/k8s-images-manager-agent"]
 
 # rustup target add x86_64-unknown-linux-musl
 # cargo build --release --target x86_64-unknown-linux-musl

@@ -9,7 +9,8 @@
     "preview": "nuxt preview",
     "watch": "nuxt dev",
     "lint": "eslint . --fix && pnpm lint:vue:check",
-    "lint:vue:check": "vue-tsc --noEmit || true"
+    "lint:vue:check": "vue-tsc --noEmit || true",
+    "lint:dockerfile": "hadolint Dockerfile"
   },
   "dependencies": {
     "@nuxt/eslint": "1.15.2",

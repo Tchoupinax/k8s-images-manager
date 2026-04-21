@@ -6,6 +6,7 @@
     "check": "gitleaks dir -v && gitleaks git -v",
     "knip": "knip",
     "lint": "turbo run lint",
+    "lint:dockerfile": "turbo run lint:dockerfile",
     "prewatch": "docker compose up -d",
     "test": "turbo run test",
     "upgrade": "pnpm ncu -p pnpm -i --cooldown 3 --format group",

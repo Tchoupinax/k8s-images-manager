@@ -13,6 +13,9 @@ RUN cargo build --release
 ##########################################################################################
 FROM ubuntu
 
+RUN addgroup --system --gid 999 k8simagemanager && \
+    adduser --system --uid 999 --ingroup k8simagemanager k8simagemanager
+
 WORKDIR /app
 
 #RUN apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y
@@ -31,5 +34,9 @@ RUN tar zxvf crictl-v1.32.0-linux-amd64.tar.gz -C /usr/local/bin
 RUN crictl --version
 
 COPY --from=builder /app/target/release/k8s-images-manager-agent /app/k8s-images-manager-agent
+
+RUN chown k8simagemanager:k8simagemanager /app/k8s-images-manager-agent
+
+USER k8simagemanager
 
 CMD ["/bin/sh", "-c", "/app/k8s-images-manager-agent && sleep 300"]
