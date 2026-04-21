@@ -19,10 +19,16 @@ RUN apt-get update \
     ca-certificates \
     curl \
     libsasl2-modules \
+    sudo \
     wget \
  && wget --progress=dot:giga https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.35.0/crictl-v1.35.0-linux-amd64.tar.gz \
  && tar -C /usr/local/bin -xzf crictl-v1.35.0-linux-amd64.tar.gz \
  && chmod +x /usr/local/bin/crictl \
+ && printf '%s\n' \
+    'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock images' \
+    'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock rmi *' \
+    > /etc/sudoers.d/k8simagemanager-crictl \
+ && chmod 440 /etc/sudoers.d/k8simagemanager-crictl \
  && rm -f crictl-v1.35.0-linux-amd64.tar.gz \
  && rm -rf /var/lib/apt/lists/*
 
