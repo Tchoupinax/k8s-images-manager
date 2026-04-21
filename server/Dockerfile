@@ -1,7 +1,7 @@
 FROM node:25-alpine
 
-RUN addgroup -S -g 999 k8simagemanager && \
-    adduser -S -u 999 -G k8simagemanager k8simagemanager
+RUN addgroup -S -g 1001 k8simagemanager && \
+    adduser -S -u 1001 -G k8simagemanager k8simagemanager
 
 WORKDIR /app
 
