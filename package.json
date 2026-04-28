@@ -13,9 +13,9 @@
     "watch": "turbo run watch"
   },
   "devDependencies": {
-    "knip": "6.4.1",
-    "npm-check-updates": "21.0.2",
+    "knip": "6.7.0",
+    "npm-check-updates": "21.0.3",
     "turbo": "2.9.6"
   },
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@10.33.2"
 }
