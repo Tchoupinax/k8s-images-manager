@@ -14,7 +14,7 @@
     "lint:dockerfile": "hadolint Dockerfile"
   },
   "dependencies": {
-    "@electric-sql/pglite": "0.4.4",
+    "@electric-sql/pglite": "0.4.5",
     "@fastify/cors": "11.2.0",
     "@fastify/request-context": "6.2.1",
     "@prisma/adapter-pg": "7.8.0",
@@ -28,9 +28,9 @@
     "valienv": "1.1.0"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "0.4.4",
+    "@electric-sql/pglite": "0.4.5",
     "@types/node": "25.6.0",
-    "eslint": "10.2.1",
+    "eslint": "10.3.0",
     "eslint-config-tchoupinax": "2.5.0",
     "nodemon": "3.1.14",
     "pglite-prisma-adapter": "0.7.2",
