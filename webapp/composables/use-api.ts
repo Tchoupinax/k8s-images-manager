@@ -11,6 +11,6 @@ export const useImagesStats = (images: Array<ImageInfo>) => {
   const nodes = images.map(node => node.hostname);
 
   return {
-    nodes: computed(() => nodes)
+    nodes: computed(() => nodes),
   };
 };

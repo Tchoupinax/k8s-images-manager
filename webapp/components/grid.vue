@@ -55,7 +55,7 @@ export default defineComponent({
   name: "PastelGrid",
   props: {
     node: { type: Object, required: true },
-    selectedImages: { type: Array, required: true }
+    selectedImages: { type: Array, required: true },
   },
   setup() {
     return { pastelColors };
@@ -65,8 +65,8 @@ export default defineComponent({
     doesNodeHasThisImage(node: any, imageName: string) {
       // Exemple de logique positive/négative
       return node.images?.includes(imageName)
-    }
-  }
+    },
+  },
 });
 </script>
 

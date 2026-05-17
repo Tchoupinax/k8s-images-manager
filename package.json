@@ -9,13 +9,13 @@
     "lint:dockerfile": "turbo run lint:dockerfile",
     "prewatch": "docker compose up -d",
     "test": "turbo run test",
-    "upgrade": "pnpm ncu -p pnpm -i --cooldown 3 --format group",
+    "upgrade": "pnpm ncu -p pnpm -w -i --cooldown 3 --format group",
     "watch": "turbo run watch"
   },
   "devDependencies": {
-    "knip": "6.7.0",
+    "knip": "6.13.1",
     "npm-check-updates": "22.2.0",
-    "turbo": "2.9.6"
+    "turbo": "2.9.12"
   },
-  "packageManager": "pnpm@10.33.2"
+  "packageManager": "pnpm@11.1.1"
 }

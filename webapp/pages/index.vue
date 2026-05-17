@@ -301,23 +301,23 @@ const $config = useRuntimeConfig();
 const toast = useToast();
 
 const { data: images, pending, error, refresh } = useFetch<Array<ImageInfo>>(
-  `${$config.public.serverEndpoint}/api/images`
+  `${$config.public.serverEndpoint}/api/images`,
 );
 
 const allImages = computed(() => images.value || []);
 
 const totalImages = computed(() => allImages.value.length);
 const totalRepositories = computed(
-  () => new Set(allImages.value.map(img => img.repository)).size
+  () => new Set(allImages.value.map(img => img.repository)).size,
 );
 const totalNodes = computed(
-  () => new Set(allImages.value.map(img => img.hostname)).size
+  () => new Set(allImages.value.map(img => img.hostname)).size,
 );
 
 const hostnameOptions = computed(() =>
   Array.from(new Set(allImages.value.map(img => img.hostname)))
     .sort()
-    .map(hostname => ({ label: hostname, value: hostname }))
+    .map(hostname => ({ label: hostname, value: hostname })),
 );
 
 const search = ref("");
@@ -368,7 +368,7 @@ const groupedImages = computed(() => {
         digest: img.digest,
         lastSeen: img.date ?? null,
         nodes: new Set<string>(),
-        count: 0
+        count: 0,
       };
       groups.set(key, group);
     }
@@ -390,7 +390,7 @@ const groupedImages = computed(() => {
     digest: g.digest,
     lastSeen: g.lastSeen,
     nodes: Array.from(g.nodes).sort(),
-    count: g.count
+    count: g.count,
   }));
 });
 
@@ -455,7 +455,7 @@ const onRemoveImage = async (image: RemovableImage) => {
   deletingKey.value = makeImageKey(image);
   try {
     const url = new URL(
-      `${$config.public.serverEndpoint}/api/images`
+      `${$config.public.serverEndpoint}/api/images`,
     );
     url.searchParams.set("repository", image.repository);
     url.searchParams.set("tag", image.tag);
@@ -470,7 +470,7 @@ const onRemoveImage = async (image: RemovableImage) => {
       severity: "success",
       summary: "Image removed",
       detail: `Removed ${image.repository}:${image.tag} on all nodes`,
-      life: 3500
+      life: 3500,
     });
 
     await refresh();
@@ -480,7 +480,7 @@ const onRemoveImage = async (image: RemovableImage) => {
         severity: "error",
         summary: "Removal failed",
         detail: e?.message ?? "Unable to remove image",
-        life: 4500
+        life: 4500,
       });
     }
   } finally {
