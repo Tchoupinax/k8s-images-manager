@@ -61,8 +61,8 @@ import { computed, ref } from "vue";
 const $props = defineProps({
   data: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 })
 
 // Ref pour le critère de tri et la direction

@@ -9,10 +9,7 @@ this_is_a_fake_image                                                1.13.1      
 pub fn execute_list_image_command() -> Result<String, std::io::Error> {
     match Command::new("sudo")
         .arg("--non-interactive")
-        .arg("/usr/local/bin/crictl")
-        .arg("--runtime-endpoint")
-        .arg("unix:///run/k3s/containerd/containerd.sock")
-        .arg("images")
+        .arg("/usr/local/bin/crictl-images")
         .output()
     {
         Ok(output) => {
@@ -31,10 +28,7 @@ pub fn execute_remove_image_command(repository: &str, tag: &str) -> Result<(), s
 
     match Command::new("sudo")
         .arg("--non-interactive")
-        .arg("/usr/local/bin/crictl")
-        .arg("--runtime-endpoint")
-        .arg("unix:///run/k3s/containerd/containerd.sock")
-        .arg("rmi")
+        .arg("/usr/local/bin/crictl-rmi")
         .arg(&image_ref)
         .status()
     {

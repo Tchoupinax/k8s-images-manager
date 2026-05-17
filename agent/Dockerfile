@@ -24,9 +24,25 @@ RUN apt-get update \
  && wget --progress=dot:giga https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.35.0/crictl-v1.35.0-linux-amd64.tar.gz \
  && tar -C /usr/local/bin -xzf crictl-v1.35.0-linux-amd64.tar.gz \
  && chmod +x /usr/local/bin/crictl \
+ && printf '%s\n' '#!/usr/bin/env sh' \
+    'set -eu' \
+    'exec /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock images' \
+    > /usr/local/bin/crictl-images \
+ && chmod 755 /usr/local/bin/crictl-images \
+ && chown root:root /usr/local/bin/crictl-images \
+ && printf '%s\n' '#!/usr/bin/env sh' \
+    'set -eu' \
+    "if [ \"\$#\" -ne 1 ]; then" \
+    '  echo "usage: crictl-rmi <image-ref>" >&2' \
+    '  exit 2' \
+    'fi' \
+    "exec /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock rmi \"\$1\"" \
+    > /usr/local/bin/crictl-rmi \
+ && chmod 755 /usr/local/bin/crictl-rmi \
+ && chown root:root /usr/local/bin/crictl-rmi \
  && printf '%s\n' \
-    'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock images' \
-    'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock rmi *' \
+    'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-images' \
+    'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-rmi *' \
     > /etc/sudoers.d/k8simagemanager-crictl \
  && chmod 440 /etc/sudoers.d/k8simagemanager-crictl \
  && rm -f crictl-v1.35.0-linux-amd64.tar.gz \

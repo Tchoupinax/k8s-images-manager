@@ -198,12 +198,12 @@ const pastelColors: string[] = [
   "#3EC1C1", // Pastel Mint foncé
   "#B39CD0", // Pastel Lavender foncé
   "#FFB085", // Pastel Peach foncé
-  "#A9A9A9" // Pastel Gray foncé
+  "#A9A9A9", // Pastel Gray foncé
 ];
 
 const $config = useRuntimeConfig();
 const { data, pending, error, refresh } = useFetch<ImageInfo[]>(
-  `${$config.public.serverEndpoint}/api/images`
+  `${$config.public.serverEndpoint}/api/images`,
 );
 
 const selectedImages = ref<string[]>([]);
@@ -211,15 +211,15 @@ const selectedImages = ref<string[]>([]);
 const imageOptions = computed(() =>
   Array.from(
     new Set(
-      (data.value || []).map(node => `${node.repository}:${node.tag}`)
-    )
+      (data.value || []).map(node => `${node.repository}:${node.tag}`),
+    ),
   )
     .sort()
-    .map(image => ({ label: image, value: image }))
+    .map(image => ({ label: image, value: image })),
 );
 
 const nodesArray = computed(
-  () => Array.from(new Set(data.value?.map(node => node.hostname) || [])).sort()
+  () => Array.from(new Set(data.value?.map(node => node.hostname) || [])).sort(),
 );
 const getImagesCountByNodeName = (nodeName: string) => {
   return data.value?.filter(node => node.hostname === nodeName)?.length ?? 0;
@@ -245,7 +245,7 @@ const calculateImagePercentageByNode = (nodeName: string, selectedImages: string
   return Math.floor(
     (countHowManyImagesTheNodeHas(nodeName, selectedImages) /
       selectedImages.length) *
-      100
+      100,
   );
 };
 </script>
