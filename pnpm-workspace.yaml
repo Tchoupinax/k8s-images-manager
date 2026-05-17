@@ -1,11 +1,11 @@
 packages:
-  - agent
-  - server
-  - webapp
+- agent
+- server
+- webapp
 
 allowBuilds:
   '@parcel/watcher': false
-  '@prisma/engines': true
+  '@prisma/engines': false
   esbuild: false
-  prisma: true
+  prisma: false
   unrs-resolver: false

@@ -11,7 +11,7 @@
     "test": "turbo run test",
     "upgrade": "pnpm ncu -p pnpm -w -i --cooldown 3 --format group",
     "watch": "turbo run watch",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean && rm -rf node_modules .turbo"
   },
   "devDependencies": {
     "knip": "6.13.1",

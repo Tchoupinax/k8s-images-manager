@@ -9,7 +9,9 @@
       "dependsOn": ["^lint"]
     },
     "lint:dockerfile": {},
-    "clean": {},
+    "clean": {
+      "cache": false
+    },
     "test": {
       "dependsOn": ["^test"]
     },

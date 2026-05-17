@@ -7,9 +7,12 @@ WORKDIR /app
 
 RUN npm i -g pnpm
 
-COPY server/package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY server/package.json server/
 
-RUN pnpm install
+RUN pnpm install --frozen-lockfile --filter=server
+
+WORKDIR /app/server
 
 COPY server/src src
 COPY server/prisma prisma

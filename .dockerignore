@@ -1,12 +1,14 @@
 **
 
+!package.json
 !pnpm-lock.yaml
 !pnpm-workspace.yaml
 
 # server
 !server/package.json
 !server/src
-!server/prisma
+!server/prisma/schema.prisma
+!server/prisma/migrations
 !server/prisma.config.mts
 
 # webapp
