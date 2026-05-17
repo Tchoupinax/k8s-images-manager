@@ -34,7 +34,8 @@ export async function createServer(
   fastify.decorate("prisma", prisma);
 
   fastify.register(cors, {
-    origin: "http://localhost:3000",
+    origin: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   });
 

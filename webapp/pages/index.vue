@@ -190,7 +190,6 @@
                   ></i>
                 </button>
               </th>
-              <th class="px-4 py-3 font-semibold">Nodes</th>
               <th class="px-4 py-3 font-semibold">
                 <button
                   type="button"
@@ -237,29 +236,6 @@
                   >
                     {{ image.tag }}
                   </span>
-                </div>
-              </td>
-
-              <td class="px-4 py-3 align-top">
-                <div class="flex flex-col gap-1">
-                  <span class="text-[11px] font-medium text-slate-800">
-                    {{ image.nodes.length }} node{{ image.nodes.length > 1 ? "s" : "" }}
-                  </span>
-                  <div class="flex flex-wrap gap-1">
-                    <span
-                      v-for="hostname in image.nodes.slice(0, 3)"
-                      :key="hostname"
-                      class="inline-flex max-w-[120px] items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700"
-                    >
-                      <span class="truncate">{{ hostname }}</span>
-                    </span>
-                    <span
-                      v-if="image.nodes.length > 3"
-                      class="inline-flex items-center rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-800"
-                    >
-                      +{{ image.nodes.length - 3 }} more
-                    </span>
-                  </div>
                 </div>
               </td>
 
