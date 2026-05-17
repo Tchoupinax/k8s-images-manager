@@ -5,7 +5,8 @@
   "scripts": {
     "build": "cargo build",
     "watch": "SERVER_URL=http://127.0.0.1:9999 cargo run",
-    "lint:dockerfile": "hadolint Dockerfile"
+    "lint:dockerfile": "hadolint Dockerfile",
+    "clean": "rm -rf target node_modules .turbo"
   },
   "devDependencies": {
     "nodemon": "3.1.14"

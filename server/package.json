@@ -11,7 +11,8 @@
     "lint": "eslint . --fix",
     "migrate": "DATABASE_URL=postgresql://postgres:mysecret@localhost:5439/postgres npx prisma migrate dev",
     "test": "vitest run --config vitest.e2e.config.mts",
-    "lint:dockerfile": "hadolint Dockerfile"
+    "lint:dockerfile": "hadolint Dockerfile",
+    "clean": "rm -rf dist node_modules .turbo"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.4.5",

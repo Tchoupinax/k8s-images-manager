@@ -25,4 +25,12 @@ export default defineNuxtConfig({
       },
     },
   },
+  vite: {
+    optimizeDeps: {
+      include: [
+        "timeago.js",
+        "vue-tippy",
+      ],
+    },
+  },
 });
