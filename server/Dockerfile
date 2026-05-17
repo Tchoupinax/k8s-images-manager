@@ -9,7 +9,7 @@ RUN npm i -g pnpm
 
 COPY server/package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 COPY server/src src
 COPY server/prisma prisma
