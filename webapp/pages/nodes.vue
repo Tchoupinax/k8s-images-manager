@@ -125,7 +125,7 @@
             </p>
 
             <p v-if="!selectedImages.length" class="mt-1 text-xs text-slate-500">
-              {{ getImagesCountByNodeName(node) }} images detected
+              {{ getImagesCountByNodeName(node) }} images · {{ getTotalSizeForNode(node) }}
             </p>
           </div>
 
@@ -157,10 +157,7 @@
             <div class="mr-2 font-semibold text-slate-900">
               {{
                 selectedImages.length
-                  ? `${countHowManyImagesTheNodeHas(
-                      node,
-                      selectedImages
-                    )} / ${selectedImages.length} images`
+                  ? `${countHowManyImagesTheNodeHas(node, selectedImages)} / ${selectedImages.length} images · ${getTotalSizeForNode(node, selectedImages)}`
                   : 'No reference images selected'
               }}
             </div>
@@ -247,5 +244,34 @@ const calculateImagePercentageByNode = (nodeName: string, selectedImages: string
       selectedImages.length) *
       100,
   );
+};
+
+const parseSizeToBytes = (sizeStr: string): number => {
+  const match = sizeStr.trim().match(/^([\d.]+)\s*([a-zA-Z]*)/);
+  if (!match) {return 0;}
+  const value = parseFloat(match[1]);
+  const unit = match[2].toLowerCase();
+  const multipliers: Record<string, number> = {
+    "": 1, b: 1,
+    kb: 1e3, mb: 1e6, gb: 1e9, tb: 1e12,
+    kib: 1024, mib: 1024 ** 2, gib: 1024 ** 3, tib: 1024 ** 4,
+  };
+  return value * (multipliers[unit] ?? 1);
+};
+
+const formatBytes = (bytes: number): string => {
+  if (bytes >= 1e9) {return `${(bytes / 1e9).toFixed(1)} GB`;}
+  if (bytes >= 1e6) {return `${(bytes / 1e6).toFixed(1)} MB`;}
+  if (bytes >= 1e3) {return `${(bytes / 1e3).toFixed(1)} kB`;}
+  return `${bytes} B`;
+};
+
+const getTotalSizeForNode = (nodeName: string, imageFilter?: string[]): string => {
+  const images = data.value?.filter(img => img.hostname === nodeName) ?? [];
+  const filtered = imageFilter?.length
+    ? images.filter(img => imageFilter.includes(`${img.repository}:${img.tag}`))
+    : images;
+  const totalBytes = filtered.reduce((sum, img) => sum + parseSizeToBytes(img.size), 0);
+  return formatBytes(totalBytes);
 };
 </script>
