@@ -4,8 +4,8 @@ packages:
   - webapp
 
 allowBuilds:
-  '@parcel/watcher': false
+  '@parcel/watcher': set this to true or false
   '@prisma/engines': true
-  esbuild: false
+  esbuild: set this to true or false
   prisma: true
-  unrs-resolver: false
+  unrs-resolver: set this to true or false
