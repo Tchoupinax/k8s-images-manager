@@ -33,7 +33,7 @@
 
     <section
       v-if="images && images.length"
-      class="grid gap-3 shrink-0 sm:grid-cols-3"
+      class="grid gap-3 shrink-0 sm:grid-cols-4"
     >
       <div
         class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
@@ -65,6 +65,17 @@
         </p>
         <p class="mt-1 text-2xl font-black text-slate-900">
           {{ totalNodes }}
+        </p>
+      </div>
+
+      <div
+        class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
+      >
+        <p class="text-xs font-medium tracking-wide uppercase text-slate-500">
+          Total size on disk
+        </p>
+        <p class="mt-1 text-2xl font-black text-slate-900">
+          {{ totalSize }}
         </p>
       </div>
     </section>
@@ -312,6 +323,17 @@ const totalRepositories = computed(
 );
 const totalNodes = computed(
   () => new Set(allImages.value.map(img => img.hostname)).size,
+);
+
+const formatBytes = (bytes: number): string => {
+  if (bytes === 0) {return "0 B";}
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${units[i]}`;
+};
+
+const totalSize = computed(() =>
+  formatBytes(allImages.value.reduce((sum, img) => sum + parseSize(img.size), 0)),
 );
 
 const hostnameOptions = computed(() =>
