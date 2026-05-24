@@ -80,6 +80,7 @@ agents:
   config:
     pushFrequencyInSecond: 60
     serverUrl: ""
+    logLevel: "info"
 
   imagePullSecrets: []
   nameOverride: ""

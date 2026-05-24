@@ -58,6 +58,8 @@ spec:
             value: "{{ .Values.agents.config.pushFrequencyInSecond }}"
           - name: "SERVER_URL"
             value: {{ .Values.agents.config.serverUrl | default (printf "http://%s.%s:9999" (include "chart.server.fullname" .) .Release.Namespace) }}
+          - name: "RUST_LOG"
+            value: {{ .Values.agents.config.logLevel | default "info" | quote }}
 
           {{- range $key, $value := .Values.agents.env }}
           - name: {{ $key | quote }}
