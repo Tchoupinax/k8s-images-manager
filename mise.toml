@@ -1,8 +1,8 @@
 [tools]
 cargo = "0.93.0"
 gitleaks = "8.30.1"
-go = "1.26.3"
+go = "1.26.4"
 goreleaser = "latest"
 hadolint = "2.14.0"
 node = "25"
-rust = "1.95.0"
+rust = "1.96.0"
