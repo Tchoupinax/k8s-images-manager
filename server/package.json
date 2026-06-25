@@ -17,7 +17,7 @@
   "dependencies": {
     "@electric-sql/pglite": "0.5.1",
     "@fastify/cors": "11.2.0",
-    "@fastify/request-context": "6.2.1",
+    "@fastify/request-context": "7.0.0",
     "@prisma/adapter-pg": "7.8.0",
     "@prisma/client": "7.8.0",
     "@prisma/client-runtime-utils": "7.8.0",
