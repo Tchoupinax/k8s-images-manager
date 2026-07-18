@@ -16,7 +16,7 @@ jobs:
     name: "Release agent binary"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     #- name: Install OpenSSL dependencies
     #  run: |
     #    sudo apt-get update
