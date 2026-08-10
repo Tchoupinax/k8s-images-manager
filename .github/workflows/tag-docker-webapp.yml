@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
   packages: write
+  actions: write
 
 jobs:
   webapp-build:
@@ -85,11 +86,11 @@ jobs:
       with:
         file: "webapp/Dockerfile"
         context: "."
-        platforms: linux/amd64
+        platforms: linux/amd64,linux/arm64
         push: true
         tags: |
           ghcr.io/tchoupinax/k8s-images-manager:webapp-${{ env.TAG }}
           docker.io/${{ secrets.DOCKERHUB_USERNAME }}/k8s-images-manager:webapp-${{ env.TAG }}
         labels: "org.opencontainers.image.version=${{ env.TAG }}"
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-from: type=gha,scope=webapp
+        cache-to: type=gha,mode=max,scope=webapp
