@@ -8,7 +8,8 @@
 
 FROM ubuntu:26.04
 
-# ARG TARGETPLATFORM
+ARG TARGETPLATFORM
+ARG TARGETARCH
 
 RUN groupadd --system --gid 999 k8simagemanager && \
     useradd --system --uid 999 -g k8simagemanager k8simagemanager
@@ -21,8 +22,13 @@ RUN apt-get update \
     libsasl2-modules \
     sudo \
     wget \
- && wget --progress=dot:giga https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.35.0/crictl-v1.35.0-linux-amd64.tar.gz \
- && tar -C /usr/local/bin -xzf crictl-v1.35.0-linux-amd64.tar.gz \
+ && case "${TARGETARCH}" in \
+      amd64) CRIC_ARCH=amd64 ;; \
+      arm64) CRIC_ARCH=arm64 ;; \
+      *) echo "unsupported arch: ${TARGETARCH}" && exit 1 ;; \
+    esac \
+ && wget --progress=dot:giga "https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.35.0/crictl-v1.35.0-linux-${CRIC_ARCH}.tar.gz" \
+ && tar -C /usr/local/bin -xzf "crictl-v1.35.0-linux-${CRIC_ARCH}.tar.gz" \
  && chmod +x /usr/local/bin/crictl \
  && printf '%s\n' '#!/usr/bin/env sh' \
     'set -eu' \
@@ -45,12 +51,10 @@ RUN apt-get update \
     'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-rmi *' \
     > /etc/sudoers.d/k8simagemanager-crictl \
  && chmod 440 /etc/sudoers.d/k8simagemanager-crictl \
- && rm -f crictl-v1.35.0-linux-amd64.tar.gz \
+ && rm -f "crictl-v1.35.0-linux-${CRIC_ARCH}.tar.gz" \
  && rm -rf /var/lib/apt/lists/*
 
-# $TARGETPLATFORM seems to not to work
-# COPY linux/$TARGETPLATFORM/k8s-images-manager-agent /usr/bin/
-COPY linux/amd64 /usr/bin/k8s-images-manager-agent
+COPY ${TARGETPLATFORM} /usr/bin/k8s-images-manager-agent
 
 RUN chown -R k8simagemanager:k8simagemanager /usr/bin/k8s-images-manager-agent
 

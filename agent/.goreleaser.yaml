@@ -9,7 +9,7 @@ project_name: k8s-images-manager-agent
 before:
   hooks:
   - rustup default stable
-  - rustup target add x86_64-unknown-linux-musl
+  - rustup target add aarch64-unknown-linux-gnu
   - cargo install --locked cargo-zigbuild
   - cargo fetch --locked
 
@@ -17,7 +17,7 @@ builds:
 - builder: rust
   targets:
   - x86_64-unknown-linux-gnu
-  #- aarch64-unknown-linux-gnu
+  - aarch64-unknown-linux-gnu
   #- x86_64-apple-darwin
   #- x86_64-pc-windows-gnu
   #- aarch64-apple-darwin
@@ -83,7 +83,12 @@ dockers_v2:
   - "agent-v{{ .Version }}"
   platforms:
   - linux/amd64
-  # - linux/arm64
+  - linux/arm64
+  # Snapshot builds use --load, which cannot export GHA cache with the default driver.
+  disable: "{{ .IsSnapshot }}"
+  flags:
+  - "--cache-from=type=gha,scope=agent"
+  - "--cache-to=type=gha,mode=max,scope=agent"
   labels:
     "org.opencontainers.image.description": "Agent"
     "org.opencontainers.image.created": "{{.Date}}"
