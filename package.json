@@ -14,9 +14,9 @@
     "clean": "turbo run clean && rm -rf node_modules .turbo"
   },
   "devDependencies": {
-    "knip": "6.32.0",
+    "knip": "6.32.2",
     "npm-check-updates": "23.0.2",
     "turbo": "2.10.9"
   },
-  "packageManager": "pnpm@11.20.0"
+  "packageManager": "pnpm@11.21.0"
 }
