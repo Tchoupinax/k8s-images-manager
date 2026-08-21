@@ -16,15 +16,7 @@
         <Button
           icon="pi pi-trash"
           label="Clean"
-          class="hidden btn-danger sm:inline-flex"
-          :loading="isCleaning"
-          :disabled="!allImages.length"
-          @click="onCleanAll()"
-        />
-        <Button
-          icon="pi pi-trash"
-          class="inline-flex btn-danger sm:hidden"
-          aria-label="Clean all images"
+          class="btn-danger"
           :loading="isCleaning"
           :disabled="!allImages.length"
           @click="onCleanAll()"
@@ -32,13 +24,7 @@
         <Button
           icon="pi pi-refresh"
           label="Refresh"
-          class="hidden btn-aqua sm:inline-flex"
-          @click="refresh()"
-        />
-        <Button
-          icon="pi pi-refresh"
-          class="inline-flex btn-aqua sm:hidden"
-          aria-label="Refresh"
+          class="btn-aqua"
           @click="refresh()"
         />
       </div>
@@ -347,7 +333,8 @@ const $config = useRuntimeConfig();
 const toast = useToast();
 
 const { data: images, pending, error, refresh } = useFetch<Array<ImageInfo>>(
-  `${$config.public.serverEndpoint}/api/images`,
+  () => withServerEndpoint("/api/images", $config.public.serverEndpoint),
+  { server: false },
 );
 
 const allImages = computed(() => images.value || []);
@@ -514,9 +501,10 @@ const isPulling = (image: RemovableImage) =>
   pullingKey.value === makeImageKey(image);
 
 const requestPull = async (image: RemovableImage) => {
-  const url = new URL(`${$config.public.serverEndpoint}/api/images/pull`);
-  url.searchParams.set("repository", image.repository);
-  url.searchParams.set("tag", image.tag);
+  const url = serverEndpointUrl("/api/images/pull", $config.public.serverEndpoint, {
+    repository: image.repository,
+    tag: image.tag,
+  });
 
   const res = await fetch(url.toString(), { method: "POST" });
   if (!res.ok) {
@@ -555,11 +543,10 @@ const onRemoveImage = async (image: RemovableImage) => {
 
   deletingKey.value = makeImageKey(image);
   try {
-    const url = new URL(
-      `${$config.public.serverEndpoint}/api/images`,
-    );
-    url.searchParams.set("repository", image.repository);
-    url.searchParams.set("tag", image.tag);
+    const url = serverEndpointUrl("/api/images", $config.public.serverEndpoint, {
+      repository: image.repository,
+      tag: image.tag,
+    });
 
     const res = await fetch(url.toString(), { method: "DELETE" });
 
@@ -593,7 +580,7 @@ const onCleanAll = async () => {
   isCleaning.value = true;
   try {
     const res = await fetch(
-      `${$config.public.serverEndpoint}/api/images/all`,
+      withServerEndpoint("/api/images/all", $config.public.serverEndpoint),
       { method: "DELETE" },
     );
     if (!res.ok) {

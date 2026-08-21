@@ -124,6 +124,8 @@ webapp:
   envFromSecret: []
 
   config:
+    # Public API origin for the browser. Empty uses the current host (/api on the
+    # webapp ingress). Set this only when the API is on a different hostname.
     serverUrl: ""
 
   imagePullSecrets: []
