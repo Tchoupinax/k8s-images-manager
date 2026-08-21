@@ -4,7 +4,24 @@ import { type FastifyInstance } from "fastify";
 
 import type { PrismaClient } from "../prisma/generated/prisma/index.js";
 import { logger } from "./tools/logger.mts";
-import { prometheus } from "./tools/metrics.mts";
+import {
+  cleanAllImagesQueued,
+  cleanAllTotal,
+  collectInventoryMetrics,
+  commandsDispatched,
+  commandsDispatchedTotal,
+  deletionsQueuedTotal,
+  httpErrorsTotal,
+  prometheus,
+  pullAcksReceived,
+  pullAcksTotal,
+  pullsQueuedTotal,
+  registerDurationSeconds,
+  registerHeartbeatsTotal,
+  registerImagesReported,
+  registerNewNodesTotal,
+  validationErrorsTotal,
+} from "./tools/metrics.mts";
 
 type ImageRecord = Record<string, string>;
 
@@ -108,7 +125,8 @@ export function router(fastify: FastifyInstance) {
   fastify.register(fastifyRequestContext);
 
   fastify.get("/health", () => "OK");
-  fastify.get("/metrics", async (_, reply) => {
+  fastify.get("/metrics", async (request, reply) => {
+    await collectInventoryMetrics(request.server.prisma);
     reply.header("Content-Type", prometheus.contentType);
     return await prometheus.metrics();
   });
@@ -119,6 +137,18 @@ export function router(fastify: FastifyInstance) {
         const prisma = request.server.prisma;
         const hostname = request.headers.hostname as string;
         const payload = request.body as Array<ImageRecord>;
+        const started = process.hrtime.bigint();
+
+        if (!hostname) {
+          validationErrorsTotal.inc({ route: "/api/register" });
+          reply.code(400).send({ message: "hostname header is required" });
+          return;
+        }
+
+        const existing = await prisma.node.findUnique({ where: { hostname } });
+        if (!existing) {
+          registerNewNodesTotal.inc();
+        }
 
         const node = await prisma.$transaction(async tx => {
           const node =
@@ -166,6 +196,19 @@ export function router(fastify: FastifyInstance) {
         const ackedKeys = new Set(
           acks.map(ack => imageKey(ack.repository, ack.tag)),
         );
+        const pullsForNode = pulls.filter(
+          p => !ackedKeys.has(imageKey(p.repository, p.tag)),
+        );
+
+        registerHeartbeatsTotal.inc({ result: "ok" });
+        registerImagesReported.observe(payload.length);
+        commandsDispatchedTotal.inc({ type: "delete" }, deletions.length);
+        commandsDispatchedTotal.inc({ type: "pull" }, pullsForNode.length);
+        commandsDispatched.observe({ type: "delete" }, deletions.length);
+        commandsDispatched.observe({ type: "pull" }, pullsForNode.length);
+        registerDurationSeconds.observe(
+          Number(process.hrtime.bigint() - started) / 1e9,
+        );
 
         reply
           .code(200)
@@ -176,12 +219,10 @@ export function router(fastify: FastifyInstance) {
               repository: d.repository,
               tag: d.tag,
             })),
-            pulls: pulls
-              .filter(p => !ackedKeys.has(imageKey(p.repository, p.tag)))
-              .map((p): ImageCommand => ({
-                repository: p.repository,
-                tag: p.tag,
-              })),
+            pulls: pullsForNode.map((p): ImageCommand => ({
+              repository: p.repository,
+              tag: p.tag,
+            })),
           });
       });
 
@@ -214,6 +255,7 @@ export function router(fastify: FastifyInstance) {
         };
 
         if (!repository || !tag) {
+          validationErrorsTotal.inc({ route: "/api/images" });
           reply.code(400).send({
             message: "repository and tag query parameters are required",
           });
@@ -221,6 +263,7 @@ export function router(fastify: FastifyInstance) {
         }
 
         await queueImageDeletion(prisma, repository, tag);
+        deletionsQueuedTotal.inc({ source: "single" });
 
         reply.code(200).send({ ok: true });
       });
@@ -240,6 +283,10 @@ export function router(fastify: FastifyInstance) {
           await queueImageDeletion(prisma, repository, tag);
         }
 
+        cleanAllTotal.inc();
+        cleanAllImagesQueued.observe(unique.length);
+        deletionsQueuedTotal.inc({ source: "all" }, unique.length);
+
         reply.code(200).send({ ok: true, count: unique.length });
       });
 
@@ -251,6 +298,7 @@ export function router(fastify: FastifyInstance) {
         };
 
         if (!repository || !tag) {
+          validationErrorsTotal.inc({ route: "/api/images/pull" });
           reply.code(400).send({
             message: "repository and tag query parameters are required",
           });
@@ -272,6 +320,8 @@ export function router(fastify: FastifyInstance) {
           update: {},
         });
 
+        pullsQueuedTotal.inc();
+
         reply.code(200).send({ ok: true });
       });
 
@@ -279,6 +329,7 @@ export function router(fastify: FastifyInstance) {
         const prisma = request.server.prisma;
         const hostname = request.headers.hostname as string;
         if (!hostname) {
+          validationErrorsTotal.inc({ route: "/api/images/pull/ack" });
           reply.code(400).send({
             message: "hostname header is required",
           });
@@ -292,19 +343,25 @@ export function router(fastify: FastifyInstance) {
 
         const node = await prisma.node.findUnique({ where: { hostname } });
         if (!node) {
+          pullAcksTotal.inc({ result: "unknown_node" });
           reply.code(404).send({ message: "unknown node" });
           return;
         }
 
+        let recorded = 0;
         for (const command of commands) {
           const repository = command?.repository;
           const tag = command?.tag;
           if (!repository || !tag) {
+            pullAcksTotal.inc({ result: "invalid" });
             continue;
           }
           await recordPullAck(prisma, node.id, repository, tag);
+          recorded += 1;
+          pullAcksTotal.inc({ result: "ok" });
         }
 
+        pullAcksReceived.observe(recorded);
         await cleanupPulls(prisma);
 
         reply.code(200).send({ ok: true });
@@ -315,6 +372,7 @@ export function router(fastify: FastifyInstance) {
 
   fastify.setErrorHandler(async (error, _, reply) => {
     console.log("Global error caught", error);
+    httpErrorsTotal.inc();
     reply.status(500).send({ msg: "Error" });
   });
 
