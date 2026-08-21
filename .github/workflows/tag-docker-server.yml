@@ -11,22 +11,8 @@ permissions:
   actions: write
 
 jobs:
-  changes:
-    name: Detect server changes
-    runs-on: ubuntu-latest
-    outputs:
-      server: ${{ steps.filter.outputs.changed }}
-    steps:
-    - uses: actions/checkout@v7
-      with:
-        fetch-depth: 0
-    - id: filter
-      run: bash .github/scripts/changed-since-prev-tag.sh '^(server/|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|\.dockerignore|\.github/workflows/tag-docker-server\.yml)'
-
   server-build:
     name: "⭐️ Build server"
-    needs: changes
-    if: needs.changes.outputs.server == 'true'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository

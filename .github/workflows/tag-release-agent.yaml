@@ -13,22 +13,8 @@ permissions:
   actions: write
 
 jobs:
-  changes:
-    name: Detect agent changes
-    runs-on: ubuntu-latest
-    outputs:
-      agent: ${{ steps.filter.outputs.changed }}
-    steps:
-    - uses: actions/checkout@v7
-      with:
-        fetch-depth: 0
-    - id: filter
-      run: bash .github/scripts/changed-since-prev-tag.sh '^(agent/|\.github/workflows/tag-release-agent\.yaml)'
-
   release-binary:
     name: "Release agent binary"
-    needs: changes
-    if: needs.changes.outputs.agent == 'true'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v7
