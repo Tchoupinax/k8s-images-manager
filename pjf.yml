@@ -1,0 +1,89 @@
+# https://github.com/Tchoupinax/package-json-formatter
+keyOrder:
+- name
+- version
+- private
+- description
+- license
+- type
+- scripts
+- dependencies
+- devDependencies
+- peerDependencies
+- packageManager
+- prisma
+
+ensureKeys:
+  private: true
+
+ensureKeysFiles:
+- path: server/package.json
+  keys:
+    type: module
+- path: webapp/package.json
+  keys:
+    type: module
+
+scripts:
+  lint:dockerfile: hadolint Dockerfile
+
+scriptsFiles:
+- path: package.json
+  scripts:
+    up: ./scripts/dev/tilt-up.sh
+    build: turbo run build
+    build:docker: turbo run build:docker
+    check: gitleaks dir -v && gitleaks git -v
+    knip: knip
+    lint: turbo run lint
+    lint:dockerfile: turbo run lint:dockerfile
+    prewatch: docker compose up -d
+    test: turbo run test
+    upgrade: pnpm ncu -p pnpm -w -i --cooldown 3 --format group
+    watch: turbo run watch
+    clean: turbo run clean && rm -rf node_modules .turbo
+- path: agent/package.json
+  scripts:
+    build: cargo build
+    build:docker: docker build -f Dockerfile.dev -t k8s-images-manager-agent:dev ..
+    watch: SERVER_URL=http://127.0.0.1:9999 cargo run
+    clean: rm -rf target node_modules .turbo
+- path: server/package.json
+  scripts:
+    start: node --no-warnings --experimental-strip-types src/index.mts
+    prewatch: pnpm migrate
+    watch: node --no-warnings --experimental-strip-types --watch src/index.mts
+    build: npx prisma generate && tsc
+    lint: eslint . --fix
+    migrate: DATABASE_URL=postgresql://postgres:mysecret@localhost:5439/postgres npx prisma migrate dev
+    test: vitest run --config vitest.e2e.config.mts
+    build:docker: docker build -f Dockerfile -t k8s-images-manager-server:local ..
+    clean: rm -rf dist node_modules .turbo
+- path: webapp/package.json
+  scripts:
+    build: nuxt build
+    generate: nuxt generate
+    postinstall: nuxt prepare
+    preview: nuxt preview
+    watch: nuxt dev
+    lint: eslint . --fix && pnpm lint:vue:check
+    lint:vue:check: vue-tsc --noEmit || true
+    build:docker: docker build -f Dockerfile.dev -t k8s-images-manager-webapp:dev .. && docker build -f Dockerfile -t k8s-images-manager-webapp:local ..
+    clean: rm -rf dist node_modules .turbo .nuxt .output
+
+# Include tool defaults plus generated Nuxt/Prisma output.
+skipDirNames:
+- node_modules
+- .git
+- dist
+- build
+- coverage
+- .turbo
+- .next
+- .nuxt
+- .output
+- generated
+- target
+
+roots:
+- .

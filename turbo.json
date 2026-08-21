@@ -5,6 +5,13 @@
     "build": {
       "dependsOn": ["^build"]
     },
+    "build:docker": {
+      "cache": false
+    },
+    "webapp#build:docker": {
+      "cache": false,
+      "dependsOn": ["build"]
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },

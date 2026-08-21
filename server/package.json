@@ -4,15 +4,16 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "node --no-warnings --experimental-strip-types src/index.mts",
-    "prewatch": "pnpm migrate",
-    "watch": "node --no-warnings --experimental-strip-types --watch src/index.mts",
     "build": "npx prisma generate && tsc",
+    "build:docker": "docker build -f Dockerfile -t k8s-images-manager-server:local ..",
+    "clean": "rm -rf dist node_modules .turbo",
     "lint": "eslint . --fix",
-    "migrate": "DATABASE_URL=postgresql://postgres:mysecret@localhost:5439/postgres npx prisma migrate dev",
-    "test": "vitest run --config vitest.e2e.config.mts",
     "lint:dockerfile": "hadolint Dockerfile",
-    "clean": "rm -rf dist node_modules .turbo"
+    "migrate": "DATABASE_URL=postgresql://postgres:mysecret@localhost:5439/postgres npx prisma migrate dev",
+    "start": "node --no-warnings --experimental-strip-types src/index.mts",
+    "test": "vitest run --config vitest.e2e.config.mts",
+    "prewatch": "pnpm migrate",
+    "watch": "node --no-warnings --experimental-strip-types --watch src/index.mts"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.5.5",

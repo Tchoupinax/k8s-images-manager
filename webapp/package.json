@@ -1,17 +1,18 @@
 {
   "name": "webapp",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "nuxt build",
+    "build:docker": "docker build -f Dockerfile.dev -t k8s-images-manager-webapp:dev .. && docker build -f Dockerfile -t k8s-images-manager-webapp:local ..",
+    "clean": "rm -rf dist node_modules .turbo .nuxt .output",
     "generate": "nuxt generate",
     "postinstall": "nuxt prepare",
-    "preview": "nuxt preview",
-    "watch": "nuxt dev",
     "lint": "eslint . --fix && pnpm lint:vue:check",
-    "lint:vue:check": "vue-tsc --noEmit || true",
     "lint:dockerfile": "hadolint Dockerfile",
-    "clean": "rm -rf dist node_modules .turbo .nuxt .output"
+    "lint:vue:check": "vue-tsc --noEmit || true",
+    "preview": "nuxt preview",
+    "watch": "nuxt dev"
   },
   "dependencies": {
     "@nuxt/eslint": "1.17.0",

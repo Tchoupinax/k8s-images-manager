@@ -3,15 +3,17 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "build:docker": "turbo run build:docker",
     "check": "gitleaks dir -v && gitleaks git -v",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
     "knip": "knip",
     "lint": "turbo run lint",
     "lint:dockerfile": "turbo run lint:dockerfile",
-    "prewatch": "docker compose up -d",
     "test": "turbo run test",
+    "up": "./scripts/dev/tilt-up.sh",
     "upgrade": "pnpm ncu -p pnpm -w -i --cooldown 3 --format group",
-    "watch": "turbo run watch",
-    "clean": "turbo run clean && rm -rf node_modules .turbo"
+    "prewatch": "docker compose up -d",
+    "watch": "turbo run watch"
   },
   "devDependencies": {
     "knip": "6.32.2",
