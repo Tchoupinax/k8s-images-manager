@@ -16,13 +16,7 @@
         <Button
           icon="pi pi-refresh"
           label="Refresh"
-          class="hidden btn-aqua sm:inline-flex"
-          @click="refresh()"
-        />
-        <Button
-          icon="pi pi-refresh"
-          class="inline-flex btn-aqua sm:hidden"
-          aria-label="Refresh"
+          class="btn-aqua"
           @click="refresh()"
         />
       </div>
@@ -203,7 +197,8 @@ const pastelColors: string[] = [
 
 const $config = useRuntimeConfig();
 const { data, pending, error, refresh } = useFetch<ImageInfo[]>(
-  `${$config.public.serverEndpoint}/api/images`,
+  () => withServerEndpoint("/api/images", $config.public.serverEndpoint),
+  { server: false },
 );
 
 const selectedImages = ref<string[]>([]);

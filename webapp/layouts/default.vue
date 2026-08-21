@@ -151,9 +151,10 @@ const onPullImageRef = async () => {
   if (isPulling.value) {return;}
   isPulling.value = true;
   try {
-    const url = new URL(`${$config.public.serverEndpoint}/api/images/pull`);
-    url.searchParams.set("repository", image.repository);
-    url.searchParams.set("tag", image.tag);
+    const url = serverEndpointUrl("/api/images/pull", $config.public.serverEndpoint, {
+      repository: image.repository,
+      tag: image.tag,
+    });
 
     const res = await fetch(url.toString(), { method: "POST" });
     if (!res.ok) {

@@ -11,7 +11,9 @@ RUN npm i -g pnpm
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY server/package.json server/
 
-RUN pnpm install --frozen-lockfile --filter=server
+# hadolint ignore=DL3042
+RUN --mount=type=cache,id=pnpm-store,target=/root/.pnpm-store \
+    pnpm install --frozen-lockfile --store-dir /root/.pnpm-store --filter=server
 
 WORKDIR /app/server
 

@@ -11,8 +11,22 @@ permissions:
   actions: write
 
 jobs:
+  changes:
+    name: Detect webapp changes
+    runs-on: ubuntu-latest
+    outputs:
+      webapp: ${{ steps.filter.outputs.changed }}
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+    - id: filter
+      run: bash .github/scripts/changed-since-prev-tag.sh '^(webapp/|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|\.dockerignore|\.github/workflows/tag-docker-webapp\.yml)'
+
   webapp-build:
     name: "📊 Build webapp"
+    needs: changes
+    if: needs.changes.outputs.webapp == 'true'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -46,7 +60,8 @@ jobs:
   webapp-docker:
     name: "📊 Dockerize webapp"
     runs-on: ubuntu-latest
-    needs: webapp-build
+    needs: [changes, webapp-build]
+    if: needs.changes.outputs.webapp == 'true'
     steps:
     - name: Checkout repository
       uses: actions/checkout@v7

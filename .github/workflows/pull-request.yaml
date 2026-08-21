@@ -6,6 +6,39 @@ on:
     - "*"
 
 jobs:
+  changes:
+    name: Detect changed sources
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      webapp: ${{ steps.filter.outputs.webapp }}
+      server: ${{ steps.filter.outputs.server }}
+      agent: ${{ steps.filter.outputs.agent }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: |
+          webapp:
+            - "webapp/**"
+            - "package.json"
+            - "pnpm-lock.yaml"
+            - "pnpm-workspace.yaml"
+            - ".github/workflows/pull-request.yaml"
+          server:
+            - "server/**"
+            - "package.json"
+            - "pnpm-lock.yaml"
+            - "pnpm-workspace.yaml"
+            - ".github/workflows/pull-request.yaml"
+          agent:
+            - "agent/**"
+            - ".github/workflows/pull-request.yaml"
+
   gitleaks:
     name: "🔐 Scan for secrets"
     runs-on: ubuntu-latest
@@ -34,6 +67,8 @@ jobs:
 
   build-ui:
     name: "🟢 Build user interface (Nuxt.js project)"
+    needs: changes
+    if: needs.changes.outputs.webapp == 'true'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -55,6 +90,8 @@ jobs:
 
   build-server:
     name: "🟣 Build server and generate prisma"
+    needs: changes
+    if: needs.changes.outputs.server == 'true'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -91,6 +128,8 @@ jobs:
 
   build-agent:
     name: "🔵 Build agent binary"
+    needs: changes
+    if: needs.changes.outputs.agent == 'true'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v7

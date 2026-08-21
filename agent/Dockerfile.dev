@@ -10,7 +10,12 @@ RUN apt-get update \
 COPY agent/Cargo.toml agent/Cargo.lock ./
 COPY agent/src src
 
-RUN cargo build --release
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    --mount=type=cache,target=/tmp/cargo-target \
+    CARGO_TARGET_DIR=/tmp/cargo-target cargo build --release \
+ && mkdir -p /out \
+ && cp /tmp/cargo-target/release/k8s-images-manager-agent /out/k8s-images-manager-agent
 
 FROM debian:bookworm-slim
 
@@ -45,7 +50,7 @@ RUN chmod 755 /usr/local/bin/crictl-images /usr/local/bin/crictl-rmi /usr/local/
  && chown root:root /usr/local/bin/crictl-images /usr/local/bin/crictl-rmi /usr/local/bin/crictl-pull \
       /etc/sudoers.d/k8simagemanager-crictl
 
-COPY --from=builder /app/target/release/k8s-images-manager-agent /usr/bin/k8s-images-manager-agent/k8s-images-manager-agent
+COPY --from=builder /out/k8s-images-manager-agent /usr/bin/k8s-images-manager-agent/k8s-images-manager-agent
 
 RUN chown -R k8simagemanager:k8simagemanager /usr/bin/k8s-images-manager-agent
 
