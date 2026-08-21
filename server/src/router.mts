@@ -17,6 +17,31 @@ function imageKey(repository: string, tag: string): string {
   return `${repository}:${tag}`;
 }
 
+async function queueImageDeletion(
+  prisma: PrismaClient,
+  repository: string,
+  tag: string,
+) {
+  await prisma.pendingPullAck.deleteMany({
+    where: { repository, tag },
+  });
+  await prisma.pendingPull.deleteMany({
+    where: { repository, tag },
+  });
+
+  await prisma.pendingDeletion.upsert({
+    where: {
+      repository_tag: { repository, tag },
+    },
+    create: { repository, tag },
+    update: {},
+  });
+
+  await prisma.image.deleteMany({
+    where: { repository, tag },
+  });
+}
+
 async function cleanupDeletions(prisma: PrismaClient) {
   const pending = await prisma.pendingDeletion.findMany();
   for (const { repository, tag } of pending) {
@@ -195,26 +220,27 @@ export function router(fastify: FastifyInstance) {
           return;
         }
 
-        await prisma.pendingPullAck.deleteMany({
-          where: { repository, tag },
-        });
-        await prisma.pendingPull.deleteMany({
-          where: { repository, tag },
-        });
-
-        await prisma.pendingDeletion.upsert({
-          where: {
-            repository_tag: { repository, tag },
-          },
-          create: { repository, tag },
-          update: {},
-        });
-
-        await prisma.image.deleteMany({
-          where: { repository, tag },
-        });
+        await queueImageDeletion(prisma, repository, tag);
 
         reply.code(200).send({ ok: true });
+      });
+
+      app.delete("/images/all", async (request, reply) => {
+        const prisma = request.server.prisma;
+        const images = await prisma.image.findMany({
+          select: { repository: true, tag: true },
+        });
+        const unique = [
+          ...new Map(
+            images.map(img => [imageKey(img.repository, img.tag), img]),
+          ).values(),
+        ];
+
+        for (const { repository, tag } of unique) {
+          await queueImageDeletion(prisma, repository, tag);
+        }
+
+        reply.code(200).send({ ok: true, count: unique.length });
       });
 
       app.post("/images/pull", async (request, reply) => {

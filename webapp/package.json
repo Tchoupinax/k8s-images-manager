@@ -12,7 +12,8 @@
     "lint:dockerfile": "hadolint Dockerfile",
     "lint:vue:check": "vue-tsc --noEmit || true",
     "preview": "nuxt preview",
-    "watch": "nuxt dev"
+    "watch": "nuxt dev",
+    "watch:prod": "NUXT_PUBLIC_SERVER_ENDPOINT=https://k8s-images-manager.mysupercloud.dev nuxt dev"
   },
   "dependencies": {
     "@nuxt/eslint": "1.17.0",

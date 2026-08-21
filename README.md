@@ -27,6 +27,16 @@ Tilt builds images, pushes them to the cluster registry (`localhost:5050`), and 
 
 Tear down the Tilt resources with `./scripts/dev/tilt-down.sh`. Delete the cluster with `./scripts/dev/cluster-delete.sh`.
 
+### UI against production API
+
+Start only the Nuxt app locally, talking to the production API:
+
+```bash
+pnpm ui
+```
+
+Opens the usual Nuxt dev server (http://localhost:3000) with `NUXT_PUBLIC_SERVER_ENDPOINT=https://k8s-images-manager.mysupercloud.dev`. Pull and delete requests hit production.
+
 ### Docker Compose (server only)
 
 The server uses PostgreSQL and Prisma. To run locally with Docker:

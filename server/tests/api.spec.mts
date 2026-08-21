@@ -133,6 +133,71 @@ describe("e2e /api/images", () => {
     });
   });
 
+  it("DELETE /images/all queues removal of every unique image", async () => {
+    await testWithApp(async ({ inject, prisma }) => {
+      await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-a",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([
+          {
+            repository: "docker.io/one",
+            tag: "v1",
+            digest: "sha256:aaa",
+            size: "10MB",
+            date: new Date().toISOString(),
+          },
+          {
+            repository: "docker.io/two",
+            tag: "v2",
+            digest: "sha256:bbb",
+            size: "20MB",
+            date: new Date().toISOString(),
+          },
+        ]),
+      });
+      await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-b",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([
+          {
+            repository: "docker.io/one",
+            tag: "v1",
+            digest: "sha256:aaa",
+            size: "10MB",
+            date: new Date().toISOString(),
+          },
+        ]),
+      });
+
+      const deleteRes = await inject({
+        method: "DELETE",
+        url: "/api/images/all",
+      });
+      expect(deleteRes.statusCode).toBe(200);
+      const deleteJson = JSON.parse(deleteRes.payload ?? "{}") as {
+        ok: boolean;
+        count: number;
+      };
+      expect(deleteJson.ok).toBe(true);
+      expect(deleteJson.count).toBe(2);
+
+      const pending = await prisma.pendingDeletion.findMany();
+      expect(pending).toHaveLength(2);
+      expect(
+        pending.map(p => `${p.repository}:${p.tag}`).sort(),
+      ).toEqual(["docker.io/one:v1", "docker.io/two:v2"]);
+      expect(await prisma.image.count()).toBe(0);
+    });
+  });
+
   it("POST /images/pull queues a pull on all nodes", async () => {
     await testWithApp(async ({ inject, prisma }) => {
       const pullRes = await inject({
