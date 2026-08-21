@@ -1,0 +1,23 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: k8s-images-manager
+
+servers: 1
+agents: 1
+image: docker.io/rancher/k3s:v1.33.3-k3s1
+
+ports:
+  - port: 80:80
+    nodeFilters:
+      - loadbalancer
+
+registries:
+  create:
+    name: k8s-images-manager-registry
+    hostPort: "5050"
+  config: |
+    mirrors:
+      "k8s-images-manager-registry:5000":
+        endpoint:
+          - http://k8s-images-manager-registry:5000

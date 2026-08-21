@@ -1,8 +1,11 @@
 [tools]
-cargo = "0.93.0"
 gitleaks = "8.30.1"
-go = "1.26.5"
+go = "1.27"
 goreleaser = "latest"
 hadolint = "2.15.1"
+helm = "latest"
+k3d = "latest"
+kubectl = "latest"
 node = "25"
 rust = "1.97.1"
+tilt = "latest"

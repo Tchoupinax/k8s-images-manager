@@ -10,6 +10,25 @@
 
 ## Development
 
+### Kubernetes (Tilt + k3d)
+
+This is the local environment used to run the full stack (Postgres, server, webapp, and node agents) inside a k3d cluster.
+
+```bash
+mise install
+./scripts/dev/tilt-up.sh
+```
+
+Tilt builds images, pushes them to the cluster registry (`localhost:5050`), and installs the Helm chart with `chart/values.local.yaml`.
+
+- Web UI: http://k8s-images-manager.127.0.0.1.nip.io
+- API: http://api.k8s-images-manager.127.0.0.1.nip.io
+- Tilt UI: http://localhost:10350
+
+Tear down the Tilt resources with `./scripts/dev/tilt-down.sh`. Delete the cluster with `./scripts/dev/cluster-delete.sh`.
+
+### Docker Compose (server only)
+
 The server uses PostgreSQL and Prisma. To run locally with Docker:
 
 ```bash

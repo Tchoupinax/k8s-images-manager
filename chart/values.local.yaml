@@ -1,0 +1,56 @@
+postgres:
+  enabled: true
+
+server:
+  fullnameOverride: server
+  image:
+    repository: server
+    pullPolicy: Always
+    tag: "dev"
+
+  env:
+    POSTGRES_HOSTNAME: postgres
+    POSTGRES_PORT: "5432"
+    POSTGRES_USERNAME: postgres
+    POSTGRES_PASSWORD: mysecret
+    POSTGRES_DATABASE: postgres
+
+  ingress:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: api.k8s-images-manager.127.0.0.1.nip.io
+        paths:
+          - path: /
+            pathType: Prefix
+
+agents:
+  fullnameOverride: agents
+  image:
+    repository: agent
+    pullPolicy: Always
+    tag: "dev"
+
+  config:
+    pushFrequencyInSecond: 15
+    logLevel: debug
+
+webapp:
+  enabled: true
+  fullnameOverride: webapp
+  image:
+    repository: webapp
+    pullPolicy: Always
+    tag: "dev"
+
+  config:
+    serverUrl: http://api.k8s-images-manager.127.0.0.1.nip.io
+
+  ingress:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: k8s-images-manager.127.0.0.1.nip.io
+        paths:
+          - path: /
+            pathType: Prefix

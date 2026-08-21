@@ -14,7 +14,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       serverEndpoint:
-        process.env.SERVER_URL ?? "https://k8s-images-manager.mysupercloud.dev",
+        process.env.NUXT_PUBLIC_SERVER_ENDPOINT
+        ?? process.env.SERVER_URL
+        ?? "https://k8s-images-manager.mysupercloud.dev",
     },
   },
   css: ["~/assets/theme-overrides.css"],
