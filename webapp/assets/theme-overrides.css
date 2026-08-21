@@ -157,3 +157,108 @@
   border-color: rgb(14 165 233) !important;
   box-shadow: 0 0 0 1px rgb(14 165 233) !important;
 }
+
+/* Buttons: neo-brutalist chrome over Aura’s default green */
+.p-button {
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  border: 2px solid #000 !important;
+  box-shadow: 3px 3px 0 #000 !important;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background-color 0.12s ease,
+    filter 0.12s ease !important;
+}
+
+.p-button:not(:disabled):hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #000 !important;
+}
+
+.p-button:not(:disabled):active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #000 !important;
+}
+
+.p-button:focus-visible {
+  outline: 3px solid #4a0aaa !important;
+  outline-offset: 2px !important;
+}
+
+.p-button:disabled {
+  opacity: 0.55 !important;
+  box-shadow: 2px 2px 0 #000 !important;
+}
+
+.p-button.p-button-icon-only {
+  width: 2rem !important;
+  height: 2rem !important;
+  padding: 0 !important;
+}
+
+.p-button .p-button-icon {
+  font-size: 0.95rem !important;
+}
+
+.p-button.btn-aqua {
+  background: #4ec8d8 !important;
+  color: #0f172a !important;
+  border-color: #000 !important;
+}
+
+.p-button.btn-aqua .p-button-label,
+.p-button.btn-aqua .p-button-icon {
+  color: #0f172a !important;
+}
+
+.p-button.btn-aqua:not(:disabled):hover {
+  background: #2eb8cb !important;
+  filter: saturate(1.08);
+}
+
+.p-button.btn-aqua:not(:disabled):active {
+  background: #22a6b8 !important;
+}
+
+.p-button.btn-ink {
+  background: #4a0aaa !important;
+  color: #fff !important;
+}
+
+.p-button.btn-ink .p-button-label,
+.p-button.btn-ink .p-button-icon {
+  color: #fff !important;
+}
+
+.p-button.btn-ink:not(:disabled):hover {
+  background: #3b0888 !important;
+}
+
+.p-button.btn-danger {
+  background: #ef4444 !important;
+  color: #fff !important;
+}
+
+.p-button.btn-danger .p-button-label,
+.p-button.btn-danger .p-button-icon {
+  color: #fff !important;
+}
+
+.p-button.btn-danger:not(:disabled):hover {
+  background: #dc2626 !important;
+}
+
+.p-button.btn-ghost {
+  background: #fff !important;
+  color: #0f172a !important;
+}
+
+.p-button.btn-ghost .p-button-label,
+.p-button.btn-ghost .p-button-icon {
+  color: #0f172a !important;
+}
+
+.p-button.btn-ghost:not(:disabled):hover {
+  background: #f8fafc !important;
+}

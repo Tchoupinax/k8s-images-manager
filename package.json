@@ -10,6 +10,7 @@
     "lint": "turbo run lint",
     "lint:dockerfile": "turbo run lint:dockerfile",
     "test": "turbo run test",
+    "ui": "pnpm --filter webapp watch:prod",
     "up": "./scripts/dev/tilt-up.sh",
     "upgrade": "pnpm ncu -p pnpm -w -i --cooldown 3 --format group",
     "prewatch": "docker compose up -d",

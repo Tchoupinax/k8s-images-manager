@@ -12,20 +12,33 @@
         </p>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
+        <Button
+          icon="pi pi-trash"
+          label="Clean"
+          class="hidden btn-danger sm:inline-flex"
+          :loading="isCleaning"
+          :disabled="!allImages.length"
+          @click="onCleanAll()"
+        />
+        <Button
+          icon="pi pi-trash"
+          class="inline-flex btn-danger sm:hidden"
+          aria-label="Clean all images"
+          :loading="isCleaning"
+          :disabled="!allImages.length"
+          @click="onCleanAll()"
+        />
         <Button
           icon="pi pi-refresh"
           label="Refresh"
-          rounded
-          raised
-          class="hidden sm:inline-flex bg-[#4EC8D8] border border-black text-slate-900 hover:bg-[#3bb6c7]"
+          class="hidden btn-aqua sm:inline-flex"
           @click="refresh()"
         />
         <Button
           icon="pi pi-refresh"
-          rounded
-          raised
-          class="inline-flex sm:hidden bg-[#4EC8D8] border border-black text-slate-900 hover:bg-[#3bb6c7]"
+          class="inline-flex btn-aqua sm:hidden"
+          aria-label="Refresh"
           @click="refresh()"
         />
       </div>
@@ -147,9 +160,7 @@
         <Button
           label="Retry"
           icon="pi pi-refresh"
-          rounded
-          raised
-          class="mt-2 bg-[#4EC8D8] border border-black text-slate-900 hover:bg-[#3bb6c7]"
+          class="mt-2 btn-aqua"
           @click="refresh()"
         />
       </div>
@@ -208,6 +219,24 @@
                   ></i>
                 </button>
               </th>
+              <th class="px-4 py-3 font-semibold">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1"
+                  @click="toggleSort('nodes')"
+                >
+                  <span>Nodes</span>
+                  <i
+                    v-if="sortBy === 'nodes'"
+                    class="pi text-[10px]"
+                    :class="
+                      sortDirection === 'asc'
+                        ? 'pi-sort-amount-up'
+                        : 'pi-sort-amount-down'
+                    "
+                  ></i>
+                </button>
+              </th>
               <th class="px-4 py-3 font-semibold">Last seen</th>
               <th class="px-4 py-3 font-semibold">Digest</th>
               <th class="px-4 py-3 font-semibold text-right">Actions</th>
@@ -249,6 +278,27 @@
               </td>
 
               <td class="px-4 py-3 align-top">
+                <span
+                  v-tooltip.top="
+                    image.nodes.length
+                      ? image.nodes.join(', ')
+                      : 'Not reported on any node'
+                  "
+                  class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                  :class="
+                    totalNodes && image.nodes.length === totalNodes
+                      ? 'bg-emerald-100 text-emerald-900'
+                      : 'bg-slate-100 text-slate-800'
+                  "
+                >
+                  {{ image.nodes.length }}
+                  <span v-if="totalNodes" class="ml-0.5 font-medium text-slate-500">
+                    / {{ totalNodes }}
+                  </span>
+                </span>
+              </td>
+
+              <td class="px-4 py-3 align-top">
                 <span class="text-xs whitespace-nowrap text-slate-700">
                   {{ image.lastSeen ? format(image.lastSeen) : "—" }}
                 </span>
@@ -268,14 +318,14 @@
                   <Button
                     v-tooltip.top="'Pull this image on all nodes'"
                     icon="pi pi-download"
-                    class="!h-8 !w-8 !p-0 bg-[#4A0AAA] border border-black text-white hover:bg-[#3b0888]"
+                    class="btn-ink"
                     :loading="isPulling(image)"
                     @click="onPullImage(image)"
                   />
                   <Button
                     v-tooltip.top="'Remove this image on all nodes'"
                     icon="pi pi-trash"
-                    class="!h-8 !w-8 !p-0 bg-red-500 border border-black text-white hover:bg-red-600"
+                    class="btn-danger"
                     :loading="isDeleting(image)"
                     @click="onRemoveImage(image)"
                   />
@@ -407,7 +457,7 @@ type RemovableImage = {
   digest?: string;
 };
 
-const sortBy = ref<"name" | "size">("name");
+const sortBy = ref<"name" | "size" | "nodes">("name");
 const sortDirection = ref<"asc" | "desc">("asc");
 
 const parseSize = (size: string | undefined) => {
@@ -431,6 +481,8 @@ const sortedGroupedImages = computed(() => {
       cmp = a.repository.localeCompare(b.repository);
     } else if (sortBy.value === "size") {
       cmp = parseSize(a.size) - parseSize(b.size);
+    } else if (sortBy.value === "nodes") {
+      cmp = a.nodes.length - b.nodes.length;
     }
 
     return sortDirection.value === "asc" ? cmp : -cmp;
@@ -439,7 +491,7 @@ const sortedGroupedImages = computed(() => {
   return items;
 });
 
-const toggleSort = (field: "name" | "size") => {
+const toggleSort = (field: "name" | "size" | "nodes") => {
   if (sortBy.value === field) {
     sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
   } else {
@@ -450,6 +502,7 @@ const toggleSort = (field: "name" | "size") => {
 
 const deletingKey = ref<string | null>(null);
 const pullingKey = ref<string | null>(null);
+const isCleaning = ref(false);
 
 const makeImageKey = (image: RemovableImage) =>
   `${image.repository}:${image.tag}:${image.digest ?? ""}`;
@@ -516,12 +569,10 @@ const onRemoveImage = async (image: RemovableImage) => {
 
     toast.add({
       severity: "success",
-      summary: "Image removed",
-      detail: `Removed ${image.repository}:${image.tag} on all nodes`,
+      summary: "Removal requested",
+      detail: `Removing ${image.repository}:${image.tag} on all nodes`,
       life: 3500,
     });
-
-    await refresh();
   } catch (e) {
     if (e instanceof Error) {
       toast.add({
@@ -533,6 +584,39 @@ const onRemoveImage = async (image: RemovableImage) => {
     }
   } finally {
     deletingKey.value = null;
+  }
+};
+
+const onCleanAll = async () => {
+  if (isCleaning.value || !allImages.value.length) {return;}
+
+  isCleaning.value = true;
+  try {
+    const res = await fetch(
+      `${$config.public.serverEndpoint}/api/images/all`,
+      { method: "DELETE" },
+    );
+    if (!res.ok) {
+      throw new Error(`Failed with status ${res.status}`);
+    }
+
+    toast.add({
+      severity: "success",
+      summary: "Clean requested",
+      detail: "Removing every image on every node",
+      life: 4000,
+    });
+  } catch (e) {
+    if (e instanceof Error) {
+      toast.add({
+        severity: "error",
+        summary: "Clean failed",
+        detail: e.message,
+        life: 4500,
+      });
+    }
+  } finally {
+    isCleaning.value = false;
   }
 };
 </script>

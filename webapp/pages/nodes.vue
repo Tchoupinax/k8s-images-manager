@@ -15,9 +15,14 @@
       <div class="flex items-center gap-2">
         <Button
           icon="pi pi-refresh"
-          rounded
-          raised
-          class="inline-flex bg-[#4EC8D8] border border-black text-slate-900 hover:bg-[#3bb6c7]"
+          label="Refresh"
+          class="hidden btn-aqua sm:inline-flex"
+          @click="refresh()"
+        />
+        <Button
+          icon="pi pi-refresh"
+          class="inline-flex btn-aqua sm:hidden"
+          aria-label="Refresh"
           @click="refresh()"
         />
       </div>
@@ -93,9 +98,7 @@
         <Button
           label="Retry"
           icon="pi pi-refresh"
-          rounded
-          raised
-          class="mt-2 bg-[#4EC8D8] border border-black text-slate-900 hover:bg-[#3bb6c7]"
+          class="mt-2 btn-aqua"
           @click="refresh()"
         />
       </div>

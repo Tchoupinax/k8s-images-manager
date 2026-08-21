@@ -31,6 +31,7 @@ scriptsFiles:
 - path: package.json
   scripts:
     up: ./scripts/dev/tilt-up.sh
+    ui: pnpm --filter webapp watch:prod
     build: turbo run build
     build:docker: turbo run build:docker
     check: gitleaks dir -v && gitleaks git -v
@@ -66,6 +67,7 @@ scriptsFiles:
     postinstall: nuxt prepare
     preview: nuxt preview
     watch: nuxt dev
+    watch:prod: NUXT_PUBLIC_SERVER_ENDPOINT=https://k8s-images-manager.mysupercloud.dev nuxt dev
     lint: eslint . --fix && pnpm lint:vue:check
     lint:vue:check: vue-tsc --noEmit || true
     build:docker: docker build -f Dockerfile.dev -t k8s-images-manager-webapp:dev .. && docker build -f Dockerfile -t k8s-images-manager-webapp:local ..

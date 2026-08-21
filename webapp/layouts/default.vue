@@ -18,7 +18,7 @@
         <NuxtLink
           to="/"
           :class="[
-            'bg-[#4EC8D8] flex size-24 flex-col justify-center rounded-xl border-4 border-black p-2 text-center text-slate-900 shadow-[4px_4px_0_0_#000] transition-transform duration-150 hover:-translate-y-1 hover:shadow-[6px_6px_0_0_#000]',
+            'bg-[#4EC8D8] flex size-24 flex-col justify-center rounded-xl border-4 border-black p-2 text-center text-slate-900 shadow-[4px_4px_0_0_#000] transition-transform duration-150 hover:-translate-y-1 hover:bg-[#2eb8cb] hover:shadow-[6px_6px_0_0_#000] active:translate-y-0 active:shadow-[2px_2px_0_0_#000]',
             isActive('/') && 'ring-4 ring-offset-4 ring-black ring-offset-sky-200'
           ]"
         >
@@ -77,16 +77,13 @@
       <template #footer>
         <Button
           label="Cancel"
-          rounded
-          class="border border-black bg-white text-slate-900"
+          class="btn-ghost"
           @click="pullModalOpen = false"
         />
         <Button
           label="Pull"
           icon="pi pi-download"
-          rounded
-          raised
-          class="bg-[#4A0AAA] border border-black text-white hover:bg-[#3b0888]"
+          class="btn-ink"
           :loading="isPulling"
           @click="onPullImageRef()"
         />
