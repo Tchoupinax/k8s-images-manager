@@ -15,8 +15,22 @@ permissions:
   id-token: write
 
 jobs:
+  changes:
+    name: Detect chart changes
+    runs-on: ubuntu-latest
+    outputs:
+      chart: ${{ steps.filter.outputs.changed }}
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+    - id: filter
+      run: bash .github/scripts/changed-since-prev-tag.sh '^chart/|\.github/workflows/helm-chart\.yaml'
+
   build-helm-chart:
     name: "Push helm chart"
+    needs: changes
+    if: needs.changes.outputs.chart == 'true'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v7

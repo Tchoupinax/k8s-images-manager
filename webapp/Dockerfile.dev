@@ -7,7 +7,9 @@ RUN npm i -g pnpm
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY webapp/package.json webapp/
 
-RUN pnpm install --frozen-lockfile --filter=webapp
+# hadolint ignore=DL3042
+RUN --mount=type=cache,id=pnpm-store,target=/root/.pnpm-store \
+    pnpm install --frozen-lockfile --store-dir /root/.pnpm-store --filter=webapp
 
 COPY webapp webapp
 
