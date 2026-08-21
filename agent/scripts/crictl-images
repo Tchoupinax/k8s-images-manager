@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+set -eu
+exec /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock images -o json

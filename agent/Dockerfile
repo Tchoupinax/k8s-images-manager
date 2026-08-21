@@ -6,7 +6,7 @@
 # alpine 3.23.0
 # FROM alpine@sha256:51183f2cfa6320055da30872f211093f9ff1d3cf06f39a0bdb212314c5dc7375
 
-FROM ubuntu:26.04
+FROM ubuntu:24.04
 
 ARG TARGETPLATFORM
 ARG TARGETARCH
@@ -18,8 +18,6 @@ RUN groupadd --system --gid 999 k8simagemanager && \
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     ca-certificates \
-    curl \
-    libsasl2-modules \
     sudo \
     wget \
  && case "${TARGETARCH}" in \
@@ -32,7 +30,7 @@ RUN apt-get update \
  && chmod +x /usr/local/bin/crictl \
  && printf '%s\n' '#!/usr/bin/env sh' \
     'set -eu' \
-    'exec /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock images' \
+    'exec /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock images -o json' \
     > /usr/local/bin/crictl-images \
  && chmod 755 /usr/local/bin/crictl-images \
  && chown root:root /usr/local/bin/crictl-images \
@@ -47,8 +45,21 @@ RUN apt-get update \
  && chmod 755 /usr/local/bin/crictl-rmi \
  && chown root:root /usr/local/bin/crictl-rmi \
  && printf '%s\n' \
+    '#!/usr/bin/env sh' \
+    'set -eu' \
+    'IFS= read -r ref' \
+    'if [ -z "$ref" ]; then' \
+    '  echo "usage: crictl-pull reads image ref from stdin" >&2' \
+    '  exit 2' \
+    'fi' \
+    'exec /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock pull "$ref"' \
+    > /usr/local/bin/crictl-pull \
+ && chmod 755 /usr/local/bin/crictl-pull \
+ && chown root:root /usr/local/bin/crictl-pull \
+ && printf '%s\n' \
     'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-images' \
     'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-rmi *' \
+    'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-pull' \
     > /etc/sudoers.d/k8simagemanager-crictl \
  && chmod 440 /etc/sudoers.d/k8simagemanager-crictl \
  && rm -f "crictl-v1.35.0-linux-${CRIC_ARCH}.tar.gz" \

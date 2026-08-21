@@ -14,7 +14,7 @@ pub struct ImageInfo {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct DeletionCommand {
+pub struct ImageCommand {
     pub repository: String,
     pub tag: String,
 }
@@ -23,7 +23,9 @@ pub struct DeletionCommand {
 pub struct ServerResponse {
     pub ok: bool,
     #[serde(default)]
-    pub deletions: Vec<DeletionCommand>,
+    pub deletions: Vec<ImageCommand>,
+    #[serde(default)]
+    pub pulls: Vec<ImageCommand>,
 }
 
 pub async fn send_to_server(
@@ -36,7 +38,7 @@ pub async fn send_to_server(
     let client = Client::new();
     let response = match client
         .post(server_url)
-        .header("hostname", hostname)
+        .header("hostname", hostname.as_str())
         .json(&images)
         .send()
         .await
@@ -59,17 +61,16 @@ pub async fn send_to_server(
             }
         };
         info!(
-            "Received {} image deletion command(s) from server",
-            body.deletions.len()
+            "Received {} image deletion command(s) and {} pull command(s) from server",
+            body.deletions.len(),
+            body.pulls.len()
         );
-        for deletion in &body.deletions {
+
+        for deletion in body.deletions {
             info!(
                 "Deletion requested for image {}:{}",
                 deletion.repository, deletion.tag
             );
-        }
-        
-        for deletion in body.deletions {
             if let Err(e) =
                 commands::execute_remove_image_command(&deletion.repository, &deletion.tag)
             {
@@ -79,9 +80,59 @@ pub async fn send_to_server(
                 );
             }
         }
+
+        let mut acked_pulls: Vec<ImageCommand> = Vec::new();
+        for pull in body.pulls {
+            info!(
+                "Pull requested for image {}:{}",
+                pull.repository, pull.tag
+            );
+            match commands::execute_pull_image_command(&pull.repository, &pull.tag) {
+                Ok(()) => acked_pulls.push(pull),
+                Err(e) => {
+                    error!(
+                        "Error while trying to pull image {}:{} - {}",
+                        pull.repository, pull.tag, e
+                    );
+                }
+            }
+        }
+
+        if !acked_pulls.is_empty() {
+            ack_pulls(&client, &hostname, &base_url, &acked_pulls).await;
+        }
     } else {
         error!("Failed to send data: {}", response.status());
     }
 
     Ok(())
+}
+
+async fn ack_pulls(
+    client: &Client,
+    hostname: &str,
+    base_url: &str,
+    pulls: &[ImageCommand],
+) {
+    let server_url = format!("{base_url}/api/images/pull/ack");
+    match client
+        .post(server_url)
+        .header("hostname", hostname)
+        .json(pulls)
+        .send()
+        .await
+    {
+        Ok(response) if response.status().is_success() => {
+            info!(
+                "Acknowledged {} pull command(s) to server",
+                pulls.len()
+            );
+        }
+        Ok(response) => {
+            error!("Failed to acknowledge pulls: {}", response.status());
+        }
+        Err(e) => {
+            error!("Failed to acknowledge pulls: {}", e);
+        }
+    }
 }

@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+set -eu
+IFS= read -r ref
+if [ -z "$ref" ]; then
+  echo "usage: crictl-pull reads image ref from stdin" >&2
+  exit 2
+fi
+exec /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock pull "$ref"

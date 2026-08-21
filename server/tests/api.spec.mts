@@ -132,4 +132,174 @@ describe("e2e /api/images", () => {
       expect(list).toHaveLength(0);
     });
   });
+
+  it("POST /images/pull queues a pull on all nodes", async () => {
+    await testWithApp(async ({ inject, prisma }) => {
+      const pullRes = await inject({
+        method: "POST",
+        url: "/api/images/pull?repository=docker.io/library/nginx&tag=alpine",
+      });
+      expect(pullRes.statusCode).toBe(200);
+
+      const pendingPull = await prisma.pendingPull.findUnique({
+        where: {
+          repository_tag: {
+            repository: "docker.io/library/nginx",
+            tag: "alpine",
+          },
+        },
+      });
+      expect(pendingPull).not.toBeNull();
+
+      const registerRes = await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-a",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([]),
+      });
+      expect(registerRes.statusCode).toBe(200);
+      const registerJson = JSON.parse(registerRes.payload ?? "{}") as {
+        ok: boolean;
+        pulls: Array<{ repository: string; tag: string }>;
+      };
+      expect(registerJson.ok).toBe(true);
+      expect(registerJson.pulls).toEqual([
+        { repository: "docker.io/library/nginx", tag: "alpine" },
+      ]);
+    });
+  });
+
+  it("pull ACK stops the server from requesting the same pull", async () => {
+    await testWithApp(async ({ inject, prisma }) => {
+      await inject({
+        method: "POST",
+        url: "/api/images/pull?repository=debian&tag=12",
+      });
+
+      const firstRegister = await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-a",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([]),
+      });
+      expect(firstRegister.statusCode).toBe(200);
+      expect(
+        JSON.parse(firstRegister.payload ?? "{}") as {
+          pulls: Array<{ repository: string; tag: string }>;
+        },
+      ).toMatchObject({
+        pulls: [{ repository: "debian", tag: "12" }],
+      });
+
+      const ackRes = await inject({
+        method: "POST",
+        url: "/api/images/pull/ack",
+        headers: {
+          hostname: "node-a",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([{ repository: "debian", tag: "12" }]),
+      });
+      expect(ackRes.statusCode).toBe(200);
+
+      const pendingPull = await prisma.pendingPull.findUnique({
+        where: {
+          repository_tag: { repository: "debian", tag: "12" },
+        },
+      });
+      expect(pendingPull).toBeNull();
+
+      const secondRegister = await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-a",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([]),
+      });
+      expect(secondRegister.statusCode).toBe(200);
+      expect(
+        JSON.parse(secondRegister.payload ?? "{}") as {
+          pulls: Array<{ repository: string; tag: string }>;
+        },
+      ).toMatchObject({ pulls: [] });
+    });
+  });
+
+  it("pull ACK from one node still requests the pull on other nodes", async () => {
+    await testWithApp(async ({ inject }) => {
+      await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-a",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([]),
+      });
+      await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-b",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([]),
+      });
+      await inject({
+        method: "POST",
+        url: "/api/images/pull?repository=debian&tag=latest",
+      });
+
+      const ackRes = await inject({
+        method: "POST",
+        url: "/api/images/pull/ack",
+        headers: {
+          hostname: "node-a",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([{ repository: "debian", tag: "latest" }]),
+      });
+      expect(ackRes.statusCode).toBe(200);
+
+      const nodeA = await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-a",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([]),
+      });
+      const nodeB = await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-b",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([]),
+      });
+
+      expect(
+        JSON.parse(nodeA.payload ?? "{}") as {
+          pulls: Array<{ repository: string; tag: string }>;
+        },
+      ).toMatchObject({ pulls: [] });
+      expect(
+        JSON.parse(nodeB.payload ?? "{}") as {
+          pulls: Array<{ repository: string; tag: string }>;
+        },
+      ).toMatchObject({
+        pulls: [{ repository: "debian", tag: "latest" }],
+      });
+    });
+  });
 });

@@ -12,10 +12,11 @@ datasource db {
 }
 
 model Node {
-  id        String   @id @default(uuid())
-  hostname  String   @unique
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id        String           @id @default(uuid())
+  hostname  String           @unique
+  updatedAt DateTime         @updatedAt @map("updated_at")
   images    Image[]
+  pullAcks  PendingPullAck[]
 
   @@map("nodes")
 }
@@ -40,4 +41,24 @@ model PendingDeletion {
 
   @@unique([repository, tag])
   @@map("pending_deletions")
+}
+
+model PendingPull {
+  id         String   @id @default(uuid())
+  repository String
+  tag        String
+
+  @@unique([repository, tag])
+  @@map("pending_pulls")
+}
+
+model PendingPullAck {
+  id         String @id @default(uuid())
+  nodeId     String @map("node_id")
+  node       Node   @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  repository String
+  tag        String
+
+  @@unique([nodeId, repository, tag])
+  @@map("pending_pull_acks")
 }

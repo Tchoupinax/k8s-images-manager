@@ -20,7 +20,7 @@ docker_build_with_restart(
     "server",
     ".",
     dockerfile="server/Dockerfile",
-    entrypoint="sh -c 'npx prisma migrate deploy && exec node src/index.mts'",
+    entrypoint="sh -c 'npx prisma generate && npx prisma migrate deploy && exec node src/index.mts'",
     only=[
         "package.json",
         "pnpm-lock.yaml",
@@ -60,6 +60,7 @@ docker_build(
         "agent/Cargo.toml",
         "agent/Cargo.lock",
         "agent/Dockerfile.dev",
+        "agent/scripts",
     ],
 )
 

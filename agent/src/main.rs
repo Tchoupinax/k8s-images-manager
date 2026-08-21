@@ -1,53 +1,11 @@
 mod api;
 mod commands;
 mod logger;
-use chrono::{DateTime, Utc};
 use gethostname::gethostname;
 use log::{error, info};
 use std::env;
-use std::time::{Duration, SystemTime};
+use std::time::Duration;
 use tokio::time;
-
-fn parse_images(output: &str) -> Vec<api::ImageInfo> {
-    let mut images = Vec::new();
-
-    for line in output.lines() {
-        if line.trim().is_empty() {
-            continue;
-        }
-
-        if line.contains("REF") || line.contains("IMAGE") {
-            continue;
-        }
-
-        let parts: Vec<&str> = line.split_whitespace().collect();
-        let now: SystemTime = SystemTime::now();
-        let now: DateTime<Utc> = now.into();
-        let now = now.to_rfc3339();
-
-        if parts.len() >= 5 {
-            let image_info = api::ImageInfo {
-                repository: parts[0].to_string(),
-                tag: parts[1].to_string(),
-                digest: parts[2].to_string(),
-                size: parts[4].to_string(),
-                date: now,
-            };
-            images.push(image_info);
-        } else {
-            let image_info = api::ImageInfo {
-                repository: parts[0].to_string(),
-                tag: parts[1].to_string(),
-                digest: parts[2].to_string(),
-                size: parts[3].to_string(),
-                date: now,
-            };
-            images.push(image_info);
-        }
-    }
-
-    images
-}
 
 #[tokio::main]
 async fn main() {
@@ -92,7 +50,7 @@ async fn main() {
                     }
                 };
 
-                let images: Vec<api::ImageInfo> = parse_images(&output);
+                let images: Vec<api::ImageInfo> = commands::parse_images(&output);
                 info!("{} images detected", images.len());
 
                 if let Err(e) = api::send_to_server(images, name.clone(), server_url.clone()).await {
