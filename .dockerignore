@@ -7,14 +7,19 @@
 # server
 !server/package.json
 !server/src
-!server/prisma/schema.prisma
-!server/prisma/migrations
+!server/src/**
+!server/prisma
+!server/prisma/**
 !server/prisma.config.mts
 
-# webapp
-!webapp/.output
+# webapp (source for local Tilt builds, .output for production image)
+!webapp
+!webapp/**
+webapp/node_modules
+webapp/.nuxt
 
 # agent
-!agent/src
-!agent/Cargo.toml
-!agent/Cargo.lock
+!agent
+!agent/**
+agent/target
+agent/node_modules

@@ -49,8 +49,10 @@ spec:
           env:
           - name: NODE_ENV
             value: "production"
-          - name: "SERVER_URL"
-            value: {{ .Values.webapp.config.serverUrl | default (printf "http://%s.%s:9999" (include "chart.server.fullname" .) .Release.Namespace) }}
+          - name: SERVER_URL
+            value: {{ .Values.webapp.config.serverUrl | default (printf "http://%s.%s:9999" (include "chart.server.fullname" .) .Release.Namespace) | quote }}
+          - name: NUXT_PUBLIC_SERVER_ENDPOINT
+            value: {{ .Values.webapp.config.serverUrl | default (printf "http://%s.%s:9999" (include "chart.server.fullname" .) .Release.Namespace) | quote }}
 
           {{- range $key, $value := .Values.webapp.env }}
           - name: {{ $key | quote }}

@@ -1,0 +1,8 @@
+.git
+**/.nuxt
+**/.output
+**/.turbo
+**/node_modules
+agent/target
+server/dist
+server/prisma/generated

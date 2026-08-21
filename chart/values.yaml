@@ -104,6 +104,13 @@ agents:
   volumeMounts: []
   volumes: []
 
+postgres:
+  enabled: false
+  image: postgres:18
+  password: mysecret
+  database: postgres
+  user: postgres
+
 webapp:
   enabled: true
   replicaCount: 1

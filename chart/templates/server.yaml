@@ -41,6 +41,14 @@ spec:
           {{- end }}
           image: "{{ .Values.server.image.repository }}:server-v{{ .Values.server.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+          {{- with .Values.server.command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.server.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - name: web
               containerPort: {{ .Values.server.service.port }}

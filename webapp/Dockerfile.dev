@@ -1,0 +1,29 @@
+FROM node:25-alpine AS builder
+
+WORKDIR /app
+
+RUN npm i -g pnpm
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY webapp/package.json webapp/
+
+RUN pnpm install --frozen-lockfile --filter=webapp
+
+COPY webapp webapp
+
+RUN pnpm --filter webapp build
+
+FROM node:25-alpine
+
+RUN addgroup -S -g 1001 k8simagemanager && \
+    adduser -S -u 1001 -G k8simagemanager k8simagemanager
+
+WORKDIR /app
+
+COPY --from=builder /app/webapp/.output .output
+
+RUN chown -R k8simagemanager:k8simagemanager /app
+
+USER k8simagemanager
+
+CMD ["node", ".output/server/index.mjs"]
