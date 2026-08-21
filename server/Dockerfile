@@ -1,4 +1,5 @@
-FROM node:25-alpine
+# Prisma generate's WASM engine fails on Node 25 linux/arm64 (prisma/prisma#29464).
+FROM node:24-alpine
 
 RUN addgroup -S -g 1001 k8simagemanager && \
     adduser -S -u 1001 -G k8simagemanager k8simagemanager
