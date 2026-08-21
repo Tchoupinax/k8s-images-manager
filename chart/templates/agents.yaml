@@ -41,7 +41,7 @@ spec:
         securityContext:
           {{- toYaml . | nindent 12 }}
         {{- end }}
-        image: "{{ .Values.agents.image.repository }}:agent-v{{ .Values.agents.image.tag | default .Chart.AppVersion }}"
+        image: {{ include "chart.imageRef" (dict "root" . "component" "agent" "image" .Values.agents.image) | quote }}
         imagePullPolicy: {{ .Values.agents.image.pullPolicy }}
 
         volumeMounts:

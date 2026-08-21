@@ -120,3 +120,11 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- default "default" .Values.agents.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "chart.imageRef" -}}
+{{- $tag := .image.tag -}}
+{{- if not $tag -}}
+{{- $tag = printf "%s-v%s" .component .root.Chart.AppVersion -}}
+{{- end -}}
+{{- printf "%s:%s" .image.repository $tag -}}
+{{- end }}
