@@ -39,7 +39,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.webapp.image.repository }}:webapp-v{{ .Values.webapp.image.tag | default .Chart.AppVersion }}"
+          image: {{ include "chart.imageRef" (dict "root" . "component" "webapp" "image" .Values.webapp.image) | quote }}
           imagePullPolicy: {{ .Values.webapp.image.pullPolicy }}
           ports:
             - name: web
