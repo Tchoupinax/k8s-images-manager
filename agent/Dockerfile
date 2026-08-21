@@ -28,47 +28,23 @@ RUN apt-get update \
  && wget --progress=dot:giga "https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.35.0/crictl-v1.35.0-linux-${CRIC_ARCH}.tar.gz" \
  && tar -C /usr/local/bin -xzf "crictl-v1.35.0-linux-${CRIC_ARCH}.tar.gz" \
  && chmod +x /usr/local/bin/crictl \
- && printf '%s\n' '#!/usr/bin/env sh' \
-    'set -eu' \
-    'exec /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock images -o json' \
-    > /usr/local/bin/crictl-images \
- && chmod 755 /usr/local/bin/crictl-images \
- && chown root:root /usr/local/bin/crictl-images \
- && printf '%s\n' '#!/usr/bin/env sh' \
-    'set -eu' \
-    "if [ \"\$#\" -ne 1 ]; then" \
-    '  echo "usage: crictl-rmi <image-ref>" >&2' \
-    '  exit 2' \
-    'fi' \
-    "exec /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock rmi \"\$1\"" \
-    > /usr/local/bin/crictl-rmi \
- && chmod 755 /usr/local/bin/crictl-rmi \
- && chown root:root /usr/local/bin/crictl-rmi \
- && printf '%s\n' \
-    '#!/usr/bin/env sh' \
-    'set -eu' \
-    'IFS= read -r ref' \
-    'if [ -z "$ref" ]; then' \
-    '  echo "usage: crictl-pull reads image ref from stdin" >&2' \
-    '  exit 2' \
-    'fi' \
-    'exec /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock pull "$ref"' \
-    > /usr/local/bin/crictl-pull \
- && chmod 755 /usr/local/bin/crictl-pull \
- && chown root:root /usr/local/bin/crictl-pull \
- && printf '%s\n' \
-    'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-images' \
-    'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-rmi *' \
-    'k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-pull' \
-    > /etc/sudoers.d/k8simagemanager-crictl \
- && chmod 440 /etc/sudoers.d/k8simagemanager-crictl \
  && rm -f "crictl-v1.35.0-linux-${CRIC_ARCH}.tar.gz" \
  && rm -rf /var/lib/apt/lists/*
+
+COPY scripts/crictl-images /usr/local/bin/crictl-images
+COPY scripts/crictl-rmi /usr/local/bin/crictl-rmi
+COPY scripts/crictl-pull /usr/local/bin/crictl-pull
+COPY scripts/sudoers /etc/sudoers.d/k8simagemanager-crictl
+
+RUN chmod 755 /usr/local/bin/crictl-images /usr/local/bin/crictl-rmi /usr/local/bin/crictl-pull \
+ && chmod 440 /etc/sudoers.d/k8simagemanager-crictl \
+ && chown root:root /usr/local/bin/crictl-images /usr/local/bin/crictl-rmi /usr/local/bin/crictl-pull \
+      /etc/sudoers.d/k8simagemanager-crictl
 
 COPY ${TARGETPLATFORM} /usr/bin/k8s-images-manager-agent
 
 RUN chown -R k8simagemanager:k8simagemanager /usr/bin/k8s-images-manager-agent
 
-USER k8simagemanager
+USER 999
 
 ENTRYPOINT ["/usr/bin/k8s-images-manager-agent/k8s-images-manager-agent"]

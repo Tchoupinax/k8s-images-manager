@@ -2,6 +2,7 @@ FROM rust:1.97-bookworm AS builder
 
 WORKDIR /app
 
+# hadolint ignore=DL3008
 RUN apt-get update \
  && apt-get install -y --no-install-recommends pkg-config libssl-dev \
  && rm -rf /var/lib/apt/lists/*
@@ -48,6 +49,6 @@ COPY --from=builder /app/target/release/k8s-images-manager-agent /usr/bin/k8s-im
 
 RUN chown -R k8simagemanager:k8simagemanager /usr/bin/k8s-images-manager-agent
 
-USER k8simagemanager
+USER 999
 
 ENTRYPOINT ["/usr/bin/k8s-images-manager-agent/k8s-images-manager-agent"]

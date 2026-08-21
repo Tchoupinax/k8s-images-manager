@@ -9,6 +9,6 @@ COPY webapp/.output .output
 
 RUN chown -R k8simagemanager:k8simagemanager /app
 
-USER k8simagemanager
+USER 1001
 
 CMD ["node", ".output/server/index.mjs"]
