@@ -23,6 +23,20 @@ server:
     type: ClusterIP
     port: 9999
 
+  metrics:
+    enabled: false
+    path: /metrics
+    serviceMonitor:
+      enabled: false
+      interval: 30s
+      scrapeTimeout: 10s
+      # Labels matched by Prometheus Operator (e.g. release: kube-prometheus-stack).
+      additionalLabels: {}
+      labels: {}
+      annotations: {}
+      # Empty scrapes the release namespace. Set matchNames / matchLabels if needed.
+      namespaceSelector: {}
+
   ingress:
     enabled: false
     className: ""
