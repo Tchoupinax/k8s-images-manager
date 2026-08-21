@@ -146,8 +146,8 @@ importers:
         specifier: 5.10.1
         version: 5.10.1(eslint@10.8.1(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       eslint-plugin-simple-import-sort:
-        specifier: 13.0.0
-        version: 13.0.0(eslint@10.8.1(jiti@2.7.0)(supports-color@10.2.2))
+        specifier: 14.0.0
+        version: 14.0.0(eslint@10.8.1(jiti@2.7.0)(supports-color@10.2.2))
       postcss-custom-properties:
         specifier: 15.0.1
         version: 15.0.1(postcss@8.5.26)
@@ -3440,11 +3440,6 @@ packages:
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
     peerDependencies:
       eslint: '>=9.38.0'
-
-  eslint-plugin-simple-import-sort@13.0.0:
-    resolution: {integrity: sha512-McAc+/Nlvcg4byY/CABGH8kqnefWBj8s3JA2okEtz8ixbECQgU46p0HkTUKa4YS7wvgGceimlc34p1nXqbWqtA==}
-    peerDependencies:
-      eslint: '>=5.0.0'
 
   eslint-plugin-simple-import-sort@14.0.0:
     resolution: {integrity: sha512-NUJO0+XFCkk+o5EsAJruTgnfMEpeWrPWeJS15UVF60GgXmqz1BJ9/3hzlvG7lkL8Bubzos5cCLptThbFfPnSMQ==}
@@ -10330,13 +10325,13 @@ snapshots:
       regexp-ast-analysis: 0.7.1
       scslre: 0.3.0
 
-  eslint-plugin-simple-import-sort@13.0.0(eslint@10.8.1(jiti@2.7.0)(supports-color@10.2.2)):
-    dependencies:
-      eslint: 10.8.1(jiti@2.7.0)(supports-color@10.2.2)
-
   eslint-plugin-simple-import-sort@14.0.0(eslint@10.8.0(jiti@2.7.0)(supports-color@10.2.2)):
     dependencies:
       eslint: 10.8.0(jiti@2.7.0)(supports-color@10.2.2)
+
+  eslint-plugin-simple-import-sort@14.0.0(eslint@10.8.1(jiti@2.7.0)(supports-color@10.2.2)):
+    dependencies:
+      eslint: 10.8.1(jiti@2.7.0)(supports-color@10.2.2)
 
   eslint-plugin-unicorn@73.0.0(eslint@10.8.1(jiti@2.7.0)(supports-color@10.2.2)):
     dependencies:
