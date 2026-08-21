@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "npx prisma generate && tsc",
-    "build:docker": "docker build -f Dockerfile -t k8s-images-manager-server:local ..",
+    "build:docker": "docker build --provenance=false -f Dockerfile -t k8s-images-manager-server:local ..",
     "clean": "rm -rf dist node_modules .turbo",
     "lint": "eslint . --fix",
     "lint:dockerfile": "hadolint Dockerfile",

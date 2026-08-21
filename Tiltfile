@@ -4,6 +4,9 @@ load("ext://restart_process", "docker_build_with_restart")
 
 allow_k8s_contexts("k3d-k8s-images-manager")
 
+# Buildx attestations make k3s/containerd try to run a manifest with no CMD.
+os.putenv("BUILDX_NO_DEFAULT_ATTESTATIONS", "1")
+
 default_registry(
     "localhost:5050",
     host_from_cluster="k8s-images-manager-registry:5000",

@@ -43,6 +43,12 @@ spec:
         {{- end }}
         image: {{ include "chart.imageRef" (dict "root" . "component" "agent" "image" .Values.agents.image) | quote }}
         imagePullPolicy: {{ .Values.agents.image.pullPolicy }}
+        {{- $command := .Values.agents.command -}}
+        {{- if not $command -}}
+        {{- $command = list "/usr/bin/k8s-images-manager-agent/k8s-images-manager-agent" -}}
+        {{- end }}
+        command:
+          {{- toYaml $command | nindent 10 }}
 
         volumeMounts:
         - name: containerd-socket

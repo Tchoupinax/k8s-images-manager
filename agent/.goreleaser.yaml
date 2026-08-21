@@ -91,6 +91,8 @@ dockers_v2:
   flags:
   - "--cache-from=type=gha,scope=agent"
   - "--cache-to=type=gha,mode=max,scope=agent"
+  - "--provenance=false"
+  - "--sbom=false"
   labels:
     "org.opencontainers.image.description": "Agent"
     "org.opencontainers.image.created": "{{.Date}}"

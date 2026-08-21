@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "build:docker": "docker build -f Dockerfile.dev -t k8s-images-manager-webapp:dev .. && docker build -f Dockerfile -t k8s-images-manager-webapp:local ..",
+    "build:docker": "docker build --provenance=false -f Dockerfile.dev -t k8s-images-manager-webapp:dev .. && docker build --provenance=false -f Dockerfile -t k8s-images-manager-webapp:local ..",
     "clean": "rm -rf dist node_modules .turbo .nuxt .output",
     "generate": "nuxt generate",
     "postinstall": "nuxt prepare",

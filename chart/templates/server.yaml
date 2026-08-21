@@ -48,10 +48,12 @@ spec:
           {{- end }}
           image: {{ include "chart.imageRef" (dict "root" . "component" "server" "image" .Values.server.image) | quote }}
           imagePullPolicy: {{ .Values.server.image.pullPolicy }}
-          {{- with .Values.server.command }}
-          command:
-            {{- toYaml . | nindent 12 }}
+          {{- $command := .Values.server.command -}}
+          {{- if not $command -}}
+          {{- $command = list "node" "--no-warnings" "--experimental-strip-types" "src/index.mts" -}}
           {{- end }}
+          command:
+            {{- toYaml $command | nindent 12 }}
           {{- with .Values.server.args }}
           args:
             {{- toYaml . | nindent 12 }}

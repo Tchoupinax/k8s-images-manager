@@ -41,6 +41,12 @@ spec:
           {{- end }}
           image: {{ include "chart.imageRef" (dict "root" . "component" "webapp" "image" .Values.webapp.image) | quote }}
           imagePullPolicy: {{ .Values.webapp.image.pullPolicy }}
+          {{- $command := .Values.webapp.command -}}
+          {{- if not $command -}}
+          {{- $command = list "node" ".output/server/index.mjs" -}}
+          {{- end }}
+          command:
+            {{- toYaml $command | nindent 12 }}
           ports:
             - name: web
               containerPort: {{ .Values.webapp.service.port }}

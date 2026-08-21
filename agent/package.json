@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "cargo build",
-    "build:docker": "docker build -f Dockerfile.dev -t k8s-images-manager-agent:dev ..",
+    "build:docker": "docker build --provenance=false -f Dockerfile.dev -t k8s-images-manager-agent:dev ..",
     "clean": "rm -rf target node_modules .turbo",
     "lint:dockerfile": "hadolint Dockerfile",
     "watch": "SERVER_URL=http://127.0.0.1:9999 cargo run"

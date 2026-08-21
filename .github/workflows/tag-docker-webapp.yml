@@ -94,3 +94,5 @@ jobs:
         labels: "org.opencontainers.image.version=${{ env.TAG }}"
         cache-from: type=gha,scope=webapp
         cache-to: type=gha,mode=max,scope=webapp
+        provenance: false
+        sbom: false
