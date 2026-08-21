@@ -264,13 +264,22 @@
               </td>
 
               <td class="px-4 py-3 text-right align-top">
-                <Button
-                  v-tooltip.top="'Remove this image on all nodes'"
-                  icon="pi pi-trash"
-                  class="!h-8 !w-8 !p-0 bg-red-500 border border-black text-white hover:bg-red-600"
-                  :loading="isDeleting(image)"
-                  @click="onRemoveImage(image)"
-                />
+                <div class="inline-flex items-center gap-2">
+                  <Button
+                    v-tooltip.top="'Pull this image on all nodes'"
+                    icon="pi pi-download"
+                    class="!h-8 !w-8 !p-0 bg-[#4A0AAA] border border-black text-white hover:bg-[#3b0888]"
+                    :loading="isPulling(image)"
+                    @click="onPullImage(image)"
+                  />
+                  <Button
+                    v-tooltip.top="'Remove this image on all nodes'"
+                    icon="pi pi-trash"
+                    class="!h-8 !w-8 !p-0 bg-red-500 border border-black text-white hover:bg-red-600"
+                    :loading="isDeleting(image)"
+                    @click="onRemoveImage(image)"
+                  />
+                </div>
               </td>
             </tr>
           </tbody>
@@ -440,12 +449,53 @@ const toggleSort = (field: "name" | "size") => {
 };
 
 const deletingKey = ref<string | null>(null);
+const pullingKey = ref<string | null>(null);
 
 const makeImageKey = (image: RemovableImage) =>
   `${image.repository}:${image.tag}:${image.digest ?? ""}`;
 
 const isDeleting = (image: RemovableImage) =>
   deletingKey.value === makeImageKey(image);
+
+const isPulling = (image: RemovableImage) =>
+  pullingKey.value === makeImageKey(image);
+
+const requestPull = async (image: RemovableImage) => {
+  const url = new URL(`${$config.public.serverEndpoint}/api/images/pull`);
+  url.searchParams.set("repository", image.repository);
+  url.searchParams.set("tag", image.tag);
+
+  const res = await fetch(url.toString(), { method: "POST" });
+  if (!res.ok) {
+    throw new Error(`Failed with status ${res.status}`);
+  }
+};
+
+const onPullImage = async (image: RemovableImage) => {
+  if (isPulling(image)) {return;}
+
+  pullingKey.value = makeImageKey(image);
+  try {
+    await requestPull(image);
+    toast.add({
+      severity: "success",
+      summary: "Pull requested",
+      detail: `Pulling ${image.repository}:${image.tag} on all nodes`,
+      life: 3500,
+    });
+  } catch (e) {
+    if (e instanceof Error) {
+      toast.add({
+        severity: "error",
+        summary: "Pull failed",
+        detail: e.message,
+        life: 4500,
+      });
+    }
+  } finally {
+    pullingKey.value = null;
+  }
+};
 
 const onRemoveImage = async (image: RemovableImage) => {
   if (isDeleting(image)) {return;}

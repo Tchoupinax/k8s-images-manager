@@ -1,0 +1,3 @@
+k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-images
+k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-rmi *
+k8simagemanager ALL=(root) NOPASSWD: /usr/local/bin/crictl-pull

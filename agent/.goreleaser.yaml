@@ -81,6 +81,8 @@ dockers_v2:
   - "docker.io/tchoupinax/k8s-images-manager"
   tags:
   - "agent-v{{ .Version }}"
+  extra_files:
+  - scripts
   platforms:
   - linux/amd64
   - linux/arm64

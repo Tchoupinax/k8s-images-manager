@@ -4,7 +4,7 @@ metadata:
   name: k8s-images-manager
 
 servers: 1
-agents: 1
+agents: 3
 image: docker.io/rancher/k3s:v1.33.3-k3s1
 
 ports:

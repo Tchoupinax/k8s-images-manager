@@ -21,6 +21,6 @@ COPY server/prisma.config.mts prisma.config.mts
 RUN npx prisma generate && \
     chown -R k8simagemanager:k8simagemanager /app
 
-USER k8simagemanager
+USER 1001
 
 CMD ["node", "src/index.mts"]

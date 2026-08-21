@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+set -eu
+if [ "$#" -ne 1 ]; then
+  echo "usage: crictl-rmi <image-ref>" >&2
+  exit 2
+fi
+exec /usr/local/bin/crictl --runtime-endpoint unix:///run/k3s/containerd/containerd.sock rmi "$1"
