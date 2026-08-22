@@ -158,27 +158,35 @@
   box-shadow: 0 0 0 1px rgb(14 165 233) !important;
 }
 
-/* Buttons: neo-brutalist chrome over Aura’s default green */
+/* Buttons: same neo-brutalist chrome as the sidebar tiles */
 .p-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.4rem !important;
+  padding: 0.55rem 1rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.02em !important;
-  border: 2px solid #000 !important;
-  box-shadow: 3px 3px 0 #000 !important;
+  line-height: 1 !important;
+  border: 4px solid #000 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 4px 4px 0 0 #000 !important;
+  overflow: visible !important;
   transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease,
-    background-color 0.12s ease,
-    filter 0.12s ease !important;
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease,
+    filter 0.15s ease !important;
 }
 
 .p-button:not(:disabled):hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 #000 !important;
+  transform: translateY(-4px);
+  box-shadow: 6px 6px 0 0 #000 !important;
 }
 
 .p-button:not(:disabled):active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 #000 !important;
+  transform: translateY(0);
+  box-shadow: 2px 2px 0 0 #000 !important;
 }
 
 .p-button:focus-visible {
@@ -188,17 +196,30 @@
 
 .p-button:disabled {
   opacity: 0.55 !important;
-  box-shadow: 2px 2px 0 #000 !important;
+  box-shadow: 2px 2px 0 0 #000 !important;
 }
 
 .p-button.p-button-icon-only {
-  width: 2rem !important;
-  height: 2rem !important;
+  width: 2.75rem !important;
+  height: 2.75rem !important;
   padding: 0 !important;
+  border-radius: 0.75rem !important;
 }
 
 .p-button .p-button-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   font-size: 0.95rem !important;
+  line-height: 1 !important;
+}
+
+.p-button .p-button-label {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  padding: 0 !important;
 }
 
 .p-button.btn-aqua {

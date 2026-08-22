@@ -12,7 +12,7 @@
         </p>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 mr-3">
         <Button
           icon="pi pi-refresh"
           label="Refresh"

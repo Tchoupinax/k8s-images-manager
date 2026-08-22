@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex w-full flex-1 flex-col gap-6 overflow-hidden [@media(min-aspect-ratio:21/9)]:max-w-[1920px] [@media(min-aspect-ratio:21/9)]:mx-auto"
+    class="flex w-full flex-1 flex-col gap-6 overflow-hidden pr-1.5 pb-1.5 [@media(min-aspect-ratio:21/9)]:max-w-[1920px] [@media(min-aspect-ratio:21/9)]:mx-auto"
   >
     <header class="flex flex-wrap items-center justify-between gap-3 shrink-0">
       <div>
@@ -12,7 +12,7 @@
         </p>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 mr-3">
         <Button
           icon="pi pi-trash"
           label="Clean"
@@ -32,12 +32,12 @@
 
     <section
       v-if="images && images.length"
-      class="grid gap-3 shrink-0 sm:grid-cols-4"
+      class="grid gap-4 shrink-0 sm:grid-cols-4"
     >
       <div
-        class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
+        class="rounded-2xl border-4 border-black bg-white px-4 py-3 shadow-[4px_4px_0_0_#000]"
       >
-        <p class="text-xs font-medium tracking-wide uppercase text-slate-500">
+        <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-900">
           Total images
         </p>
         <p class="mt-1 text-2xl font-black text-slate-900">
@@ -46,9 +46,9 @@
       </div>
 
       <div
-        class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
+        class="rounded-2xl border-4 border-black bg-white px-4 py-3 shadow-[4px_4px_0_0_#000]"
       >
-        <p class="text-xs font-medium tracking-wide uppercase text-slate-500">
+        <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-900">
           Unique repositories
         </p>
         <p class="mt-1 text-2xl font-black text-slate-900">
@@ -57,9 +57,9 @@
       </div>
 
       <div
-        class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
+        class="rounded-2xl border-4 border-black bg-white px-4 py-3 shadow-[4px_4px_0_0_#000]"
       >
-        <p class="text-xs font-medium tracking-wide uppercase text-slate-500">
+        <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-900">
           Nodes reporting
         </p>
         <p class="mt-1 text-2xl font-black text-slate-900">
@@ -68,9 +68,9 @@
       </div>
 
       <div
-        class="px-4 py-3 border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
+        class="rounded-2xl border-4 border-black bg-white px-4 py-3 shadow-[4px_4px_0_0_#000]"
       >
-        <p class="text-xs font-medium tracking-wide uppercase text-slate-500">
+        <p class="text-xs font-black uppercase tracking-[0.18em] text-slate-900">
           Total size on disk
         </p>
         <p class="mt-1 text-2xl font-black text-slate-900">
@@ -80,16 +80,16 @@
     </section>
 
     <section
-      class="flex flex-col flex-1 min-h-0 overflow-hidden border shadow-sm rounded-2xl border-slate-200 bg-white/90 backdrop-blur"
+      class="flex flex-col flex-1 min-h-0 overflow-hidden rounded-2xl border-4 border-black bg-white shadow-[4px_4px_0_0_#000]"
     >
       <div
-        class="flex flex-col gap-3 px-4 py-3 border-b shrink-0 border-slate-100 sm:flex-row sm:items-center sm:justify-between"
+        class="flex flex-col gap-3 px-4 py-3 border-b-4 border-black bg-[#4EC8D8]/40 shrink-0 sm:flex-row sm:items-center sm:justify-between"
       >
         <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+          <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-900">
             Images inventory
           </p>
-          <p class="mt-1 text-xs text-slate-500">
+          <p class="mt-1 text-xs font-medium text-slate-700">
             {{ groupedImages.length }} images after filters.
           </p>
         </div>
@@ -104,17 +104,6 @@
             display="chip"
             class="w-full min-w-[180px] max-w-xs text-xs"
           />
-
-          <span class="relative inline-flex items-center flex-1 max-w-xs">
-            <i
-              class="absolute text-xs pointer-events-none pi pi-search left-2 text-slate-400"
-            ></i>
-            <InputText
-              v-model="search"
-              placeholder="Search repository, tag, digest…"
-              class="w-full rounded-lg border border-slate-300 bg-white px-7 py-2 text-xs text-slate-800 shadow-[2px_2px_0_0_#00000020] focus:border-sky-500 focus:outline-none"
-            />
-          </span>
         </div>
       </div>
 
@@ -151,43 +140,44 @@
         />
       </div>
 
-      <div
-        v-else-if="!groupedImages.length"
-        class="flex min-h-[220px] flex-col items-center justify-center gap-2 p-8 text-center"
-      >
-        <p class="text-sm font-semibold text-slate-800">
-          No images match your filters.
-        </p>
-        <p class="text-xs text-slate-500">
-          Try clearing the node filter or adjusting your search query.
-        </p>
-      </div>
-
       <div v-else class="flex-1 min-h-0 overflow-auto">
-        <table class="min-w-full text-xs text-left border-t border-slate-100">
+        <table class="min-w-full text-xs text-left">
           <thead
-            class="sticky top-0 z-10 border-b bg-slate-50/90 backdrop-blur border-slate-100"
+            class="sticky top-0 z-10 border-b-4 border-black bg-[#4A0AAA]"
           >
-            <tr class="text-[11px] uppercase tracking-[0.18em] text-slate-500">
-              <th class="px-4 py-3 font-semibold">
-                <button
-                  type="button"
-                  class="inline-flex items-center gap-1"
-                  @click="toggleSort('name')"
-                >
-                  <span>Image</span>
-                  <i
-                    v-if="sortBy === 'name'"
-                    class="pi text-[10px]"
-                    :class="
-                      sortDirection === 'asc'
-                        ? 'pi-sort-alpha-down'
-                        : 'pi-sort-alpha-up-alt'
-                    "
-                  ></i>
-                </button>
+            <tr class="text-[11px] font-black uppercase tracking-[0.18em] text-white">
+              <th class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                  <button
+                    type="button"
+                    class="inline-flex shrink-0 items-center gap-1"
+                    @click="toggleSort('name')"
+                  >
+                    <span>Image</span>
+                    <i
+                      v-if="sortBy === 'name'"
+                      class="pi text-[10px]"
+                      :class="
+                        sortDirection === 'asc'
+                          ? 'pi-sort-alpha-down'
+                          : 'pi-sort-alpha-up-alt'
+                      "
+                    ></i>
+                  </button>
+                  <span class="relative inline-flex min-w-0 flex-1 max-w-sm items-center normal-case tracking-normal">
+                    <i
+                      class="absolute text-xs pointer-events-none pi pi-search left-3 text-slate-500"
+                    ></i>
+                    <InputText
+                      v-model="search"
+                      placeholder="Search repository, tag…"
+                      class="w-full rounded-xl border-2 border-black bg-white px-7 py-1.5 text-xs font-medium text-slate-800 shadow-[2px_2px_0_0_#000] focus:outline-none"
+                      @click.stop
+                    />
+                  </span>
+                </div>
               </th>
-              <th class="px-4 py-3 font-semibold">
+              <th class="px-4 py-3">
                 <button
                   type="button"
                   class="inline-flex items-center gap-1"
@@ -205,7 +195,7 @@
                   ></i>
                 </button>
               </th>
-              <th class="px-4 py-3 font-semibold">
+              <th class="px-4 py-3">
                 <button
                   type="button"
                   class="inline-flex items-center gap-1"
@@ -223,31 +213,35 @@
                   ></i>
                 </button>
               </th>
-              <th class="px-4 py-3 font-semibold">Last seen</th>
-              <th class="px-4 py-3 font-semibold">Digest</th>
-              <th class="px-4 py-3 font-semibold text-right">Actions</th>
+              <th class="px-4 py-3">Last seen</th>
+              <th class="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
+            <tr v-if="!groupedImages.length">
+              <td colspan="5" class="px-4 py-12 text-center">
+                <p class="text-sm font-semibold text-slate-800">
+                  No images match your filters.
+                </p>
+                <p class="mt-1 text-xs text-slate-500">
+                  Try clearing the node filter or adjusting your search query.
+                </p>
+              </td>
+            </tr>
             <tr
               v-for="image in sortedGroupedImages"
               :key="image.key"
-              class="border-t border-l-4 border-slate-100 bg-white/70 last:border-b hover:bg-sky-50/60"
-              :class="
-                image.nodes.length > 3
-                  ? 'border-l-[#4A0AAA]'
-                  : 'border-l-[#4EC8D8]'
-              "
+              class="border-b-2 border-black bg-white last:border-b-0 hover:bg-[#4EC8D8]/25"
             >
               <td class="px-4 py-3 align-top">
                 <div class="flex items-center justify-between gap-2">
                   <span
-                    class="truncate text-xs font-medium text-slate-900 max-w-[220px] flex-1"
+                    class="min-w-0 flex-1 truncate text-base font-bold text-slate-900 max-w-[42rem]"
                   >
                     {{ image.repository }}
                   </span>
                   <span
-                    class="inline-flex items-center rounded-full bg-sky-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-sky-900"
+                    class="inline-flex shrink-0 items-center rounded-md border-2 border-black bg-[#4EC8D8] px-2 py-0.5 text-[11px] font-black uppercase tracking-wide text-slate-900 shadow-[2px_2px_0_0_#000]"
                   >
                     {{ image.tag }}
                   </span>
@@ -255,10 +249,10 @@
               </td>
 
               <td class="px-4 py-3 align-top">
-                <span class="text-xs font-medium text-slate-800">
+                <span class="text-xs font-bold text-slate-800">
                   {{ image.size }}
                 </span>
-                <span class="block text-[11px] text-slate-500">
+                <span class="block text-[11px] font-medium text-slate-500">
                   {{ image.count }} copy{{ image.count > 1 ? "ies" : "" }}
                 </span>
               </td>
@@ -270,11 +264,11 @@
                       ? image.nodes.join(', ')
                       : 'Not reported on any node'
                   "
-                  class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold"
+                  class="inline-flex items-center rounded-md border-2 border-black px-2 py-0.5 text-[11px] font-black shadow-[2px_2px_0_0_#000]"
                   :class="
                     totalNodes && image.nodes.length === totalNodes
-                      ? 'bg-emerald-100 text-emerald-900'
-                      : 'bg-slate-100 text-slate-800'
+                      ? 'bg-emerald-300 text-emerald-950'
+                      : 'bg-white text-slate-800'
                   "
                 >
                   {{ image.nodes.length }}
@@ -287,15 +281,6 @@
               <td class="px-4 py-3 align-top">
                 <span class="text-xs whitespace-nowrap text-slate-700">
                   {{ image.lastSeen ? format(image.lastSeen) : "—" }}
-                </span>
-              </td>
-
-              <td class="px-4 py-3 align-top">
-                <span class="font-mono text-[11px] text-slate-700">
-                  {{ image.digest?.slice(0, 18) }}<span
-                    v-if="image.digest && image.digest.length > 18"
-                    >…</span
-                  >
                 </span>
               </td>
 
