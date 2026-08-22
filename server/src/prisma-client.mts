@@ -17,7 +17,11 @@ function buildDatabaseUrl(): string {
 }
 
 const connectionString = buildDatabaseUrl();
-const adapter = new PrismaPg({ connectionString });
+const adapter = new PrismaPg({
+  connectionString,
+  max: 3,
+  idleTimeoutMillis: 20_000,
+});
 const prismaClient = new PrismaClient({ adapter });
 
 export const prisma = prismaClient;

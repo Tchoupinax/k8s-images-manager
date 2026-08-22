@@ -1,13 +1,13 @@
 import cors from "@fastify/cors";
 
-import Fastify, { type FastifyInstance } from "fastify";
+import Fastify, { type FastifyBaseLogger, type FastifyInstance } from "fastify";
 
 import type { PrismaClient as PrismaClientType } from "../prisma/generated/prisma/index.js";
 import { prisma as defaultPrisma } from "./prisma-client.mts";
 import { router } from "./router.mts";
 import { type Store } from "./store.mts";
 import { env } from "./tools/env.mts";
-import { logger, loggerConfig } from "./tools/logger.mts";
+import { isProduction, logger } from "./tools/logger.mts";
 import {
   httpRequestDurationSeconds,
   httpRequestSizeBytes,
@@ -42,7 +42,10 @@ function routeLabel(request: { routeOptions?: { url?: string } }): string {
 export async function createServer(
   options?: CreateServerOptions,
 ): Promise<FastifyInstance> {
-  const fastify = Fastify({ logger: loggerConfig });
+  const fastify = Fastify({
+    loggerInstance: logger as FastifyBaseLogger,
+    disableRequestLogging: isProduction,
+  });
   const prisma = options?.prisma ?? defaultPrisma;
 
   fastify.decorate("prisma", prisma);

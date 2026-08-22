@@ -5,3 +5,4 @@ agent/target
 node_modules
 server/dist
 server/prisma/generated
+.pnpm-store
