@@ -66,6 +66,10 @@ spec:
           env:
           - name: NODE_ENV
             value: "production"
+          - name: NODE_OPTIONS
+            value: "--max-old-space-size=96 --max-semi-space-size=4"
+          - name: UV_THREADPOOL_SIZE
+            value: "2"
 
           {{- range $key, $value := .Values.server.env }}
           - name: {{ $key | quote }}

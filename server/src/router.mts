@@ -229,7 +229,14 @@ export function router(fastify: FastifyInstance) {
       app.get("/images", async (request, reply) => {
         const prisma = request.server.prisma;
         const images = await prisma.image.findMany({
-          include: { node: true },
+          select: {
+            repository: true,
+            tag: true,
+            digest: true,
+            size: true,
+            date: true,
+            node: { select: { hostname: true } },
+          },
         });
 
         const flat = images.map(img => ({

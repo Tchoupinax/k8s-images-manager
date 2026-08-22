@@ -1,11 +1,13 @@
 import pino, { type LoggerOptions } from "pino";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const config: LoggerOptions = {
-  level: "debug",
+  level: process.env.LOG_LEVEL ?? (isProduction ? "info" : "debug"),
   base: null,
 };
 
-if (process.env.NODE_ENV !== "production") {
+if (!isProduction) {
   config.transport = {
     target: "pino-pretty",
     options: {
@@ -18,3 +20,5 @@ if (process.env.NODE_ENV !== "production") {
 
 export const loggerConfig = config;
 export const logger = pino(config);
+
+export { isProduction };

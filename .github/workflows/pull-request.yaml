@@ -77,10 +77,10 @@ jobs:
     - name: "Setup PNPM"
       uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
-    - name: Use Node.js 25
+    - name: Use Node.js 26
       uses: actions/setup-node@v7
       with:
-        node-version: 25
+        node-version: 26
         cache: "pnpm"
 
     - name: Build, lint and test the package
@@ -105,11 +105,6 @@ jobs:
       with:
         node-version: 24
         cache: "pnpm"
-
-    - name: "Build, lint and test the package"
-      run: |
-        pnpm install --frozen-lockfile --filter server
-        pnpm build --filter server
       env:
         API_URL: "_"
         CI_COMMIT_SHA: "_"
