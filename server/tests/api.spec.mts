@@ -367,4 +367,72 @@ describe("e2e /api/images", () => {
       });
     });
   });
+
+  it("removes stale nodes not seen for 1 hour", async () => {
+    await testWithApp(async ({ inject, prisma }) => {
+      await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-stale",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([
+          {
+            repository: "docker.io/stale/image",
+            tag: "v1",
+            digest: "sha256:stale",
+            size: "10MB",
+            date: new Date().toISOString(),
+          },
+        ]),
+      });
+      await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-active",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([]),
+      });
+
+      const staleNode = await prisma.node.findUnique({
+        where: { hostname: "node-stale" },
+      });
+      expect(staleNode).not.toBeNull();
+
+      const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+      await prisma.node.update({
+        where: { id: staleNode!.id },
+        data: { updatedAt: twoHoursAgo },
+      });
+      await prisma.pendingPullAck.create({
+        data: {
+          nodeId: staleNode!.id,
+          repository: "docker.io/stale/image",
+          tag: "v1",
+        },
+      });
+
+      await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: {
+          hostname: "node-active",
+          "content-type": "application/json",
+        },
+        payload: JSON.stringify([]),
+      });
+
+      expect(
+        await prisma.node.findUnique({ where: { hostname: "node-stale" } }),
+      ).toBeNull();
+      expect(await prisma.image.count()).toBe(0);
+      expect(await prisma.pendingPullAck.count()).toBe(0);
+      expect(
+        await prisma.node.findUnique({ where: { hostname: "node-active" } }),
+      ).not.toBeNull();
+    });
+  });
 });

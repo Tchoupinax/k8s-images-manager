@@ -3,6 +3,10 @@ import fastifyRequestContext from "@fastify/request-context";
 import { type FastifyInstance } from "fastify";
 
 import type { PrismaClient } from "../prisma/generated/prisma/index.js";
+import {
+  cleanupPulls,
+  runMaintenance,
+} from "./maintenance.mts";
 import { logger } from "./tools/logger.mts";
 import {
   cleanAllImagesQueued,
@@ -59,46 +63,6 @@ async function queueImageDeletion(
   });
 }
 
-async function cleanupDeletions(prisma: PrismaClient) {
-  const pending = await prisma.pendingDeletion.findMany();
-  for (const { repository, tag } of pending) {
-    const count = await prisma.image.count({
-      where: { repository, tag },
-    });
-    if (count === 0) {
-      await prisma.pendingDeletion.deleteMany({
-        where: { repository, tag },
-      });
-    }
-  }
-}
-
-async function cleanupPulls(prisma: PrismaClient) {
-  const pending = await prisma.pendingPull.findMany();
-  const nodeCount = await prisma.node.count();
-  for (const { repository, tag } of pending) {
-    const ackCount = await prisma.pendingPullAck.count({
-      where: { repository, tag },
-    });
-    const nodesWithImage = await prisma.image.findMany({
-      where: { repository, tag },
-      distinct: ["nodeId"],
-      select: { nodeId: true },
-    });
-    if (
-      nodeCount > 0 &&
-      (ackCount >= nodeCount || nodesWithImage.length >= nodeCount)
-    ) {
-      await prisma.pendingPullAck.deleteMany({
-        where: { repository, tag },
-      });
-      await prisma.pendingPull.deleteMany({
-        where: { repository, tag },
-      });
-    }
-  }
-}
-
 async function recordPullAck(
   prisma: PrismaClient,
   nodeId: string,
@@ -151,9 +115,13 @@ export function router(fastify: FastifyInstance) {
         }
 
         const node = await prisma.$transaction(async tx => {
-          const node =
-            (await tx.node.findUnique({ where: { hostname } })) ??
-            (await tx.node.create({ data: { hostname } }));
+          const existing = await tx.node.findUnique({ where: { hostname } });
+          const node = existing
+            ? await tx.node.update({
+                where: { id: existing.id },
+                data: { hostname },
+              })
+            : await tx.node.create({ data: { hostname } });
 
           await tx.image.deleteMany({ where: { nodeId: node.id } });
 
@@ -183,8 +151,7 @@ export function router(fastify: FastifyInstance) {
           }
         }
 
-        await cleanupDeletions(prisma);
-        await cleanupPulls(prisma);
+        await runMaintenance(prisma);
 
         const [deletions, pulls, acks] = await Promise.all([
           prisma.pendingDeletion.findMany(),
