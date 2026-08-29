@@ -236,14 +236,16 @@
               <td class="px-4 py-3 align-top">
                 <div class="flex items-center justify-between gap-2">
                   <span
-                    class="min-w-0 flex-1 truncate text-base font-bold text-slate-900 max-w-[42rem]"
+                    class="min-w-0 flex-1 truncate font-bold text-slate-900 max-w-[42rem]"
+                    :class="isNoneLabel(image.repository) ? 'font-mono text-sm' : 'text-base'"
                   >
-                    {{ image.repository }}
+                    {{ displayImageRepository(image) }}
                   </span>
                   <span
+                    v-if="shouldShowImageTag(image)"
                     class="inline-flex shrink-0 items-center rounded-md border-2 border-black bg-[#4EC8D8] px-2 py-0.5 text-[11px] font-black uppercase tracking-wide text-slate-900 shadow-[2px_2px_0_0_#000]"
                   >
-                    {{ image.tag }}
+                    {{ displayImageTag(image) }}
                   </span>
                 </div>
               </td>
@@ -386,7 +388,7 @@ const groupedImages = computed(() => {
   >();
 
   for (const img of filteredImages.value) {
-    const key = `${img.repository}:${img.tag}`;
+    const key = imageGroupKey(img);
     let group = groups.get(key);
 
     if (!group) {
@@ -412,7 +414,7 @@ const groupedImages = computed(() => {
   }
 
   return Array.from(groups.values()).map(g => ({
-    key: `${g.repository}:${g.tag}`,
+    key: imageGroupKey(g),
     repository: g.repository,
     tag: g.tag,
     size: g.size,
@@ -450,7 +452,7 @@ const sortedGroupedImages = computed(() => {
     let cmp = 0;
 
     if (sortBy.value === "name") {
-      cmp = a.repository.localeCompare(b.repository);
+      cmp = displayImageRepository(a).localeCompare(displayImageRepository(b));
     } else if (sortBy.value === "size") {
       cmp = parseSize(a.size) - parseSize(b.size);
     } else if (sortBy.value === "nodes") {
@@ -506,7 +508,7 @@ const onPullImage = async (image: RemovableImage) => {
     toast.add({
       severity: "success",
       summary: "Pull requested",
-      detail: `Pulling ${image.repository}:${image.tag} on all nodes`,
+      detail: `Pulling ${displayImageRepository(image)} on all nodes`,
       life: 3500,
     });
   } catch (e) {
@@ -542,7 +544,7 @@ const onRemoveImage = async (image: RemovableImage) => {
     toast.add({
       severity: "success",
       summary: "Removal requested",
-      detail: `Removing ${image.repository}:${image.tag} on all nodes`,
+      detail: `Removing ${displayImageRepository(image)} on all nodes`,
       life: 3500,
     });
   } catch (e) {
