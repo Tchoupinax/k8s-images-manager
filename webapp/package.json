@@ -29,7 +29,7 @@
     "vue-tippy": "6.7.1"
   },
   "devDependencies": {
-    "@primevue/nuxt-module": "4.5.5",
+    "@primevue/nuxt-module": "5.0.1",
     "@stylistic/eslint-plugin": "5.10.0",
     "@types/node": "26.4.1",
     "@typescript-eslint/parser": "8.69.0",
