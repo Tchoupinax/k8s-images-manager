@@ -22,7 +22,7 @@
     "@primeuix/themes": "3.0.0",
     "nuxt": "4.5.2",
     "nuxt3-notifications": "1.4.0",
-    "primevue": "4.5.5",
+    "primevue": "5.0.1",
     "timeago.js": "4.0.2",
     "vue": "3.5.42",
     "vue-router": "5.3.0",
