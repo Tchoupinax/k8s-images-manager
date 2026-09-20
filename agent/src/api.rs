@@ -136,3 +136,47 @@ async fn ack_pulls(
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+    use wiremock::matchers::{header, method, path};
+    use wiremock::{Mock, MockServer, ResponseTemplate};
+
+    #[test]
+    fn server_response_deserializes_with_default_command_lists() {
+        let body: ServerResponse = serde_json::from_str(r#"{"ok":true}"#).unwrap();
+
+        assert!(body.ok);
+        assert!(body.deletions.is_empty());
+        assert!(body.pulls.is_empty());
+    }
+
+    #[tokio::test]
+    async fn register_posts_inventory_with_hostname_header() {
+        let mock_server = MockServer::start().await;
+
+        Mock::given(method("POST"))
+            .and(path("/api/register"))
+            .and(header("hostname", "node-test"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "ok": true
+            })))
+            .expect(1)
+            .mount(&mock_server)
+            .await;
+
+        let images = vec![ImageInfo {
+            repository: "docker.io/nginx".into(),
+            tag: "alpine".into(),
+            digest: "sha256:abc".into(),
+            size: "10MB".into(),
+            date: "2024-01-01T00:00:00Z".into(),
+        }];
+
+        send_to_server(images, "node-test".into(), mock_server.uri())
+            .await
+            .unwrap();
+    }
+}

@@ -40,4 +40,56 @@ describe("e2e /metrics", () => {
       expect(body).toContain('hostname="node-metrics"');
     });
   });
+
+  it("reflects duplicate rows and unique repositories across nodes", async () => {
+    await testWithApp(async ({ inject }) => {
+      const image = {
+        repository: "docker.io/library/redis",
+        tag: "7",
+        digest: "sha256:redis",
+        size: "30MB",
+        date: new Date().toISOString(),
+      };
+
+      for (const hostname of ["metrics-node-a", "metrics-node-b"]) {
+        await inject({
+          method: "POST",
+          url: "/api/register",
+          headers: {
+            hostname,
+            "content-type": "application/json",
+          },
+          payload: JSON.stringify([image]),
+        });
+      }
+
+      const res = await inject({ method: "GET", url: "/metrics" });
+      const body = res.payload ?? "";
+
+      expect(body).toContain("k8s_images_manager_nodes 2");
+      expect(body).toContain("k8s_images_manager_images 2");
+      expect(body).toContain("k8s_images_manager_images_unique 1");
+    });
+  });
+
+  it("increments validation error metrics on bad requests", async () => {
+    await testWithApp(async ({ inject }) => {
+      await inject({
+        method: "POST",
+        url: "/api/register",
+        headers: { "content-type": "application/json" },
+        payload: JSON.stringify([]),
+      });
+      await inject({ method: "DELETE", url: "/api/images" });
+      await inject({ method: "POST", url: "/api/images/pull" });
+
+      const res = await inject({ method: "GET", url: "/metrics" });
+      const body = res.payload ?? "";
+
+      expect(body).toContain("k8s_images_manager_validation_errors_total");
+      expect(body).toContain('route="/api/register"');
+      expect(body).toContain('route="/api/images"');
+      expect(body).toContain('route="/api/images/pull"');
+    });
+  });
 });
