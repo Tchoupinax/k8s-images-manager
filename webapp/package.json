@@ -12,6 +12,7 @@
     "lint:dockerfile": "hadolint Dockerfile",
     "lint:vue:check": "vue-tsc --noEmit || true",
     "preview": "nuxt preview",
+    "test": "vitest run --config vitest.config.ts",
     "watch": "nuxt dev",
     "watch:prod": "NUXT_PUBLIC_SERVER_ENDPOINT=https://k8s-images-manager.mysupercloud.dev nuxt dev"
   },
@@ -19,17 +20,17 @@
     "@nuxt/eslint": "1.17.0",
     "@nuxt/fonts": "0.14.0",
     "@nuxtjs/tailwindcss": "6.14.0",
-    "@primeuix/themes": "3.0.0",
+    "@primeuix/themes": "3.0.1",
     "nuxt": "4.5.2",
     "nuxt3-notifications": "1.4.0",
-    "primevue": "4.5.5",
+    "primevue": "5.0.1",
     "timeago.js": "4.0.2",
     "vue": "3.5.42",
     "vue-router": "5.3.1",
     "vue-tippy": "6.8.0"
   },
   "devDependencies": {
-    "@primevue/nuxt-module": "4.5.5",
+    "@primevue/nuxt-module": "5.0.1",
     "@stylistic/eslint-plugin": "5.10.0",
     "@types/node": "26.6.1",
     "@typescript-eslint/parser": "8.70.0",
@@ -39,6 +40,7 @@
     "eslint-plugin-simple-import-sort": "14.0.0",
     "postcss-custom-properties": "15.0.1",
     "typescript": "6.0.3",
+    "vitest": "5.0.1",
     "vue-tsc": "3.3.11"
   }
 }

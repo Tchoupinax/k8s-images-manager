@@ -197,3 +197,57 @@ fn format_size(bytes: u64) -> String {
         format!("{:.1}{}", size, UNITS[unit])
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_images_expands_repo_tags_and_formats_size() {
+        let json = r#"{"images":[{"id":"sha256:abc","repoTags":["docker.io/library/nginx:1.27","registry.example:5000/app:v2"],"size":1048576}]}"#;
+        let images = parse_images(json);
+
+        assert_eq!(images.len(), 2);
+        assert_eq!(images[0].repository, "docker.io/library/nginx");
+        assert_eq!(images[0].tag, "1.27");
+        assert_eq!(images[0].digest, "sha256:abc");
+        assert_eq!(images[0].size, "1.0MB");
+        assert_eq!(images[1].repository, "registry.example:5000/app");
+        assert_eq!(images[1].tag, "v2");
+    }
+
+    #[test]
+    fn parse_images_defaults_tag_to_latest_without_colon() {
+        let json = r#"{"images":[{"id":"sha256:id","repoTags":["docker.io/busybox"],"size":100}]}"#;
+        let images = parse_images(json);
+
+        assert_eq!(images.len(), 1);
+        assert_eq!(images[0].repository, "docker.io/busybox");
+        assert_eq!(images[0].tag, "latest");
+        assert_eq!(images[0].size, "100B");
+    }
+
+    #[test]
+    fn parse_images_uses_none_placeholder_when_repo_tags_empty() {
+        let json = r#"{"images":[{"id":"sha256:id","repoTags":[],"size":0}]}"#;
+        let images = parse_images(json);
+
+        assert_eq!(images.len(), 1);
+        assert_eq!(images[0].repository, "<none>");
+        assert_eq!(images[0].tag, "<none>");
+        assert_eq!(images[0].size, "0B");
+    }
+
+    #[test]
+    fn parse_images_accepts_string_sizes() {
+        let json = r#"{"images":[{"id":"sha256:a","repoTags":["x:1"],"size":"2048"}]}"#;
+        let images = parse_images(json);
+
+        assert_eq!(images[0].size, "2.0KB");
+    }
+
+    #[test]
+    fn parse_images_returns_empty_on_invalid_json() {
+        assert!(parse_images("not-json").is_empty());
+    }
+}
