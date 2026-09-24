@@ -1,5 +1,3 @@
-import Aura from "@primeuix/themes/aura";
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-22",
@@ -8,7 +6,6 @@ export default defineNuxtConfig({
   modules: [
     "@nuxt/eslint",
     "@nuxtjs/tailwindcss",
-    "@primevue/nuxt-module",
     "nuxt3-notifications",
   ],
   runtimeConfig: {
@@ -17,13 +14,6 @@ export default defineNuxtConfig({
     },
   },
   css: ["~/assets/theme-overrides.css"],
-  primevue: {
-    options: {
-      theme: {
-        preset: Aura,
-      },
-    },
-  },
   vite: {
     optimizeDeps: {
       include: [

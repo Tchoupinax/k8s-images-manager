@@ -15,9 +15,11 @@
 This is the local environment used to run the full stack (Postgres, server, webapp, and node agents) inside a k3d cluster.
 
 ```bash
-mise install
+mise install   # installs Node 26 and pnpm 12.4.2 (see mise.toml)
 ./scripts/dev/tilt-up.sh
 ```
+
+Use the pnpm from mise in this repo (`mise.toml` pins `pnpm@12.4.2`). If you see `Failed to switch pnpm to v12.4.2`, run `mise install` from the project root and ensure your shell loads mise (`eval "$(mise activate bash)"` or the equivalent for your shell).
 
 Tilt builds images, pushes them to the cluster registry (`localhost:5050`), and installs the Helm chart with `chart/values.local.yaml`.
 
