@@ -3,7 +3,7 @@
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 64 64"
     fill="none"
-    class="icon w-full h-auto"
+    class="size-full shrink-0"
     aria-hidden="true"
   >
     <rect

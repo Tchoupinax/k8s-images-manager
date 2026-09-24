@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex w-full flex-1 flex-col gap-6 overflow-hidden pr-1.5 pb-1.5 [@media(min-aspect-ratio:21/9)]:max-w-[1920px] [@media(min-aspect-ratio:21/9)]:mx-auto"
+    class="flex w-full flex-1 flex-col gap-4 overflow-hidden md:gap-6 md:pr-1.5 md:pb-1.5 [@media(min-aspect-ratio:21/9)]:max-w-[1920px] [@media(min-aspect-ratio:21/9)]:mx-auto"
   >
     <header class="flex flex-wrap items-center justify-between gap-3 shrink-0">
       <div>
@@ -12,7 +12,7 @@
         </p>
       </div>
 
-      <div class="flex items-center gap-3 mr-3">
+      <div class="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:gap-3 sm:mr-3">
         <UiButton
           label="Clean"
           variant="danger"
@@ -34,7 +34,7 @@
 
     <section
       v-if="images && images.length"
-      class="grid gap-4 shrink-0 sm:grid-cols-4"
+      class="grid grid-cols-2 gap-3 shrink-0 md:grid-cols-4 md:gap-4"
     >
       <div
         class="rounded-2xl border-4 border-black bg-white px-4 py-3 shadow-[4px_4px_0_0_#000]"
@@ -96,12 +96,49 @@
           </p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex w-full flex-col gap-2 sm:max-w-xs">
+          <div class="relative md:hidden">
+            <IconSearch
+              class="absolute pointer-events-none left-3 top-1/2 -translate-y-1/2 text-slate-500"
+            />
+            <input
+              v-model="search"
+              type="search"
+              placeholder="Search repository, tag…"
+              class="w-full rounded-xl border-2 border-black bg-white py-2 pl-9 pr-2 text-xs font-medium text-slate-800 shadow-[2px_2px_0_0_#000] focus:outline-none focus:ring-2 focus:ring-[#6DBF8A]"
+            >
+          </div>
+          <div class="flex flex-wrap gap-1.5 md:hidden">
+            <button
+              type="button"
+              class="rounded-lg border-2 border-black bg-white px-2 py-1 text-[10px] font-bold uppercase shadow-[2px_2px_0_0_#000]"
+              :class="sortBy === 'name' && 'bg-[#4EC8D8]'"
+              @click="toggleSort('name')"
+            >
+              Name {{ sortBy === 'name' ? (sortDirection === 'asc' ? '↓' : '↑') : '' }}
+            </button>
+            <button
+              type="button"
+              class="rounded-lg border-2 border-black bg-white px-2 py-1 text-[10px] font-bold uppercase shadow-[2px_2px_0_0_#000]"
+              :class="sortBy === 'size' && 'bg-[#4EC8D8]'"
+              @click="toggleSort('size')"
+            >
+              Size {{ sortBy === 'size' ? (sortDirection === 'asc' ? '↓' : '↑') : '' }}
+            </button>
+            <button
+              type="button"
+              class="rounded-lg border-2 border-black bg-white px-2 py-1 text-[10px] font-bold uppercase shadow-[2px_2px_0_0_#000]"
+              :class="sortBy === 'nodes' && 'bg-[#4EC8D8]'"
+              @click="toggleSort('nodes')"
+            >
+              Nodes {{ sortBy === 'nodes' ? (sortDirection === 'asc' ? '↓' : '↑') : '' }}
+            </button>
+          </div>
           <UiMultiSelect
             v-model="selectedHostnames"
             :options="hostnameOptions"
             placeholder="Filter by node"
-            class="w-full min-w-[180px] max-w-xs"
+            class="w-full min-w-0 md:min-w-[180px]"
           />
         </div>
       </div>
@@ -141,8 +178,100 @@
         </UiButton>
       </div>
 
-      <div v-else class="flex-1 min-h-0 overflow-auto">
-        <table class="min-w-full text-xs text-left">
+      <div
+        v-else
+        class="flex-1 min-h-0 overflow-auto"
+      >
+        <div
+          v-if="!groupedImages.length"
+          class="px-4 py-12 text-center md:hidden"
+        >
+          <p class="text-sm font-semibold text-slate-800">
+            No images match your filters.
+          </p>
+          <p class="mt-1 text-xs text-slate-500">
+            Try clearing the node filter or adjusting your search query.
+          </p>
+        </div>
+
+        <ul
+          v-else
+          class="flex flex-col gap-3 p-3 md:hidden"
+        >
+          <li
+            v-for="image in sortedGroupedImages"
+            :key="image.key"
+            class="rounded-xl border-4 border-black bg-white p-3 shadow-[3px_3px_0_0_#000]"
+          >
+            <div class="flex items-start justify-between gap-2">
+              <p
+                class="min-w-0 flex-1 break-all font-bold text-slate-900"
+                :class="isNoneLabel(image.repository) ? 'font-mono text-sm' : 'text-sm'"
+              >
+                {{ displayImageRepository(image) }}
+              </p>
+              <span
+                v-if="shouldShowImageTag(image)"
+                class="inline-flex shrink-0 items-center rounded-md border-2 border-black bg-[#4EC8D8] px-2 py-0.5 text-[10px] font-black uppercase text-slate-900"
+              >
+                {{ displayImageTag(image) }}
+              </span>
+            </div>
+            <dl class="mt-2 grid grid-cols-2 gap-x-2 gap-y-1 text-[11px]">
+              <div>
+                <dt class="font-semibold text-slate-500">Size</dt>
+                <dd class="font-bold text-slate-800">
+                  {{ image.size }}
+                  <span class="font-medium text-slate-500">({{ image.count }}×)</span>
+                </dd>
+              </div>
+              <div>
+                <dt class="font-semibold text-slate-500">Nodes</dt>
+                <dd>
+                  <span
+                    class="inline-flex items-center rounded-md border-2 border-black px-1.5 py-0.5 text-[10px] font-black"
+                    :class="
+                      totalNodes && image.nodes.length === totalNodes
+                        ? 'bg-emerald-300 text-emerald-950'
+                        : 'bg-white text-slate-800'
+                    "
+                  >
+                    {{ image.nodes.length }}<span v-if="totalNodes">/{{ totalNodes }}</span>
+                  </span>
+                </dd>
+              </div>
+              <div class="col-span-2">
+                <dt class="font-semibold text-slate-500">Last seen</dt>
+                <dd class="text-slate-700">
+                  <TimeAgo v-if="image.lastSeen" :date="image.lastSeen" />
+                  <span v-else>—</span>
+                </dd>
+              </div>
+            </dl>
+            <div class="mt-3 flex justify-end gap-2">
+              <UiButton
+                variant="ink"
+                icon-only
+                :loading="isPulling(image)"
+                aria-label="Pull on all nodes"
+                @click="onPullImage(image)"
+              >
+                <IconDownload />
+              </UiButton>
+              <UiButton
+                variant="danger"
+                icon-only
+                :loading="isDeleting(image)"
+                aria-label="Remove on all nodes"
+                @click="onRemoveImage(image)"
+              >
+                <IconTrash />
+              </UiButton>
+            </div>
+          </li>
+        </ul>
+
+        <table class="hidden min-w-full text-xs text-left md:table">
           <thead
             class="sticky top-0 z-10 border-b-4 border-black bg-[#6DBF8A]"
           >
@@ -161,7 +290,7 @@
                       aria-hidden="true"
                     >{{ sortDirection === 'asc' ? '↓' : '↑' }}</span>
                   </button>
-                  <span class="relative inline-flex min-w-0 flex-1 max-w-sm items-center normal-case tracking-normal">
+                  <span class="relative hidden min-w-0 flex-1 max-w-sm items-center normal-case tracking-normal md:inline-flex">
                     <IconSearch
                       class="absolute pointer-events-none left-3 text-slate-500"
                     />
@@ -251,11 +380,12 @@
 
               <td class="px-4 py-3 align-top">
                 <span
-                  v-tooltip.top="
-                    image.nodes.length
+                  v-tippy="{
+                    content: image.nodes.length
                       ? image.nodes.join(', ')
-                      : 'Not reported on any node'
-                  "
+                      : 'Not reported on any node',
+                    placement: 'top',
+                  }"
                   class="inline-flex items-center rounded-md border-2 border-black px-2 py-0.5 text-[11px] font-black shadow-[2px_2px_0_0_#000]"
                   :class="
                     totalNodes && image.nodes.length === totalNodes
@@ -272,14 +402,15 @@
 
               <td class="px-4 py-3 align-top">
                 <span class="text-xs whitespace-nowrap text-slate-700">
-                  {{ image.lastSeen ? format(image.lastSeen) : "—" }}
+                  <TimeAgo v-if="image.lastSeen" :date="image.lastSeen" />
+                  <span v-else>—</span>
                 </span>
               </td>
 
               <td class="px-4 py-3 text-right align-top">
                 <div class="inline-flex items-center gap-2">
                   <UiButton
-                    v-tooltip.top="'Pull this image on all nodes'"
+                    v-tippy="{ content: 'Pull this image on all nodes', placement: 'top' }"
                     variant="ink"
                     icon-only
                     :loading="isPulling(image)"
@@ -288,7 +419,7 @@
                     <IconDownload />
                   </UiButton>
                   <UiButton
-                    v-tooltip.top="'Remove this image on all nodes'"
+                    v-tippy="{ content: 'Remove this image on all nodes', placement: 'top' }"
                     variant="danger"
                     icon-only
                     :loading="isDeleting(image)"
@@ -307,14 +438,13 @@
 </template>
 
 <script setup lang="ts">
-import { format } from "timeago.js";
-
 const $config = useRuntimeConfig();
 const toast = useAppToast();
 
-const { data: images, pending, error, refresh } = useFetch<Array<ImageInfo>>(
-  () => withServerEndpoint("/api/images", $config.public.serverEndpoint),
-  { server: false },
+const { data: images, pending, error, refresh } = useClientFetch(() =>
+  $fetch<ImageInfo[]>(
+    withServerEndpoint("/api/images", $config.public.serverEndpoint),
+  ),
 );
 
 const allImages = computed(() => images.value || []);
