@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex w-full flex-1 flex-col gap-6 overflow-hidden text-slate-900 [@media(min-aspect-ratio:21/9)]:max-w-[1920px] [@media(min-aspect-ratio:21/9)]:mx-auto"
+    class="flex w-full flex-1 flex-col gap-4 overflow-hidden text-slate-900 md:gap-6 [@media(min-aspect-ratio:21/9)]:max-w-[1920px] [@media(min-aspect-ratio:21/9)]:mx-auto"
   >
     <header class="flex flex-wrap items-center justify-between gap-3">
       <div>
@@ -12,7 +12,7 @@
         </p>
       </div>
 
-      <div class="flex items-center gap-2 mr-3">
+      <div class="flex w-full items-center gap-2 sm:w-auto sm:mr-3">
         <UiButton
           label="Refresh"
           variant="aqua"
@@ -195,9 +195,10 @@ const pastelColors: string[] = [
 ];
 
 const $config = useRuntimeConfig();
-const { data, pending, error, refresh } = useFetch<ImageInfo[]>(
-  () => withServerEndpoint("/api/images", $config.public.serverEndpoint),
-  { server: false },
+const { data, pending, error, refresh } = useClientFetch(() =>
+  $fetch<ImageInfo[]>(
+    withServerEndpoint("/api/images", $config.public.serverEndpoint),
+  ),
 );
 
 const selectedImages = ref<string[]>([]);

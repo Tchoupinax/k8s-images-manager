@@ -1,9 +1,9 @@
 <template>
   <div
-    class="relative flex flex-col h-screen overflow-hidden bg-gradient-to-br from-sky-100 via-blue-50 to-green-50 text-slate-900"
+    class="relative flex flex-col h-[100dvh] overflow-hidden bg-gradient-to-br from-sky-100 via-blue-50 to-green-50 text-slate-900"
   >
     <aside
-      class="fixed flex flex-col items-center w-40 h-full p-4 border-r-4 border-black bg-blue-100/90 backdrop-blur"
+      class="fixed hidden md:flex flex-col items-center w-40 h-full p-4 border-r-4 border-black bg-blue-100/90 backdrop-blur"
     >
       <div class="mb-8 text-center">
         <p class="text-xs font-semibold uppercase tracking-[0.25em] text-slate-600">
@@ -17,10 +17,7 @@
       <nav class="flex flex-col items-stretch gap-6">
         <NuxtLink
           to="/"
-          :class="[
-            'bg-[#4EC8D8] flex size-24 flex-col justify-center rounded-xl border-4 border-black p-2 text-center text-slate-900 shadow-[4px_4px_0_0_#000] transition-transform duration-150 hover:-translate-y-1 hover:bg-[#2eb8cb] hover:shadow-[6px_6px_0_0_#000] active:translate-y-0 active:shadow-[2px_2px_0_0_#000]',
-            isActive('/') && 'ring-4 ring-offset-4 ring-black ring-offset-sky-200'
-          ]"
+          :class="desktopNavClass('/', 'bg-[#4EC8D8] text-slate-900 hover:bg-[#2eb8cb]', 'ring-offset-sky-200')"
         >
           <IconWhale class="w-full" />
           <p class="mt-2 text-xs font-semibold tracking-wide uppercase">Images</p>
@@ -28,10 +25,7 @@
 
         <NuxtLink
           to="/nodes"
-          :class="[
-            'relative flex size-24 flex-col justify-center rounded-xl border-4 border-black bg-[#6DBF8A] p-2 text-center text-white shadow-[4px_4px_0_0_#000] transition-transform duration-150 hover:-translate-y-1 hover:bg-[#5AAA78] hover:shadow-[6px_6px_0_0_#000]',
-            isActive('/nodes') && 'ring-4 ring-offset-4 ring-black ring-offset-green-100'
-          ]"
+          :class="desktopNavClass('/nodes', 'bg-[#6DBF8A] text-white hover:bg-[#5AAA78]', 'ring-offset-green-100')"
         >
           <IconServer class="w-full" />
           <p class="mt-2 text-xs font-semibold tracking-wide uppercase">Nodes</p>
@@ -48,11 +42,75 @@
       </nav>
     </aside>
 
-    <main class="flex flex-col flex-1 min-h-0 px-6 py-8 ml-40">
+    <header
+      class="shrink-0 border-b-4 border-black bg-blue-100/90 px-4 py-3 backdrop-blur md:hidden"
+    >
+      <p class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-600">
+        K8s
+      </p>
+      <p class="text-sm font-black tracking-tight text-slate-900">
+        Images Manager
+      </p>
+    </header>
+
+    <main
+      class="flex flex-col flex-1 min-h-0 overflow-hidden px-4 py-3 pb-[calc(6.25rem+env(safe-area-inset-bottom,0px))] md:ml-40 md:px-6 md:py-8 md:pb-8"
+    >
       <div class="flex flex-col flex-1 min-h-0 overflow-hidden">
         <slot />
       </div>
     </main>
+
+    <nav
+      class="fixed inset-x-0 bottom-0 z-50 md:hidden pointer-events-none"
+      aria-label="Main navigation"
+    >
+      <div
+        class="pointer-events-auto mx-3 flex gap-2 rounded-2xl border-4 border-black bg-blue-100/95 p-2 shadow-[4px_4px_0_0_#000] backdrop-blur mb-[max(0.75rem,env(safe-area-inset-bottom,0px))]"
+      >
+        <NuxtLink
+          to="/"
+          :class="mobileNavLinkClass('/')"
+          :aria-current="isActive('/') ? 'page' : undefined"
+        >
+          <span class="flex size-9 items-center justify-center" aria-hidden="true">
+            <IconWhale class="size-8" />
+          </span>
+          <span class="text-[10px] font-black uppercase tracking-wide leading-none">
+            Images
+          </span>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/nodes"
+          :class="mobileNavLinkClass('/nodes')"
+          :aria-current="isActive('/nodes') ? 'page' : undefined"
+        >
+          <span class="flex size-9 items-center justify-center" aria-hidden="true">
+            <IconServer class="size-8" />
+          </span>
+          <span class="text-[10px] font-black uppercase tracking-wide leading-none">
+            Nodes
+          </span>
+        </NuxtLink>
+
+        <button
+          type="button"
+          :class="mobilePullClass"
+          @click="openPullModal()"
+        >
+          <span
+            class="flex size-9 items-center justify-center rounded-lg border-2 border-black bg-white shadow-[2px_2px_0_0_#000]"
+            aria-hidden="true"
+          >
+            <IconDownload class="size-5" />
+          </span>
+          <span class="text-[10px] font-black uppercase tracking-wide leading-none">
+            Pull
+          </span>
+        </button>
+      </div>
+    </nav>
 
     <UiModal
       v-model:open="pullModalOpen"
@@ -87,10 +145,12 @@
       </template>
     </UiModal>
 
-    <NuxtNotifications
-      position="bottom right"
-      :speed="400"
-    />
+    <ClientOnly>
+      <NuxtNotifications
+        position="bottom right"
+        :speed="400"
+      />
+    </ClientOnly>
   </div>
 </template>
 
@@ -100,6 +160,29 @@ const $config = useRuntimeConfig();
 const toast = useAppToast();
 
 const isActive = (path: string) => route.path === path;
+
+const desktopNavBase =
+  "flex size-24 flex-col justify-center rounded-xl border-4 border-black p-2 text-center shadow-[4px_4px_0_0_#000] transition-transform duration-150 hover:-translate-y-1 hover:shadow-[6px_6px_0_0_#000] active:translate-y-0 active:shadow-[2px_2px_0_0_#000]";
+
+const desktopNavClass = (path: string, palette: string, ringOffset: string) => [
+  desktopNavBase,
+  palette,
+  isActive(path) && `ring-4 ring-offset-4 ring-black ${ringOffset}`,
+];
+
+const mobileTabBase =
+  "flex flex-1 min-w-0 flex-col items-center justify-center gap-1 rounded-xl border-2 border-black py-2 text-slate-900 shadow-[2px_2px_0_0_#000] transition-[transform,box-shadow,background-color] active:translate-y-px active:shadow-[1px_1px_0_0_#000]";
+
+const mobileNavLinkClass = (path: string) => [
+  mobileTabBase,
+  isActive(path)
+    ? path === "/nodes"
+      ? "bg-[#6DBF8A] text-white"
+      : "bg-[#4EC8D8] text-slate-900"
+    : "bg-white hover:bg-slate-50",
+];
+
+const mobilePullClass = `${mobileTabBase} bg-white hover:bg-slate-50`;
 
 const pullModalOpen = ref(false);
 const pullRef = ref("");
