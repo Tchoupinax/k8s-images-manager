@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex flex-col h-screen overflow-hidden bg-gradient-to-br from-sky-100 via-blue-50 to-indigo-100 text-slate-900"
+    class="relative flex flex-col h-screen overflow-hidden bg-gradient-to-br from-sky-100 via-blue-50 to-green-50 text-slate-900"
   >
     <aside
       class="fixed flex flex-col items-center w-40 h-full p-4 border-r-4 border-black bg-blue-100/90 backdrop-blur"
@@ -14,7 +14,7 @@
         </p>
       </div>
 
-      <nav class="flex flex-col items-stretch gap-4">
+      <nav class="flex flex-col items-stretch gap-6">
         <NuxtLink
           to="/"
           :class="[
@@ -23,18 +23,18 @@
           ]"
         >
           <IconWhale class="w-full" />
-          <p class="mt-1 text-xs font-semibold tracking-wide uppercase">Images</p>
+          <p class="mt-2 text-xs font-semibold tracking-wide uppercase">Images</p>
         </NuxtLink>
 
         <NuxtLink
           to="/nodes"
           :class="[
-            'relative flex size-24 flex-col justify-center rounded-xl border-4 border-black bg-[#4A0AAA] p-2 text-center text-white shadow-[4px_4px_0_0_#000] transition-transform duration-150 hover:-translate-y-1 hover:shadow-[6px_6px_0_0_#000]',
-            isActive('/nodes') && 'ring-4 ring-offset-4 ring-black ring-offset-indigo-300'
+            'relative flex size-24 flex-col justify-center rounded-xl border-4 border-black bg-[#6DBF8A] p-2 text-center text-white shadow-[4px_4px_0_0_#000] transition-transform duration-150 hover:-translate-y-1 hover:bg-[#5AAA78] hover:shadow-[6px_6px_0_0_#000]',
+            isActive('/nodes') && 'ring-4 ring-offset-4 ring-black ring-offset-green-100'
           ]"
         >
           <IconServer class="w-full" />
-          <p class="mt-1 text-xs font-semibold tracking-wide uppercase">Nodes</p>
+          <p class="mt-2 text-xs font-semibold tracking-wide uppercase">Nodes</p>
         </NuxtLink>
 
         <button
@@ -42,8 +42,8 @@
           class="relative flex size-24 flex-col items-center justify-center rounded-xl border-4 border-black bg-white p-2 text-center text-slate-900 shadow-[4px_4px_0_0_#000] transition-transform duration-150 hover:-translate-y-1 hover:shadow-[6px_6px_0_0_#000]"
           @click="openPullModal()"
         >
-          <i class="text-3xl pi pi-download"></i>
-          <p class="mt-1 text-xs font-semibold tracking-wide uppercase">Pull</p>
+          <IconDownload class="size-10" />
+          <p class="mt-2 text-xs font-semibold tracking-wide uppercase">Pull</p>
         </button>
       </nav>
     </aside>
@@ -54,57 +54,56 @@
       </div>
     </main>
 
-    <Dialog
-      v-model:visible="pullModalOpen"
-      modal
-      header="Pull image on all nodes"
-      :pt="{
-        root: { class: 'border-4 border-black rounded-2xl shadow-[6px_6px_0_0_#000]' },
-        header: { class: 'text-slate-900 font-black' },
-      }"
-      :style="{ width: 'min(28rem, 92vw)' }"
+    <UiModal
+      v-model:open="pullModalOpen"
+      title="Pull image on all nodes"
       @show="onPullModalShow"
     >
       <p class="text-sm text-slate-600">
         Agents will pull this image on every node on the next heartbeat.
       </p>
-      <InputText
+      <input
+        ref="pullInputEl"
         v-model="pullRef"
+        type="text"
         placeholder="nginx:alpine"
-        class="w-full mt-4 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-sky-500 focus:outline-none"
+        class="w-full mt-4 rounded-lg border-2 border-black bg-white px-3 py-2 text-sm text-slate-800 shadow-[2px_2px_0_0_#000] focus:border-sky-500 focus:outline-none"
         @keyup.enter="onPullImageRef()"
-      />
+      >
       <template #footer>
-        <Button
+        <UiButton
           label="Cancel"
-          class="btn-ghost"
+          variant="ghost"
           @click="pullModalOpen = false"
         />
-        <Button
+        <UiButton
           label="Pull"
-          icon="pi pi-download"
-          class="btn-ink"
+          variant="ink"
           :loading="isPulling"
           @click="onPullImageRef()"
-        />
+        >
+          <IconDownload />
+        </UiButton>
       </template>
-    </Dialog>
+    </UiModal>
 
-    <Toast />
+    <NuxtNotifications
+      position="bottom right"
+      :speed="400"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useToast } from "primevue/usetoast";
-
 const route = useRoute();
 const $config = useRuntimeConfig();
-const toast = useToast();
+const toast = useAppToast();
 
 const isActive = (path: string) => route.path === path;
 
 const pullModalOpen = ref(false);
 const pullRef = ref("");
+const pullInputEl = ref<HTMLInputElement | null>(null);
 const isPulling = ref(false);
 
 const openPullModal = () => {
@@ -113,10 +112,7 @@ const openPullModal = () => {
 };
 
 const onPullModalShow = () => {
-  nextTick(() => {
-    const el = document.querySelector(".p-dialog input") as HTMLInputElement | null;
-    el?.focus();
-  });
+  nextTick(() => pullInputEl.value?.focus());
 };
 
 const parseImageRef = (input: string) => {

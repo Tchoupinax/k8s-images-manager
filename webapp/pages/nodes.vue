@@ -13,12 +13,13 @@
       </div>
 
       <div class="flex items-center gap-2 mr-3">
-        <Button
-          icon="pi pi-refresh"
+        <UiButton
           label="Refresh"
-          class="btn-aqua"
+          variant="aqua"
           @click="refresh()"
-        />
+        >
+          <IconRefresh />
+        </UiButton>
       </div>
     </header>
 
@@ -35,17 +36,13 @@
           </p>
         </div>
 
-        <MultiSelect
+        <UiMultiSelect
           v-model="selectedImages"
           :options="imageOptions"
-          option-label="label"
-          option-value="value"
           filter
-          display="chip"
           placeholder="Select images"
           :max-selected-labels="3"
-          :highlight-on-select="true"
-          class="w-full min-w-[240px] max-w-xl text-xs"
+          class="w-full min-w-[240px] max-w-xl"
         />
       </div>
 
@@ -73,7 +70,7 @@
             class="absolute inset-0 rounded-full border-4 border-black bg-[#4EC8D8] opacity-40 animate-ping"
           ></div>
           <div
-            class="absolute inset-1 rounded-full border-4 border-black bg-[#4A0AAA] animate-[spin_1.1s_linear_infinite]"
+            class="absolute inset-1 rounded-full border-4 border-black bg-[#6DBF8A] animate-[spin_1.1s_linear_infinite]"
           ></div>
         </div>
         <p class="text-sm font-medium text-slate-800">Loading node information…</p>
@@ -89,12 +86,14 @@
         <p class="text-xs text-slate-600">
           {{ error?.message || "Please try again in a moment." }}
         </p>
-        <Button
+        <UiButton
           label="Retry"
-          icon="pi pi-refresh"
-          class="mt-2 btn-aqua"
+          variant="aqua"
+          class="mt-2"
           @click="refresh()"
-        />
+        >
+          <IconRefresh />
+        </UiButton>
       </div>
 
       <div
@@ -187,10 +186,10 @@ const pastelColors: string[] = [
   "#6CA0DC", // Pastel Blue foncé
   "#47B174", // Pastel Green foncé
   "#FFE066", // Pastel Yellow foncé
-  "#C586C0", // Pastel Purple foncé
+  "#B8E6C8", // Pastel mint green
   "#FF9F43", // Pastel Orange foncé
   "#3EC1C1", // Pastel Mint foncé
-  "#B39CD0", // Pastel Lavender foncé
+  "#9BD4BC", // Pastel mint
   "#FFB085", // Pastel Peach foncé
   "#A9A9A9", // Pastel Gray foncé
 ];

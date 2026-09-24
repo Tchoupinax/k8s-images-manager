@@ -13,20 +13,22 @@
       </div>
 
       <div class="flex items-center gap-3 mr-3">
-        <Button
-          icon="pi pi-trash"
+        <UiButton
           label="Clean"
-          class="btn-danger"
+          variant="danger"
           :loading="isCleaning"
           :disabled="!allImages.length"
           @click="onCleanAll()"
-        />
-        <Button
-          icon="pi pi-refresh"
+        >
+          <IconTrash />
+        </UiButton>
+        <UiButton
           label="Refresh"
-          class="btn-aqua"
+          variant="aqua"
           @click="refresh()"
-        />
+        >
+          <IconRefresh />
+        </UiButton>
       </div>
     </header>
 
@@ -95,14 +97,11 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <MultiSelect
+          <UiMultiSelect
             v-model="selectedHostnames"
             :options="hostnameOptions"
-            option-label="label"
-            option-value="value"
             placeholder="Filter by node"
-            display="chip"
-            class="w-full min-w-[180px] max-w-xs text-xs"
+            class="w-full min-w-[180px] max-w-xs"
           />
         </div>
       </div>
@@ -116,7 +115,7 @@
             class="absolute inset-0 rounded-full border-4 border-black bg-[#4EC8D8] opacity-40 animate-ping"
           ></div>
           <div
-            class="absolute inset-1 rounded-full border-4 border-black bg-[#4A0AAA] animate-[spin_1.1s_linear_infinite]"
+            class="absolute inset-1 rounded-full border-4 border-black bg-[#6DBF8A] animate-[spin_1.1s_linear_infinite]"
           ></div>
         </div>
         <p class="text-sm font-medium text-slate-800">Loading images…</p>
@@ -132,18 +131,20 @@
         <p class="text-xs text-slate-600">
           {{ error?.message || "Please try again in a moment." }}
         </p>
-        <Button
+        <UiButton
           label="Retry"
-          icon="pi pi-refresh"
-          class="mt-2 btn-aqua"
+          variant="aqua"
+          class="mt-2"
           @click="refresh()"
-        />
+        >
+          <IconRefresh />
+        </UiButton>
       </div>
 
       <div v-else class="flex-1 min-h-0 overflow-auto">
         <table class="min-w-full text-xs text-left">
           <thead
-            class="sticky top-0 z-10 border-b-4 border-black bg-[#4A0AAA]"
+            class="sticky top-0 z-10 border-b-4 border-black bg-[#6DBF8A]"
           >
             <tr class="text-[11px] font-black uppercase tracking-[0.18em] text-white">
               <th class="px-4 py-3">
@@ -154,26 +155,23 @@
                     @click="toggleSort('name')"
                   >
                     <span>Image</span>
-                    <i
+                    <span
                       v-if="sortBy === 'name'"
-                      class="pi text-[10px]"
-                      :class="
-                        sortDirection === 'asc'
-                          ? 'pi-sort-alpha-down'
-                          : 'pi-sort-alpha-up-alt'
-                      "
-                    ></i>
+                      class="text-[10px] font-black"
+                      aria-hidden="true"
+                    >{{ sortDirection === 'asc' ? '↓' : '↑' }}</span>
                   </button>
                   <span class="relative inline-flex min-w-0 flex-1 max-w-sm items-center normal-case tracking-normal">
-                    <i
-                      class="absolute text-xs pointer-events-none pi pi-search left-3 text-slate-500"
-                    ></i>
-                    <InputText
-                      v-model="search"
-                      placeholder="Search repository, tag…"
-                      class="w-full rounded-xl border-2 border-black bg-white px-7 py-1.5 text-xs font-medium text-slate-800 shadow-[2px_2px_0_0_#000] focus:outline-none"
-                      @click.stop
+                    <IconSearch
+                      class="absolute pointer-events-none left-3 text-slate-500"
                     />
+                    <input
+                      v-model="search"
+                      type="search"
+                      placeholder="Search repository, tag…"
+                      class="w-full rounded-xl border-2 border-black bg-white py-1.5 pl-7 pr-2 text-xs font-medium text-slate-800 shadow-[2px_2px_0_0_#000] focus:outline-none focus:ring-2 focus:ring-[#6DBF8A]"
+                      @click.stop
+                    >
                   </span>
                 </div>
               </th>
@@ -184,15 +182,11 @@
                   @click="toggleSort('size')"
                 >
                   <span>Size</span>
-                  <i
+                  <span
                     v-if="sortBy === 'size'"
-                    class="pi text-[10px]"
-                    :class="
-                      sortDirection === 'asc'
-                        ? 'pi-sort-amount-up'
-                        : 'pi-sort-amount-down'
-                    "
-                  ></i>
+                    class="text-[10px] font-black"
+                    aria-hidden="true"
+                  >{{ sortDirection === 'asc' ? '↓' : '↑' }}</span>
                 </button>
               </th>
               <th class="px-4 py-3">
@@ -202,15 +196,11 @@
                   @click="toggleSort('nodes')"
                 >
                   <span>Nodes</span>
-                  <i
+                  <span
                     v-if="sortBy === 'nodes'"
-                    class="pi text-[10px]"
-                    :class="
-                      sortDirection === 'asc'
-                        ? 'pi-sort-amount-up'
-                        : 'pi-sort-amount-down'
-                    "
-                  ></i>
+                    class="text-[10px] font-black"
+                    aria-hidden="true"
+                  >{{ sortDirection === 'asc' ? '↓' : '↑' }}</span>
                 </button>
               </th>
               <th class="px-4 py-3">Last seen</th>
@@ -288,20 +278,24 @@
 
               <td class="px-4 py-3 text-right align-top">
                 <div class="inline-flex items-center gap-2">
-                  <Button
+                  <UiButton
                     v-tooltip.top="'Pull this image on all nodes'"
-                    icon="pi pi-download"
-                    class="btn-ink"
+                    variant="ink"
+                    icon-only
                     :loading="isPulling(image)"
                     @click="onPullImage(image)"
-                  />
-                  <Button
+                  >
+                    <IconDownload />
+                  </UiButton>
+                  <UiButton
                     v-tooltip.top="'Remove this image on all nodes'"
-                    icon="pi pi-trash"
-                    class="btn-danger"
+                    variant="danger"
+                    icon-only
                     :loading="isDeleting(image)"
                     @click="onRemoveImage(image)"
-                  />
+                  >
+                    <IconTrash />
+                  </UiButton>
                 </div>
               </td>
             </tr>
@@ -313,11 +307,10 @@
 </template>
 
 <script setup lang="ts">
-import { useToast } from "primevue/usetoast";
 import { format } from "timeago.js";
 
 const $config = useRuntimeConfig();
-const toast = useToast();
+const toast = useAppToast();
 
 const { data: images, pending, error, refresh } = useFetch<Array<ImageInfo>>(
   () => withServerEndpoint("/api/images", $config.public.serverEndpoint),

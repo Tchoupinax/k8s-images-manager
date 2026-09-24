@@ -1,285 +1,180 @@
-/* MultiSelect & InputText: light theme matching app (aqua/sky, black border) */
+/* Neo-brutalist controls (replaces former PrimeVue overrides) */
 
-.p-multiselect {
-  background: rgb(255 255 255) !important;
-  border: 2px solid rgb(0 0 0) !important;
-  color: rgb(15 23 42) !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.1) !important;
-}
-
-.p-multiselect:hover,
-.p-multiselect.p-focus {
-  border-color: rgb(0 0 0) !important;
-  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.15) !important;
-}
-
-/* Hover/focus: background is black → text white */
-.p-multiselect:hover,
-.p-multiselect:hover *,
-.p-multiselect.p-focus,
-.p-multiselect.p-focus * {
-  color: rgb(255 255 255) !important;
-}
-
-.p-multiselect:hover .p-placeholder,
-.p-multiselect.p-focus .p-placeholder {
-  color: rgb(203 213 225) !important;
-}
-
-.p-multiselect .p-multiselect-label {
-  color: rgb(15 23 42) !important;
-}
-
-.p-multiselect .p-multiselect-trigger {
-  color: rgb(15 23 42) !important;
-}
-
-.p-multiselect .p-multiselect-label.p-placeholder {
-  color: rgb(100 116 139) !important;
-}
-
-/* All text in trigger (closed state) – dark so not white on white */
-.p-multiselect,
-.p-multiselect * {
-  color: rgb(15 23 42) !important;
-}
-
-.p-multiselect .p-placeholder {
-  color: rgb(100 116 139) !important;
-}
-
-/* Dropdown panel (often teleported to body) – force light background + dark text */
-.p-multiselect-panel,
-.p-multiselect-overlay,
-.p-multiselect-panel .p-multiselect-content,
-[data-pc-section="overlay"],
-[data-pc-name="multiselect"] [data-pc-section="panel"] {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  border: 2px solid rgb(0 0 0) !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 4px 4px 0 rgb(0 0 0 / 0.15) !important;
-  color: rgb(15 23 42) !important;
-}
-
-/* All text inside panel – avoid white-on-white */
-.p-multiselect-panel,
-.p-multiselect-panel *,
-.p-multiselect-overlay,
-.p-multiselect-overlay *,
-[data-pc-name="multiselect"] [data-pc-section="panel"],
-[data-pc-name="multiselect"] [data-pc-section="panel"] * {
-  color: rgb(15 23 42) !important;
-}
-
-.p-multiselect-panel .p-multiselect-item:hover,
-.p-multiselect-panel .p-multiselect-item.p-highlight {
-  color: rgb(15 23 42) !important;
-}
-
-/* Inner content of popup (PrimeVue structure) */
-.p-multiselect-panel .p-multiselect-content,
-.p-multiselect-panel [class*="content"] {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-}
-
-.p-multiselect-panel .p-multiselect-list,
-.p-multiselect-panel .p-multiselect-items,
-.p-multiselect-panel .p-multiselect-list-wrapper {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-}
-
-.p-multiselect-panel .p-multiselect-header {
-  background: rgb(248 250 252) !important;
-  border-color: rgb(226 232 240) !important;
-  color: rgb(15 23 42) !important;
-}
-
-.p-multiselect-panel .p-multiselect-item {
-  color: rgb(15 23 42) !important;
-}
-
-/* Panel item hover: background is black → text white */
-.p-multiselect-panel .p-multiselect-item:hover,
-.p-multiselect-panel .p-multiselect-item:hover * {
-  background: rgb(0 0 0) !important;
-  color: rgb(255 255 255) !important;
-}
-
-.p-multiselect-panel .p-multiselect-item.p-highlight,
-.p-multiselect-panel .p-multiselect-item.p-highlight * {
-  background: rgb(0 0 0) !important;
-  color: rgb(255 255 255) !important;
-}
-
-.p-multiselect-panel .p-multiselect-close {
-  color: rgb(15 23 42) !important;
-}
-
-.p-multiselect-panel .p-multiselect-filter-container .p-inputtext {
-  background: rgb(255 255 255) !important;
-  border: 1px solid rgb(203 213 225) !important;
-  color: rgb(15 23 42) !important;
-  border-radius: 0.5rem !important;
-}
-
-.p-multiselect-panel .p-multiselect-filter-container .p-inputtext::placeholder {
-  color: rgb(148 163 184) !important;
-}
-
-/* Chips inside multiselect */
-.p-multiselect .p-multiselect-chip {
-  background: rgb(186 230 253) !important;
-  color: rgb(15 23 42) !important;
-  border: 1px solid rgb(0 0 0) !important;
-  border-radius: 9999px !important;
-}
-
-.p-multiselect .p-multiselect-chip .p-multiselect-chip-remove-icon {
-  color: rgb(15 23 42) !important;
-}
-
-/* InputText (search) - ensure light */
-.p-inputtext {
-  background: rgb(255 255 255) !important;
-  border-color: rgb(203 213 225) !important;
-  color: rgb(15 23 42) !important;
-}
-
-.p-inputtext::placeholder {
-  color: rgb(148 163 184) !important;
-}
-
-.p-inputtext:enabled:focus {
-  border-color: rgb(14 165 233) !important;
-  box-shadow: 0 0 0 1px rgb(14 165 233) !important;
-}
-
-/* Buttons: same neo-brutalist chrome as the sidebar tiles */
-.p-button {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 0.4rem !important;
-  padding: 0.55rem 1rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.02em !important;
-  line-height: 1 !important;
-  border: 4px solid #000 !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 4px 4px 0 0 #000 !important;
-  overflow: visible !important;
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  border: 4px solid #000;
+  border-radius: 0.75rem;
+  box-shadow: 4px 4px 0 0 #000;
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,
     background-color 0.15s ease,
-    filter 0.15s ease !important;
+    filter 0.15s ease;
 }
 
-.p-button:not(:disabled):hover {
+.ui-btn:not(:disabled):hover {
   transform: translateY(-4px);
-  box-shadow: 6px 6px 0 0 #000 !important;
+  box-shadow: 6px 6px 0 0 #000;
 }
 
-.p-button:not(:disabled):active {
+.ui-btn:not(:disabled):active {
   transform: translateY(0);
-  box-shadow: 2px 2px 0 0 #000 !important;
+  box-shadow: 2px 2px 0 0 #000;
 }
 
-.p-button:focus-visible {
-  outline: 3px solid #4a0aaa !important;
-  outline-offset: 2px !important;
+.ui-btn:focus-visible {
+  outline: 3px solid #6dbf8a;
+  outline-offset: 2px;
 }
 
-.p-button:disabled {
-  opacity: 0.55 !important;
-  box-shadow: 2px 2px 0 0 #000 !important;
+.ui-btn:disabled {
+  opacity: 0.55;
+  box-shadow: 2px 2px 0 0 #000;
+  cursor: not-allowed;
 }
 
-.p-button.p-button-icon-only {
-  width: 2.75rem !important;
-  height: 2.75rem !important;
-  padding: 0 !important;
-  border-radius: 0.75rem !important;
+.ui-btn-icon-only {
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
 }
 
-.p-button .p-button-icon {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 0.95rem !important;
-  line-height: 1 !important;
+.ui-btn-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 9999px;
+  animation: ui-btn-spin 0.7s linear infinite;
 }
 
-.p-button .p-button-label {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 1 !important;
-  padding: 0 !important;
+@keyframes ui-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.p-button.btn-aqua {
-  background: #4ec8d8 !important;
-  color: #0f172a !important;
-  border-color: #000 !important;
+.ui-btn.btn-aqua {
+  background: #4ec8d8;
+  color: #0f172a;
 }
 
-.p-button.btn-aqua .p-button-label,
-.p-button.btn-aqua .p-button-icon {
-  color: #0f172a !important;
-}
-
-.p-button.btn-aqua:not(:disabled):hover {
-  background: #2eb8cb !important;
+.ui-btn.btn-aqua:not(:disabled):hover {
+  background: #2eb8cb;
   filter: saturate(1.08);
 }
 
-.p-button.btn-aqua:not(:disabled):active {
-  background: #22a6b8 !important;
+.ui-btn.btn-ink {
+  background: #6dbf8a;
+  color: #fff;
 }
 
-.p-button.btn-ink {
-  background: #4a0aaa !important;
-  color: #fff !important;
+.ui-btn.btn-ink:not(:disabled):hover {
+  background: #5aaa78;
 }
 
-.p-button.btn-ink .p-button-label,
-.p-button.btn-ink .p-button-icon {
-  color: #fff !important;
+.ui-btn.btn-danger {
+  background: #ef4444;
+  color: #fff;
 }
 
-.p-button.btn-ink:not(:disabled):hover {
-  background: #3b0888 !important;
+.ui-btn.btn-danger:not(:disabled):hover {
+  background: #dc2626;
 }
 
-.p-button.btn-danger {
-  background: #ef4444 !important;
-  color: #fff !important;
+.ui-btn.btn-ghost {
+  background: #fff;
+  color: #0f172a;
 }
 
-.p-button.btn-danger .p-button-label,
-.p-button.btn-danger .p-button-icon {
-  color: #fff !important;
+.ui-btn.btn-ghost:not(:disabled):hover {
+  background: #f8fafc;
 }
 
-.p-button.btn-danger:not(:disabled):hover {
-  background: #dc2626 !important;
+.ui-multiselect-trigger {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  color: #0f172a;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 0.75rem;
+  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.1);
 }
 
-.p-button.btn-ghost {
-  background: #fff !important;
-  color: #0f172a !important;
+.ui-multiselect-trigger:hover,
+.ui-multiselect-trigger-open {
+  box-shadow: 2px 2px 0 rgb(0 0 0 / 0.15);
 }
 
-.p-button.btn-ghost .p-button-label,
-.p-button.btn-ghost .p-button-icon {
-  color: #0f172a !important;
+.ui-multiselect-panel {
+  position: absolute;
+  z-index: 50;
+  margin-top: 0.35rem;
+  width: 100%;
+  min-width: 12rem;
+  overflow: hidden;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 0.75rem;
+  box-shadow: 4px 4px 0 rgb(0 0 0 / 0.15);
 }
 
-.p-button.btn-ghost:not(:disabled):hover {
-  background: #f8fafc !important;
+.ui-modal {
+  margin: auto;
+  max-width: min(28rem, 92vw);
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.ui-modal::backdrop {
+  background: rgb(15 23 42 / 0.45);
+}
+
+.ui-modal-panel {
+  border: 4px solid #000;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 6px 6px 0 0 #000;
+}
+
+.ui-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem 0;
+}
+
+.ui-modal-close {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #64748b;
+}
+
+.ui-modal-close:hover {
+  color: #0f172a;
+}
+
+.ui-modal-body {
+  padding: 1rem 1.25rem;
+}
+
+.ui-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0 1.25rem 1.25rem;
 }
