@@ -7,6 +7,7 @@ import {
   cleanupPulls,
   runMaintenance,
 } from "./maintenance.mts";
+import { getStatsHistory, isHistoryRange } from "./stats.mts";
 import { logger } from "./tools/logger.mts";
 import {
   cleanAllImagesQueued,
@@ -219,6 +220,25 @@ export function router(fastify: FastifyInstance) {
           .code(200)
           .header("Content-Type", "application/json; charset=utf-8")
           .send(flat);
+      });
+
+      app.get("/stats/history", async (request, reply) => {
+        const { range = "7d" } = request.query as { range?: string };
+
+        if (!isHistoryRange(range)) {
+          validationErrorsTotal.inc({ route: "/api/stats/history" });
+          reply.code(400).send({
+            message: "range must be one of 24h, 7d, 30d, 90d",
+          });
+          return;
+        }
+
+        const points = await getStatsHistory(request.server.prisma, range);
+
+        reply
+          .code(200)
+          .header("Content-Type", "application/json; charset=utf-8")
+          .send(points);
       });
 
       app.delete("/images", async (request, reply) => {

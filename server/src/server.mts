@@ -6,6 +6,7 @@ import type { PrismaClient as PrismaClientType } from "../prisma/generated/prism
 import { prisma as defaultPrisma } from "./prisma-client.mts";
 import { runMaintenance } from "./maintenance.mts";
 import { router } from "./router.mts";
+import { maybeRecordStatsSnapshot, SNAPSHOT_INTERVAL_MS } from "./stats.mts";
 import { type Store } from "./store.mts";
 import { env } from "./tools/env.mts";
 import { isProduction, logger } from "./tools/logger.mts";
@@ -102,11 +103,21 @@ export async function startServer() {
   }, MAINTENANCE_INTERVAL_MS);
   maintenanceTimer.unref();
 
+  const recordSnapshot = () => {
+    void maybeRecordStatsSnapshot(server.prisma).catch(err => {
+      logger.error(err, "Stats snapshot failed");
+    });
+  };
+  recordSnapshot();
+  const snapshotTimer = setInterval(recordSnapshot, SNAPSHOT_INTERVAL_MS);
+  snapshotTimer.unref();
+
   try {
     await server.listen({ port, host: "0.0.0.0" });
     logger.info(`Listening on ${port}`);
   } catch (err) {
     clearInterval(maintenanceTimer);
+    clearInterval(snapshotTimer);
     server.log.error(err);
     process.exit(1);
   }

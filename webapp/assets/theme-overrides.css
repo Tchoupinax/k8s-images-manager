@@ -119,10 +119,9 @@
 }
 
 .ui-multiselect-panel {
-  position: absolute;
-  z-index: 50;
-  margin-top: 0.35rem;
-  width: 100%;
+  /* Teleported to <body> and positioned from the trigger, so it escapes parent stacking contexts */
+  position: fixed;
+  z-index: 1000;
   min-width: 12rem;
   overflow: hidden;
   background: #fff;
