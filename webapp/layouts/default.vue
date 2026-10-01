@@ -17,18 +17,29 @@
       <nav class="flex flex-col items-stretch gap-6">
         <NuxtLink
           to="/"
+          aria-label="Images"
+          title="Images"
           :class="desktopNavClass('/', 'bg-[#4EC8D8] text-slate-900 hover:bg-[#2eb8cb]', 'ring-offset-sky-200')"
         >
           <IconWhale class="w-full" />
-          <p class="mt-2 text-xs font-semibold tracking-wide uppercase">Images</p>
         </NuxtLink>
 
         <NuxtLink
           to="/nodes"
+          aria-label="Nodes"
+          title="Nodes"
           :class="desktopNavClass('/nodes', 'bg-[#6DBF8A] text-white hover:bg-[#5AAA78]', 'ring-offset-green-100')"
         >
           <IconServer class="w-full" />
-          <p class="mt-2 text-xs font-semibold tracking-wide uppercase">Nodes</p>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/stats"
+          aria-label="Stats"
+          title="Stats"
+          :class="desktopNavClass('/stats', 'bg-[#FFC94A] text-slate-900 hover:bg-[#F5B92E]', 'ring-offset-amber-100')"
+        >
+          <IconChart class="w-full" />
         </NuxtLink>
 
         <button
@@ -91,6 +102,19 @@
           </span>
           <span class="text-[10px] font-black uppercase tracking-wide leading-none">
             Nodes
+          </span>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/stats"
+          :class="mobileNavLinkClass('/stats')"
+          :aria-current="isActive('/stats') ? 'page' : undefined"
+        >
+          <span class="flex size-9 items-center justify-center" aria-hidden="true">
+            <IconChart class="size-8" />
+          </span>
+          <span class="text-[10px] font-black uppercase tracking-wide leading-none">
+            Stats
           </span>
         </NuxtLink>
 
@@ -178,7 +202,9 @@ const mobileNavLinkClass = (path: string) => [
   isActive(path)
     ? path === "/nodes"
       ? "bg-[#6DBF8A] text-white"
-      : "bg-[#4EC8D8] text-slate-900"
+      : path === "/stats"
+        ? "bg-[#FFC94A] text-slate-900"
+        : "bg-[#4EC8D8] text-slate-900"
     : "bg-white hover:bg-slate-50",
 ];
 

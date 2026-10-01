@@ -26,6 +26,25 @@ const emit = defineEmits<{
 const open = ref(false);
 const filterQuery = ref("");
 const root = ref<HTMLElement | null>(null);
+const panel = ref<HTMLElement | null>(null);
+const panelStyle = ref<Record<string, string>>({});
+
+const updatePanelPosition = () => {
+  if (!root.value) {return;}
+  const rect = root.value.getBoundingClientRect();
+  panelStyle.value = {
+    top: `${rect.bottom + 6}px`,
+    left: `${rect.left}px`,
+    width: `${rect.width}px`,
+  };
+};
+
+watch(open, async isOpen => {
+  if (!isOpen) {return;}
+  updatePanelPosition();
+  await nextTick();
+  updatePanelPosition();
+});
 
 const filteredOptions = computed(() => {
   const q = filterQuery.value.trim().toLowerCase();
@@ -56,13 +75,27 @@ const toggle = (value: string) => {
 
 const onDocumentClick = (event: MouseEvent) => {
   if (!open.value || !root.value) {return;}
-  if (!root.value.contains(event.target as Node)) {
+  const target = event.target as Node;
+  if (!root.value.contains(target) && !panel.value?.contains(target)) {
     open.value = false;
   }
 };
 
-onMounted(() => document.addEventListener("click", onDocumentClick));
-onBeforeUnmount(() => document.removeEventListener("click", onDocumentClick));
+const onViewportChange = () => {
+  if (open.value) {updatePanelPosition();}
+};
+
+onMounted(() => {
+  document.addEventListener("click", onDocumentClick);
+  // Capture so scrolling any ancestor container keeps the panel attached to the trigger
+  window.addEventListener("scroll", onViewportChange, true);
+  window.addEventListener("resize", onViewportChange);
+});
+onBeforeUnmount(() => {
+  document.removeEventListener("click", onDocumentClick);
+  window.removeEventListener("scroll", onViewportChange, true);
+  window.removeEventListener("resize", onViewportChange);
+});
 </script>
 
 <template>
@@ -77,43 +110,47 @@ onBeforeUnmount(() => document.removeEventListener("click", onDocumentClick));
       <span class="shrink-0 text-[10px] font-black" aria-hidden="true">▼</span>
     </button>
 
-    <div
-      v-if="open"
-      class="ui-multiselect-panel"
-      @click.stop
-    >
-      <div v-if="filter" class="border-b-2 border-black p-2">
-        <input
-          v-model="filterQuery"
-          type="search"
-          placeholder="Filter…"
-          class="w-full rounded-lg border-2 border-black bg-white px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#6DBF8A]"
-        >
-      </div>
-      <ul class="max-h-56 overflow-auto p-1">
-        <li
-          v-for="opt in filteredOptions"
-          :key="opt.value"
-        >
-          <label
-            class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 hover:bg-[#4EC8D8]/30"
+    <Teleport to="body">
+      <div
+        v-if="open"
+        ref="panel"
+        class="ui-multiselect-panel text-xs"
+        :style="panelStyle"
+        @click.stop
+      >
+        <div v-if="filter" class="border-b-2 border-black p-2">
+          <input
+            v-model="filterQuery"
+            type="search"
+            placeholder="Filter…"
+            class="w-full rounded-lg border-2 border-black bg-white px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#6DBF8A]"
           >
-            <input
-              type="checkbox"
-              class="size-3.5 rounded border-2 border-black accent-[#6DBF8A]"
-              :checked="isSelected(opt.value)"
-              @change="toggle(opt.value)"
+        </div>
+        <ul class="max-h-56 overflow-auto p-1">
+          <li
+            v-for="opt in filteredOptions"
+            :key="opt.value"
+          >
+            <label
+              class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 hover:bg-[#4EC8D8]/30"
             >
-            <span class="min-w-0 truncate text-slate-900">{{ opt.label }}</span>
-          </label>
-        </li>
-        <li
-          v-if="!filteredOptions.length"
-          class="px-2 py-3 text-center text-slate-500"
-        >
-          No matches
-        </li>
-      </ul>
-    </div>
+              <input
+                type="checkbox"
+                class="size-3.5 rounded border-2 border-black accent-[#6DBF8A]"
+                :checked="isSelected(opt.value)"
+                @change="toggle(opt.value)"
+              >
+              <span class="min-w-0 truncate text-slate-900">{{ opt.label }}</span>
+            </label>
+          </li>
+          <li
+            v-if="!filteredOptions.length"
+            class="px-2 py-3 text-center text-slate-500"
+          >
+            No matches
+          </li>
+        </ul>
+      </div>
+    </Teleport>
   </div>
 </template>

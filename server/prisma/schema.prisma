@@ -62,3 +62,15 @@ model PendingPullAck {
   @@unique([nodeId, repository, tag])
   @@map("pending_pull_acks")
 }
+
+model StatsSnapshot {
+  id               String   @id @default(uuid())
+  createdAt        DateTime @default(now()) @map("created_at")
+  nodeCount        Int      @map("node_count")
+  imageCount       Int      @map("image_count")
+  uniqueImageCount Int      @map("unique_image_count")
+  totalBytes       BigInt   @map("total_bytes")
+
+  @@index([createdAt])
+  @@map("stats_snapshots")
+}
