@@ -23,21 +23,21 @@
     "nuxt": "4.5.2",
     "nuxt3-notifications": "1.4.0",
     "timeago.js": "4.0.2",
-    "vue": "3.5.42",
+    "vue": "3.5.43",
     "vue-router": "5.3.1",
     "vue-tippy": "6.8.0"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "5.10.0",
-    "@types/node": "26.6.1",
-    "@typescript-eslint/parser": "8.70.0",
-    "eslint": "10.10.0",
+    "@types/node": "26.6.3",
+    "@typescript-eslint/parser": "8.71.0",
+    "eslint": "10.11.0",
     "eslint-config-tchoupinax": "2.6.1",
-    "eslint-plugin-perfectionist": "5.11.1",
+    "eslint-plugin-perfectionist": "5.12.1",
     "eslint-plugin-simple-import-sort": "14.0.0",
-    "postcss-custom-properties": "15.0.1",
+    "postcss-custom-properties": "15.0.2",
     "typescript": "6.0.3",
-    "vitest": "5.0.1",
+    "vitest": "5.0.3",
     "vue-tsc": "3.3.11"
   }
 }
