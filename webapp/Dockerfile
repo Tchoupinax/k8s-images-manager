@@ -1,4 +1,4 @@
-FROM node:26-alpine
+FROM node:26.12.1-alpine
 
 RUN addgroup -S -g 1001 k8simagemanager && \
     adduser -S -u 1001 -G k8simagemanager k8simagemanager
