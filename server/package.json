@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@fastify/cors": "11.3.1",
-    "@fastify/request-context": "7.0.4",
+    "@fastify/request-context": "7.0.5",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
     "@prisma/client-runtime-utils": "7.10.1",
@@ -28,7 +28,7 @@
     "valienv": "1.1.0"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "0.5.10",
+    "@electric-sql/pglite": "0.5.11",
     "@types/node": "26.6.5",
     "eslint": "10.13.0",
     "eslint-config-tchoupinax": "2.6.1",
