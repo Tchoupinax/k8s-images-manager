@@ -1,5 +1,5 @@
 # Prisma generate is unreliable on newer Node linux/arm64 (prisma/prisma#29464).
-FROM node:24.22.1-alpine AS build
+FROM node:26.12.1-alpine AS build
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ RUN pnpm --filter=server exec prisma generate \
     && mkdir -p /out/prisma \
     && cp -a server/prisma/generated /out/prisma/generated
 
-FROM node:24.22.1-alpine
+FROM node:26.12.1-alpine
 
 RUN addgroup -S -g 1001 k8simagemanager && \
     adduser -S -u 1001 -G k8simagemanager k8simagemanager
