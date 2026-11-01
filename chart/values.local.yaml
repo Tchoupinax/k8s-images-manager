@@ -26,6 +26,9 @@ server:
 
 agents:
   fullnameOverride: agents
+  # GID of the containerd group inside the k3d nodes. Required.
+  # docker exec k3d-k8s-images-manager-server-0 stat -c '%g' /run/k3s/containerd/containerd.sock
+  containerdGroup:
   image:
     repository: agent
     pullPolicy: Always

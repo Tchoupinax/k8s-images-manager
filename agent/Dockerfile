@@ -18,7 +18,6 @@ RUN groupadd --system --gid 999 k8simagemanager && \
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     ca-certificates \
-    sudo \
     wget \
  && case "${TARGETARCH}" in \
       amd64) CRIC_ARCH=amd64 ;; \
@@ -34,12 +33,9 @@ RUN apt-get update \
 COPY scripts/crictl-images /usr/local/bin/crictl-images
 COPY scripts/crictl-rmi /usr/local/bin/crictl-rmi
 COPY scripts/crictl-pull /usr/local/bin/crictl-pull
-COPY scripts/sudoers /etc/sudoers.d/k8simagemanager-crictl
 
 RUN chmod 755 /usr/local/bin/crictl-images /usr/local/bin/crictl-rmi /usr/local/bin/crictl-pull \
- && chmod 440 /etc/sudoers.d/k8simagemanager-crictl \
- && chown root:root /usr/local/bin/crictl-images /usr/local/bin/crictl-rmi /usr/local/bin/crictl-pull \
-      /etc/sudoers.d/k8simagemanager-crictl
+ && chown root:root /usr/local/bin/crictl-images /usr/local/bin/crictl-rmi /usr/local/bin/crictl-pull
 
 COPY ${TARGETPLATFORM} /usr/bin/k8s-images-manager-agent
 

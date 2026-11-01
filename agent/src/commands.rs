@@ -24,10 +24,7 @@ struct CrictlImage {
 }
 
 pub fn execute_list_image_command() -> Result<String, std::io::Error> {
-    match Command::new("sudo")
-        .arg("--non-interactive")
-        .arg("/usr/local/bin/crictl-images")
-        .output()
+    match Command::new("/usr/local/bin/crictl-images").output()
     {
         Ok(output) => {
             if !output.status.success() {
@@ -86,9 +83,7 @@ pub fn execute_remove_image_command(repository: &str, tag: &str) -> Result<(), s
         return Ok(());
     };
 
-    let output = Command::new("sudo")
-        .arg("--non-interactive")
-        .arg("/usr/local/bin/crictl-rmi")
+    let output = Command::new("/usr/local/bin/crictl-rmi")
         .arg(&image.digest)
         .output()?;
 
@@ -122,9 +117,7 @@ pub fn execute_pull_image_command(repository: &str, tag: &str) -> Result<(), std
         return Ok(());
     }
 
-    let mut child = Command::new("sudo")
-        .arg("--non-interactive")
-        .arg("/usr/local/bin/crictl-pull")
+    let mut child = Command::new("/usr/local/bin/crictl-pull")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
