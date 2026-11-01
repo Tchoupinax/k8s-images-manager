@@ -2,15 +2,11 @@
 
 See which container images are on each node, then pull or delete them from one screen.
 
-[Live demo](https://k8s-images-manager.mysupercloud.dev/)
-
 ![Nuxt](https://img.shields.io/badge/Nuxt-4-00DC82?style=flat-square&logo=nuxtdotjs&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-26-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white)
 ![Rust](https://img.shields.io/badge/Rust-1.99-000000?style=flat-square&logo=rust&logoColor=white)
 
 ## Interface
-
-Captured from the [live demo](https://k8s-images-manager.mysupercloud.dev/).
 
 ### Images
 
@@ -105,7 +101,7 @@ Tear down the Tilt resources with `./scripts/dev/tilt-down.sh`. Delete the clust
 pnpm ui
 ```
 
-Opens the Nuxt dev server at http://localhost:3000 with `NUXT_PUBLIC_SERVER_ENDPOINT=https://k8s-images-manager.mysupercloud.dev`. Pull and delete requests hit production.
+Opens the Nuxt dev server at http://localhost:3000 against the production API. Pull and delete requests hit production.
 
 ### Server only
 
