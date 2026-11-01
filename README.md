@@ -65,29 +65,14 @@ Read it on a node:
 stat -c '%g %G %a' /run/k3s/containerd/containerd.sock
 ```
 
-A typical result is `990 containerd 660`. Put the number in the chart:
+The first field is the GID of the group that already owns the socket. Put that number in the chart:
 
 ```yaml
 agents:
-  containerdGroup: 990
+  containerdGroup: 989
 ```
 
-k3s creates the `containerd` group when it starts. If a node does not have it, create it with a fixed GID, then restart k3s so the socket is recreated in that group:
-
-```bash
-sudo groupadd --system --gid 990 containerd
-sudo systemctl restart k3s
-```
-
-On a worker, restart `k3s-agent` instead of `k3s`. Check the socket again with `stat`. You want the GID you chose, the group name `containerd`, and mode `660`.
-
-If the group already exists with a different GID on some nodes, recreate it with the same `--gid` everywhere, then restart k3s:
-
-```bash
-sudo groupdel containerd
-sudo groupadd --system --gid 990 containerd
-sudo systemctl restart k3s
-```
+On production nodes the `k3s` Ansible role (`containerd-socket-group.yml`) does this itself. It reads that group and reuses its GID. It creates `containerd` only when the socket is still owned by `root`, then copies the GID the system assigned onto the other nodes. The playbook prints the value to set in `agents.containerdGroup`.
 
 For the local k3d cluster, read the GID inside a node and set `agents.containerdGroup` in `chart/values.local.yaml`:
 
@@ -95,15 +80,17 @@ For the local k3d cluster, read the GID inside a node and set `agents.containerd
 docker exec k3d-k8s-images-manager-server-0 stat -c '%g' /run/k3s/containerd/containerd.sock
 ```
 
+If `stat` shows `0 root 660`, the socket is still owned by the root group. The Ansible role covers that case on production nodes.
+
 ### With `Helm`
 
 ```
 helm install k8s-images-manager oci://ghcr.io/tchoupinax \
   --create-namespace -n k8s-images-manager \
-  --set agents.containerdGroup=990
+  --set agents.containerdGroup=989
 ```
 
-Replace `990` with the containerd GID from the node.
+Replace `989` with the GID printed by the playbook, or by `stat` on the socket.
 
 ### With `Chart.yaml` and `Helm`
 

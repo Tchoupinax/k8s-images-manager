@@ -108,7 +108,7 @@ agents:
 
   # Host GID of the group that owns the containerd socket. Required.
   # On a node: stat -c '%g' /run/k3s/containerd/containerd.sock
-  containerdGroup:
+  containerdGroup: 989
 
   affinity: {}
   nodeSelector: {}
