@@ -1,80 +1,57 @@
 # k8s-images-manager
 
-![frontend](https://img.shields.io/badge/frontend-Nuxt.js-00D492?style=for-the-badge)
-![backend](https://img.shields.io/badge/backend-Node.js-6DA55F?style=for-the-badge)
-![rust](https://img.shields.io/badge/agent-Rust-brown?style=for-the-badge)
+See which container images are on each node, then pull or delete them from one screen.
 
-[![Nuxt](https://img.shields.io/badge/Nuxt_v25-00D492?style=for-the-badge&logo=nuxt&logoColor=white)](#)
-[![NodeJS](https://img.shields.io/badge/Node.js_v25-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)](#)
-[![Golang](https://img.shields.io/badge/Rust_v1.92-brown?style=for-the-badge&logo=rust&logoColor=white)](#)
+[Live demo](https://k8s-images-manager.mysupercloud.dev/)
 
-## Development
+![Nuxt](https://img.shields.io/badge/Nuxt-4-00DC82?style=flat-square&logo=nuxtdotjs&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-26-5FA04E?style=flat-square&logo=nodedotjs&logoColor=white)
+![Rust](https://img.shields.io/badge/Rust-1.99-000000?style=flat-square&logo=rust&logoColor=white)
 
-### Kubernetes (Tilt + k3d)
+## Interface
 
-This is the local environment used to run the full stack (Postgres, server, webapp, and node agents) inside a k3d cluster.
+Captured from the [live demo](https://k8s-images-manager.mysupercloud.dev/).
 
-```bash
-mise install   # installs Node 26 and pnpm 12.4.2 (see mise.toml)
-./scripts/dev/tilt-up.sh
-```
+### Images
 
-Use the pnpm from mise in this repo (`mise.toml` pins `pnpm@12.4.2`). If you see `Failed to switch pnpm to v12.4.2`, run `mise install` from the project root and ensure your shell loads mise (`eval "$(mise activate bash)"` or the equivalent for your shell).
+Search the inventory, see how many nodes hold each tag, and pull or delete from the row.
 
-Tilt builds images, pushes them to the cluster registry (`localhost:5050`), and installs the Helm chart with `chart/values.local.yaml`. Set `agents.containerdGroup` in that file to the containerd socket GID inside the k3d nodes (see [Containerd group](#containerd-group)).
+![Image inventory with sizes, node counts, and pull or delete actions](.github/docs/images.png)
 
-- Web UI: http://k8s-images-manager.127.0.0.1.nip.io
-- API: http://api.k8s-images-manager.127.0.0.1.nip.io
-- Tilt UI: http://localhost:10350
+### Nodes
 
-Tear down the Tilt resources with `./scripts/dev/tilt-down.sh`. Delete the cluster with `./scripts/dev/cluster-delete.sh`.
+Pick a few images and see which nodes already have them.
 
-### UI against production API
+![Selected images compared across cluster nodes](.github/docs/nodes.png)
 
-Start only the Nuxt app locally, talking to the production API:
+### Stats
 
-```bash
-pnpm ui
-```
+Disk, copies, and registries, plus a history of how the cluster footprint moves.
 
-Opens the usual Nuxt dev server (http://localhost:3000) with `NUXT_PUBLIC_SERVER_ENDPOINT=https://k8s-images-manager.mysupercloud.dev`. Pull and delete requests hit production.
+![Stats for disk usage, per-node size, and registries](.github/docs/stats.png)
 
-### Docker Compose (server only)
+## Install
 
-The server uses PostgreSQL and Prisma. To run locally with Docker:
-
-```bash
-docker compose up -d
-cd server && pnpm migrate
-DATABASE_URL=postgresql://postgres:mysecret@localhost:5439/postgres pnpm start
-```
-
-Or set `DATABASE_URL` (or `POSTGRES_*` env vars) and run the server. Default without env: `postgresql://postgres:mysecret@localhost:5439/postgres`.
-
-## Getting start
-
-The agent runs as a DaemonSet. It is not privileged and it does not run as root. It still needs the host network (so the hostname it reports is the node name) and a mount of the containerd socket. On k3s that socket is `/run/k3s/containerd/containerd.sock`.
+The agent is a DaemonSet. It is not privileged and it does not run as root. It uses the host network so the hostname it reports is the node name, and it mounts the containerd socket. On k3s that socket is `/run/k3s/containerd/containerd.sock`.
 
 ### Containerd group
 
 The socket is mode `0660` and belongs to the `containerd` group. The agent process is UID 999, so the pod joins that group through `supplementalGroups`. Kubernetes needs the numeric GID from the node, and that GID has to be the same on every node.
 
-Read it on a node:
-
 ```bash
 stat -c '%g %G %a' /run/k3s/containerd/containerd.sock
 ```
 
-The first field is the GID of the group that already owns the socket. Put that number in the chart:
+The first field is the GID. Put it in the chart:
 
 ```yaml
 agents:
   containerdGroup: 989
 ```
 
-On production nodes the `k3s` Ansible role (`containerd-socket-group.yml`) does this itself. It reads that group and reuses its GID. It creates `containerd` only when the socket is still owned by `root`, then copies the GID the system assigned onto the other nodes. The playbook prints the value to set in `agents.containerdGroup`.
+On production nodes the `k3s` Ansible role (`containerd-socket-group.yml`) reads that group and reuses its GID. It creates `containerd` only when the socket is still owned by `root`, then copies the GID the system assigned onto the other nodes. The playbook prints the value to set in `agents.containerdGroup`.
 
-For the local k3d cluster, read the GID inside a node and set `agents.containerdGroup` in `chart/values.local.yaml`:
+For the local k3d cluster:
 
 ```bash
 docker exec k3d-k8s-images-manager-server-0 stat -c '%g' /run/k3s/containerd/containerd.sock
@@ -82,55 +59,80 @@ docker exec k3d-k8s-images-manager-server-0 stat -c '%g' /run/k3s/containerd/con
 
 If `stat` shows `0 root 660`, the socket is still owned by the root group. The Ansible role covers that case on production nodes.
 
-### With `Helm`
+### Helm
 
-```
-helm install k8s-images-manager oci://ghcr.io/tchoupinax \
+```bash
+helm install k8s-images-manager oci://ghcr.io/tchoupinax/k8s-images-manager \
   --create-namespace -n k8s-images-manager \
   --set agents.containerdGroup=989
 ```
 
-Replace `989` with the GID printed by the playbook, or by `stat` on the socket.
+Replace `989` with the GID from the playbook, or from `stat` on the socket.
 
-### With `Chart.yaml` and `Helm`
+As a dependency:
 
-```
-apiVersion: v2
-name: k8s-images-manager
-type: application
-version: 1.0.0
-
+```yaml
 dependencies:
 - name: k8s-images-manager
-  version: 0.1.0
+  version: 0.5.7
   repository: oci://ghcr.io/tchoupinax
 ```
-## Motivation
 
-If you manager a cluster, you know that Dockerhub's rate limit can be hard if you did not anticipate it. There are many tips to handle it, one is to have an [embedded registry mirror](https://docs.k3s.io/installation/registry-mirror) that I wanted to setup with k3s.
+## Development
 
-But to check that this registry is working, I need to monitor how images are managed accros the nodes.
+### Kubernetes (Tilt + k3d)
 
-That's the reason of this project, and that's all. Sometimes, it's really simple.
+This runs the full stack (Postgres, server, webapp, and node agents) inside a k3d cluster.
 
-## Features
+```bash
+mise install   # Node 26 and pnpm 12.15.0, see mise.toml
+./scripts/dev/tilt-up.sh
+```
 
-### List images from the cluster
+Use the pnpm from mise (`mise.toml` pins `pnpm@12.15.0`). If you see `Failed to switch pnpm to v12.15.0`, run `mise install` from the project root and make sure your shell loads mise (`eval "$(mise activate bash)"`, or the equivalent for your shell).
 
-To be done
+Tilt builds images, pushes them to the cluster registry (`localhost:5050`), and installs the Helm chart with `chart/values.local.yaml`. Set `agents.containerdGroup` in that file to the containerd socket GID inside the k3d nodes.
 
-### Show which nodes have specific images
-![](.github/docs/nodes.png)
+- Web UI: http://k8s-images-manager.127.0.0.1.nip.io
+- API: http://api.k8s-images-manager.127.0.0.1.nip.io
+- Tilt UI: http://localhost:10350
+
+Tear down the Tilt resources with `./scripts/dev/tilt-down.sh`. Delete the cluster with `./scripts/dev/cluster-delete.sh`.
+
+### UI against the production API
+
+```bash
+pnpm ui
+```
+
+Opens the Nuxt dev server at http://localhost:3000 with `NUXT_PUBLIC_SERVER_ENDPOINT=https://k8s-images-manager.mysupercloud.dev`. Pull and delete requests hit production.
+
+### Server only
+
+The server uses PostgreSQL and Prisma.
+
+```bash
+docker compose up -d
+cd server && pnpm migrate
+DATABASE_URL=postgresql://postgres:mysecret@localhost:5439/postgres pnpm start
+```
+
+`DATABASE_URL` or the `POSTGRES_*` variables override the default `postgresql://postgres:mysecret@localhost:5439/postgres`.
+
+## Why
+
+If you manage a cluster, you know Docker Hub rate limits hurt when you did not plan for them. One way through is an [embedded registry mirror](https://docs.k3s.io/installation/registry-mirror), which is what I wanted on k3s.
+
+To know the mirror is actually doing its job, I need to see how images are spread across the nodes. That is this project.
 
 ## Roadmap
 
-- [ ] Make agent compatible with Kubernetes distribution
-    - [x] k3s
-    - [ ] Minikube
-    - [ ] EKS
-    - [ ] GKE
-    - [ ] Talos
-- [ ] Make agent compatible with Docker engine
-- [ ] Make agent binary the most light possible (using scratch)
-- [ ] Improve UI
-  - [ ] Nodes dashboard
+- [ ] Other Kubernetes distributions
+  - [x] k3s
+  - [ ] Minikube
+  - [ ] EKS
+  - [ ] GKE
+  - [ ] Talos
+- [ ] Docker engine
+- [ ] Smaller agent binary (`scratch`)
+- [ ] Richer nodes dashboard
