@@ -106,14 +106,24 @@ agents:
     annotations: {}
     name: ""
 
+  # Host GID of the group that owns the containerd socket. Required.
+  # On a node: stat -c '%g' /run/k3s/containerd/containerd.sock
+  containerdGroup: 989
+
   affinity: {}
   nodeSelector: {}
   podAnnotations: {}
   podLabels: {}
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
   resources: {}
   securityContext:
-    privileged: true # Mandatory to access containerd API
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
   tolerations: []
   volumeMounts: []
   volumes: []

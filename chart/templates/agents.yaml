@@ -30,10 +30,15 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.agents.podSecurityContext }}
-      securityContext:
-        {{- toYaml . | nindent 8 }}
+      {{- $gid := required "agents.containerdGroup is required. Set it to the host GID of the group that owns the containerd socket (see README)." .Values.agents.containerdGroup }}
+      {{- $podSecurityContext := merge (dict) (.Values.agents.podSecurityContext | default dict) }}
+      {{- $groups := list ($gid | int) }}
+      {{- with $podSecurityContext.supplementalGroups }}
+      {{- $groups = concat $groups . }}
       {{- end }}
+      {{- $_ := set $podSecurityContext "supplementalGroups" $groups }}
+      securityContext:
+        {{- toYaml $podSecurityContext | nindent 8 }}
 
       containers:
       - name: {{ .Chart.Name }}

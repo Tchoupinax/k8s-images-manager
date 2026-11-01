@@ -21,7 +21,7 @@ mise install   # installs Node 26 and pnpm 12.4.2 (see mise.toml)
 
 Use the pnpm from mise in this repo (`mise.toml` pins `pnpm@12.4.2`). If you see `Failed to switch pnpm to v12.4.2`, run `mise install` from the project root and ensure your shell loads mise (`eval "$(mise activate bash)"` or the equivalent for your shell).
 
-Tilt builds images, pushes them to the cluster registry (`localhost:5050`), and installs the Helm chart with `chart/values.local.yaml`.
+Tilt builds images, pushes them to the cluster registry (`localhost:5050`), and installs the Helm chart with `chart/values.local.yaml`. Set `agents.containerdGroup` in that file to the containerd socket GID inside the k3d nodes (see [Containerd group](#containerd-group)).
 
 - Web UI: http://k8s-images-manager.127.0.0.1.nip.io
 - API: http://api.k8s-images-manager.127.0.0.1.nip.io
@@ -53,22 +53,44 @@ Or set `DATABASE_URL` (or `POSTGRES_*` env vars) and run the server. Default wit
 
 ## Getting start
 
-> [!WARNING]
-> Rust agent runs as daemonset inside your cluster and requires privileges to be able to list downloaded images
-> 
-> It requires:
-> - [HostNetwork: true](https://github.com/Tchoupinax/k8s-images-manager/blob/master/chart/templates/agents.yaml#L26)
-> 
-> - [Binding containerd socket (k3s only for now!)](https://github.com/Tchoupinax/k8s-images-manager/blob/21bf40b02947c9b23686ebec0cab99133e35908f/chart/templates/agents.yaml#L66)
-> - [Being privileged](https://github.com/Tchoupinax/k8s-images-manager/blob/21bf40b02947c9b23686ebec0cab99133e35908f/chart/values.yaml#L95)
->
-> Improvements will be done to limit these requirement in the future.
+The agent runs as a DaemonSet. It is not privileged and it does not run as root. It still needs the host network (so the hostname it reports is the node name) and a mount of the containerd socket. On k3s that socket is `/run/k3s/containerd/containerd.sock`.
+
+### Containerd group
+
+The socket is mode `0660` and belongs to the `containerd` group. The agent process is UID 999, so the pod joins that group through `supplementalGroups`. Kubernetes needs the numeric GID from the node, and that GID has to be the same on every node.
+
+Read it on a node:
+
+```bash
+stat -c '%g %G %a' /run/k3s/containerd/containerd.sock
+```
+
+The first field is the GID of the group that already owns the socket. Put that number in the chart:
+
+```yaml
+agents:
+  containerdGroup: 989
+```
+
+On production nodes the `k3s` Ansible role (`containerd-socket-group.yml`) does this itself. It reads that group and reuses its GID. It creates `containerd` only when the socket is still owned by `root`, then copies the GID the system assigned onto the other nodes. The playbook prints the value to set in `agents.containerdGroup`.
+
+For the local k3d cluster, read the GID inside a node and set `agents.containerdGroup` in `chart/values.local.yaml`:
+
+```bash
+docker exec k3d-k8s-images-manager-server-0 stat -c '%g' /run/k3s/containerd/containerd.sock
+```
+
+If `stat` shows `0 root 660`, the socket is still owned by the root group. The Ansible role covers that case on production nodes.
 
 ### With `Helm`
 
 ```
-helm install k8s-images-manager oci://ghcr.io/tchoupinax --create-namespace -n k8s-images-manager
+helm install k8s-images-manager oci://ghcr.io/tchoupinax \
+  --create-namespace -n k8s-images-manager \
+  --set agents.containerdGroup=989
 ```
+
+Replace `989` with the GID printed by the playbook, or by `stat` on the socket.
 
 ### With `Chart.yaml` and `Helm`
 

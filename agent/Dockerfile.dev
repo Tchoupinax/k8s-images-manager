@@ -26,7 +26,7 @@ RUN groupadd --system --gid 999 k8simagemanager && \
 
 # hadolint ignore=DL3008
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates sudo wget \
+ && apt-get install -y --no-install-recommends ca-certificates wget \
  && rm -rf /var/lib/apt/lists/*
 
 RUN arch="${TARGETARCH:-$(dpkg --print-architecture)}" \
@@ -43,12 +43,9 @@ RUN arch="${TARGETARCH:-$(dpkg --print-architecture)}" \
 COPY agent/scripts/crictl-images /usr/local/bin/crictl-images
 COPY agent/scripts/crictl-rmi /usr/local/bin/crictl-rmi
 COPY agent/scripts/crictl-pull /usr/local/bin/crictl-pull
-COPY agent/scripts/sudoers /etc/sudoers.d/k8simagemanager-crictl
 
 RUN chmod 755 /usr/local/bin/crictl-images /usr/local/bin/crictl-rmi /usr/local/bin/crictl-pull \
- && chmod 440 /etc/sudoers.d/k8simagemanager-crictl \
- && chown root:root /usr/local/bin/crictl-images /usr/local/bin/crictl-rmi /usr/local/bin/crictl-pull \
-      /etc/sudoers.d/k8simagemanager-crictl
+ && chown root:root /usr/local/bin/crictl-images /usr/local/bin/crictl-rmi /usr/local/bin/crictl-pull
 
 COPY --from=builder /out/k8s-images-manager-agent /usr/bin/k8s-images-manager-agent/k8s-images-manager-agent
 
