@@ -1,4 +1,24 @@
-# Prisma generate is unreliable on newer Node linux/arm64 (prisma/prisma#29464).
+# prisma generate fails under QEMU on Node >=25 linux/arm64 (prisma/prisma#29464).
+# The client engine output is platform-independent, so generate it on the native builder.
+# hadolint ignore=DL3029
+FROM --platform=$BUILDPLATFORM node:26.13.0-alpine AS generate
+
+WORKDIR /app
+
+RUN npm i -g pnpm
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY server/package.json server/
+
+# hadolint ignore=DL3042
+RUN --mount=type=cache,id=pnpm-store-generate,target=/root/.pnpm-store \
+    pnpm install --frozen-lockfile --store-dir /root/.pnpm-store --filter=server...
+
+COPY server/prisma server/prisma
+COPY server/prisma.config.mts server/prisma.config.mts
+
+RUN pnpm --filter=server exec prisma generate
+
 FROM node:26.13.0-alpine AS build
 
 WORKDIR /app
@@ -15,10 +35,10 @@ RUN --mount=type=cache,id=pnpm-store,target=/root/.pnpm-store \
 COPY server/src server/src
 COPY server/prisma server/prisma
 COPY server/prisma.config.mts server/prisma.config.mts
+COPY --from=generate /app/server/prisma/generated server/prisma/generated
 
 # generated/ is gitignored, so pnpm deploy would skip it — copy it into the deploy root.
-RUN pnpm --filter=server exec prisma generate \
-    && pnpm --filter=server deploy --prod --legacy --ignore-scripts /out \
+RUN pnpm --filter=server deploy --prod --legacy --ignore-scripts /out \
     && mkdir -p /out/prisma \
     && cp -a server/prisma/generated /out/prisma/generated
 
