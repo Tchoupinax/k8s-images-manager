@@ -37,6 +37,22 @@ jobs:
       with:
         fetch-depth: 0
 
+    # helm-push ignores version and appVersion when useOCIRegistry is true,
+    # so the packaged chart would keep the version committed in Chart.yaml.
+    # Empty image tags are "<component>-v<appVersion>".
+    - name: Set chart version from the git tag
+      run: |
+        version="${GITHUB_REF_NAME#v}"
+        if [[ ! "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+          echo "Tag ${GITHUB_REF_NAME} is not a semver chart version"
+          exit 1
+        fi
+        sed -i -E \
+          -e "s/^version:.*/version: ${version}/" \
+          -e "s/^appVersion:.*/appVersion: ${version}/" \
+          chart/Chart.yaml
+        grep -E '^(version|appVersion):' chart/Chart.yaml
+
     - name: Push Helm chart to OCI Github registry2
       uses: bsord/helm-push@v4.2.0
       with:
