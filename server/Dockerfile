@@ -1,7 +1,7 @@
 # prisma generate fails under QEMU on Node >=25 linux/arm64 (prisma/prisma#29464).
 # The client engine output is platform-independent, so generate it on the native builder.
 # hadolint ignore=DL3029
-FROM --platform=$BUILDPLATFORM node:26.13.0-alpine AS generate
+FROM --platform=$BUILDPLATFORM node:26.13.1-alpine AS generate
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ COPY server/prisma.config.mts server/prisma.config.mts
 
 RUN pnpm --filter=server exec prisma generate
 
-FROM node:26.13.0-alpine AS build
+FROM node:26.13.1-alpine AS build
 
 WORKDIR /app
 
@@ -42,7 +42,7 @@ RUN pnpm --filter=server deploy --prod --legacy --ignore-scripts /out \
     && mkdir -p /out/prisma \
     && cp -a server/prisma/generated /out/prisma/generated
 
-FROM node:26.13.0-alpine
+FROM node:26.13.1-alpine
 
 RUN addgroup -S -g 1001 k8simagemanager && \
     adduser -S -u 1001 -G k8simagemanager k8simagemanager
